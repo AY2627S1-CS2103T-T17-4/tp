@@ -1,4 +1,4 @@
----
+    ---
 layout: page
 title: About Us
 ---
@@ -30,14 +30,14 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Team Lead
 * Responsibilities: Testing
 
-### Johnny Doe
+### Ni Jian
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/nijian3369.png" width="200px">
 
-[[github](http://github.com/johndoe)] [[portfolio](team/johndoe.md)]
+[[github](http://github.com/nijian3369)] [[portfolio](team/johndoe.md)]
 
 * Role: Developer
-* Responsibilities: Data
+* Responsibilities: Deliverables and deadlines
 
 ### Jean Doe
 
