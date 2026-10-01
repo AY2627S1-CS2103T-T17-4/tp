@@ -20,15 +20,15 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Project Advisor
 * Responsibilities: Documentation
 
-### Jane Doe
+### Dylan Tay
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/zsdcode.png" width="200px">
 
-[[github](http://github.com/johndoe)]
+[[github](http://github.com/zsdcode)]
 [[portfolio](team/johndoe.md)]
 
 * Role: Team Lead
-* Responsibilities: UI
+* Responsibilities: Testing
 
 ### Johnny Doe
 
