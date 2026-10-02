@@ -40,35 +40,12 @@ The MVP is intentionally small and local. It focuses on the minimum workflow nee
 
 The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy search, multiple hobbies, phone-number support, backup commands, confirmations, undo/redo, and command aliases are outside the MVP and planned for later iterations.
 
-## Usage
-
 ## Documentation
 
 ### Prerequisites
 
 - Java Development Kit (JDK) 25 or later
 - A supported desktop environment for JavaFX
-
-### Build and test
-
-From the project root:
-
-```powershell
-.\gradlew.bat clean test
-```
-
-### Run from Gradle
-
-```powershell
-.\gradlew.bat run
-```
-
-### Build and run the executable JAR
-
-```powershell
-.\gradlew.bat shadowJar
-java -jar build/libs/addressbook.jar
-```
 
 ### Commands
 
@@ -84,6 +61,14 @@ Notes:
 - Values containing spaces (e.g. names) must be enclosed in double quotation marks.
 - Command words and option flags (`-n`, `-c`, `-h`) are lowercase and case-sensitive.
 - Data is saved automatically after every successful data-changing command, and reloaded on startup.
+
+## Authors
+
+- Dylan Tay
+- Ng Jing Jie, Asher
+- Chew Hong Zhi
+- Darryl Zhang Junzhuo
+- Ni Jian
 
 ## Acknowledgements
 
