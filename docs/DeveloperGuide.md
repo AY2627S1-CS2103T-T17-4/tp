@@ -1,7 +1,6 @@
----
-layout: page
-title: Developer Guide
----
+| layout | page |
+| :---   | :--- |
+| title | Developer Guide |
 * Table of Contents
 {:toc}
 
@@ -274,16 +273,28 @@ _{Explain here how the data archiving feature will be implemented}_
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​                                    | I want to …​                     | So that I can…​                                                        |
-| -------- | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| `* * *`  | new user                                   | see usage instructions         | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person               |                                                                        |
-| `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
+# HobbyHub — User Stories
 
-*{More to be added}*
+| Priority | As a …                  | I want to …                                                                    | So that I can…                                            |
+| -------- | ----------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------- |
+| `* * *`  | coordinator             | add a new member profile with their name, contact info, and primary hobby      | keep track of everyone joining the community              |
+| `* *`    | coordinator             | update a member's availability schedule (e.g., weekends, evenings)             | know when they are free for matches                       |
+| `* * *`  | coordinator             | view a member's full profile including hobbies, skill levels, and availability | quickly assess their details before making a match        |
+| `* * *`  | coordinator             | search for members by a specific hobby                                         | find all potential participants for a specific activity   |
+| `* *`    | coordinator             | filter members by availability                                                 | find people who are free at a specific time               |
+| `* *`    | coordinator             | create a new group/team for a specific hobby                                   | organize regular meetups or leagues                       |
+| `* *`    | coordinator             | add members to a specific group                                                | manage the roster for that group                          |
+| `* *`    | coordinator             | list all members being managed                                                 | see which members are currnetly under me                  |
+| `* *`    | coordinator             | list all members in a specific group                                           | see who is participating in that group                    |
+| `* * *`  | coordinator             | remove a member from the system                                                | keep the database clean when someone leaves the community |
+| `* * *`  | coordinator             | edit an existing member's contact information                                  | ensure their details are up to date                       |
+| `*`      | experienced coordinator | use keyboard shortcuts or aliases for common commands                          | work even faster without typing long commands             |
+| `* *`    | coordinator             | view all matches for a specific group                                          | see the full matching status of that group                |
+| `* *`    | coordinator             | view all groups a specific member belongs to                                   | quickly check their group memberships                     |
+| `* *`    | coordinator             | remove a member from one group without deleting their profile                  | update memberships as interests change                    |
+| `* *`    | new coordinator         | view a built-in help/command list                                              | learn how to use HobbyHub without external docs           |
+| `*`      | new coordinator         | undo my last action                                                            | recover quickly from an accidental edit or deletion       |
+| `* * *`  | coordinator             | view all members                                                               | see the people I am currently managing                    |
 
 ### Use cases
 
