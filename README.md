@@ -44,5 +44,51 @@ The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy 
 
 ## Documentation
 
+### Prerequisites
+
+- Java Development Kit (JDK) 25 or later
+- A supported desktop environment for JavaFX
+
+### Build and test
+
+From the project root:
+
+```powershell
+.\gradlew.bat clean test
+```
+
+### Run from Gradle
+
+```powershell
+.\gradlew.bat run
+```
+
+### Build and run the executable JAR
+
+```powershell
+.\gradlew.bat shadowJar
+java -jar build/libs/addressbook.jar
+```
+
+### Commands
+
+| Command | Format | Example |
+| --- | --- | --- |
+| Add member | `add -n "NAME" -c EMAIL -h HOBBY` | `add -n "John Doe" -c john@example.com -h Chess` |
+| List all members | `list` | `list` |
+| Search members by name | `search -n NAME` | `search -n John` |
+| Remove member | `remove -c EMAIL` | `remove -c john@example.com` |
+| Exit program | `exit` | `exit` |
+
+Notes:
+- Values containing spaces (e.g. names) must be enclosed in double quotation marks.
+- Command words and option flags (`-n`, `-c`, `-h`) are lowercase and case-sensitive.
+- Data is saved automatically after every successful data-changing command, and reloaded on startup.
+
+## Acknowledgements
+
+This project is based on the [AddressBook-Level3 project](https://github.com/se-edu/addressbook-level3) created by the [SE-EDU initiative](https://se-education.org).
+
+HobbyHub also uses [JavaFX](https://openjfx.io/), [Jackson](https://github.com/FasterXML/jackson), [JUnit 5](https://junit.org/junit5/), Gradle, and the [JaCoCo](https://www.jacoco.org/jacoco/) code-coverage tool.
 
 
