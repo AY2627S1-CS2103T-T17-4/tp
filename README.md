@@ -16,4 +16,30 @@ HobbyHub is a single-user, CLI-first productivity tool. It does not connect memb
 
 The product direction, user stories, and external MVP behaviour have been specified. The current repository is an early JavaFX/CLI prototype derived from the AddressBook Level 3 codebase; HobbyHub-specific member, hobby, matching, and group-management features are being implemented incrementally.
 
+## MVP features
+
+| Feature | Description                                                                                                            | Status |
+| --- |------------------------------------------------------------------------------------------------------------------------| --- |
+| Add member | Add a new member with a name, unique email address, and primary hobby.                                                 | MVP |
+| List all members | Display all members currently being managed.                                                                           | MVP |
+| Remove member | Remove an existing member using their unique email address.                                                            | MVP |
+| Search members by name | Search for members using case-insensitive partial-name matching.                                                       | MVP |
+| Automatic data saving | Save member data automatically after every successful data-changing command and reload it when the application starts. | MVP |
+| Exit program | Exit HobbyHub cleanly without losing successfully saved data.                                                          | MVP |
+
+## MVP scope
+
+The MVP is intentionally small and local. It focuses on the minimum workflow needed for a coordinator to maintain a usable member list:
+
+- Add a member with a name, unique email address, and primary hobby.
+- List all members.
+- Remove a member by email address.
+- Search members by name using case-insensitive partial matching.
+- Save data automatically after each successful data-changing command.
+- Exit the application cleanly.
+
+The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy search, multiple hobbies, phone-number support, backup commands, confirmations, undo/redo, and command aliases are outside the MVP and planned for later iterations.
+
+
+
 
