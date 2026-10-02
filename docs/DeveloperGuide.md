@@ -303,32 +303,303 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+(For all use cases below, the **System** is `HobbyHub` and the **Actor** is the `coordinator`, unless specified otherwise)
 
-**Use case: Delete a person**
+**Use case: UC01 - Add a member**
+
+**Preconditions**
+
+* HobbyHub is running.
+* The local data store is available.
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1. Coordinator initiates the addition of a member.
+2. Coordinator supplies the member's name, email address, and primary hobby.
+3. HobbyHub validates the supplied details.
+4. HobbyHub verifies that the email address is unique.
+5. HobbyHub creates the member record.
+6. HobbyHub persists the updated member data.
+7. HobbyHub records the successful addition.
 
-    Use case ends.
+   Use case ends.
+
+**Guarantees**
+
+* The new member is available in subsequent searches and listings.
+* The new member is persisted and can be restored after relaunching HobbyHub.
+* Invalid input does not partially modify the member list.
 
 **Extensions**
 
-* 2a. The list is empty.
+* 2a. One or more required details are missing.
 
-  Use case ends.
+  * 2a1. HobbyHub reports the missing details.
+  * 2a2. HobbyHub does not create or modify the member record.
 
-* 3a. The given index is invalid.
+    Use case ends.
 
-    * 3a1. AddressBook shows an error message.
+* 3a. One or more supplied details are invalid.
 
-      Use case resumes at step 2.
+  * 3a1. HobbyHub reports the invalid details and the expected format, where applicable.
+  * 3a2. HobbyHub does not create or modify the member record.
 
-*{More to be added}*
+    Use case ends.
+
+* 4a. The email address is already in use.
+
+  * 4a1. HobbyHub reports that the email address is already associated with an existing member.
+  * 4a2. HobbyHub does not create or modify the member record.
+
+    Use case ends.
+
+* 6a. HobbyHub cannot persist the updated member data.
+
+  * 6a1. HobbyHub reports the persistence failure.
+  * 6a2. HobbyHub does not record the addition as successful.
+  * 6a3. HobbyHub does not partially modify the stored member data.
+
+    Use case ends.
+
+* *a. Coordinator cancels the operation.
+
+  * *a1. HobbyHub ends the operation without modifying the member data.
+
+    Use case ends.
+
+**Use case: UC02 - List all members**
+
+**Preconditions**
+
+* HobbyHub is running.
+
+**MSS**
+
+1. Coordinator requests to list all members.
+2. HobbyHub retrieves the current member records.
+3. HobbyHub returns all current member records to the coordinator.
+
+   Use case ends.
+
+**Guarantees**
+
+* All currently stored members are displayed.
+* No member data is changed.
+
+**Extensions**
+
+* 1a. The list request contains additional or invalid parameters.
+
+  * 1a1. HobbyHub reports that the request format is invalid.
+  * 1a2. HobbyHub does not retrieve or modify any member records.
+
+    Use case ends.
+
+* 2a. There are no members in HobbyHub.
+
+  * 2a1. HobbyHub reports that no members have been added.
+
+    Use case ends.
+
+**Use case: UC03 - Remove a member**
+
+**Preconditions**
+
+* HobbyHub is running.
+* The member to be removed exists.
+
+**MSS**
+
+1. Coordinator initiates the removal of a member.
+2. Coordinator supplies the member's unique email address.
+3. HobbyHub validates the email address.
+4. HobbyHub locates the corresponding member record.
+5. HobbyHub removes the member record.
+6. HobbyHub persists the updated member data.
+7. HobbyHub records the successful removal.
+
+   Use case ends.
+
+**Guarantees**
+
+* The selected member is no longer available in the member list.
+* The removed member remains absent after HobbyHub is relaunched.
+* Other member records remain unchanged.
+
+**Extensions**
+
+* 2a. The coordinator does not provide an email address.
+
+  * 2a1. HobbyHub reports that an email address is required.
+  * 2a2. HobbyHub does not remove or modify any member record.
+
+    Use case ends.
+
+* 3a. The supplied email address is invalid.
+
+  * 3a1. HobbyHub reports the invalid email address and the expected format.
+  * 3a2. HobbyHub does not remove or modify any member record.
+
+    Use case ends.
+
+* 4a. No member has the supplied email address.
+
+  * 4a1. HobbyHub reports that no matching member was found.
+  * 4a2. HobbyHub does not remove or modify any member record.
+
+    Use case ends.
+
+* 6a. HobbyHub cannot persist the updated member data.
+
+  * 6a1. HobbyHub reports the persistence failure.
+  * 6a2. HobbyHub does not record the removal as successful.
+  * 6a3. HobbyHub preserves the previously persisted member data.
+
+    Use case ends.
+
+* *a. The coordinator cancels the operation before the member record is removed.
+
+  * *a1. HobbyHub ends the operation without modifying the member data.
+
+    Use case ends.
+
+**Use case: UC04 - Search members by name**
+
+**Preconditions**
+
+* HobbyHub is running.
+
+**MSS**
+
+1. Coordinator initiates a member search.
+2. Coordinator supplies a name or name fragment.
+3. HobbyHub validates the search term.
+4. HobbyHub identifies members whose names contain the search term, ignoring letter case.
+5. HobbyHub returns the matching member records to the coordinator.
+
+   Use case ends.
+
+**Guarantees**
+
+* HobbyHub displays all members whose names match the search criteria.
+* No member data is changed.
+
+**Extensions**
+
+* 1a. The search request contains additional or invalid parameters.
+
+  * 1a1. HobbyHub reports that the request format is invalid.
+  * 1a2. HobbyHub does not perform a search or modify any member records.
+
+    Use case ends.
+
+* 2a. The coordinator does not provide a name or name fragment.
+
+  * 2a1. HobbyHub reports that a non-empty search term is required.
+  * 2a2. HobbyHub does not perform a search or modify any member records.
+
+    Use case ends.
+
+* 3a. The search term does not follow the expected format.
+
+  * 3a1. HobbyHub reports the invalid search term and the expected format.
+  * 3a2. HobbyHub does not perform a search or modify any member records.
+
+    Use case ends.
+
+* 4a. No members match the search term.
+
+  * 4a1. HobbyHub reports that no matching members were found.
+
+    Use case ends.
+
+* *a. The coordinator cancels the search before it is completed.
+
+  * *a1. HobbyHub ends the operation without modifying any member records.
+
+    Use case ends.
+
+**Use case: UC05 - Persist and restore member data**
+
+**Preconditions**
+
+* HobbyHub has been used to add or modify member data.
+* The local data store is available.
+
+**MSS**
+
+1. Coordinator completes a successful data-changing operation.
+2. HobbyHub persists the updated member data.
+3. Coordinator exits HobbyHub.
+4. Coordinator relaunches HobbyHub.
+5. HobbyHub loads the persisted member data.
+6. HobbyHub restores the member data for continued use.
+
+   Use case ends.
+
+**Guarantees**
+
+* Successfully persisted member data is retained between application sessions.
+* Members, contact details, and hobbies are restored without unintended changes.
+* No separate manual save command is required.
+
+**Extensions**
+
+* 2a. HobbyHub cannot create, access, or write to the local data store.
+
+  * 2a1. HobbyHub reports that the data could not be saved.
+  * 2a2. HobbyHub informs the coordinator that the latest changes may not be available after relaunch.
+
+    Use case ends.
+
+* 5a. HobbyHub cannot read the persisted member data.
+
+  * 5a1. HobbyHub reports that the data could not be loaded.
+  * 5a2. HobbyHub does not claim that the previous member data was restored.
+
+    Use case ends.
+
+* 5b. The persisted data is invalid.
+
+  * 5b1. HobbyHub reports that the data file is invalid.
+  * 5b2. HobbyHub does not silently overwrite the invalid data before informing the coordinator.
+
+    Use case ends.
+
+**Use case: UC06 - Exit the program**
+
+**Preconditions**
+
+* HobbyHub is running.
+
+**MSS**
+
+1. Coordinator initiates an exit request.
+2. HobbyHub terminates the application gracefully.
+
+   Use case ends.
+
+**Guarantees**
+
+* HobbyHub closes without crashing.
+* All previously persisted member data remains available for the next session.
+
+**Extensions**
+
+* 1a. The exit request contains additional or invalid parameters.
+
+  * 1a1. HobbyHub reports that the exit request format is invalid.
+  * 1a2. HobbyHub does not terminate the application.
+
+    Use case ends.
+
+* 2a. HobbyHub encounters an unexpected failure while terminating.
+
+  * 2a1. HobbyHub reports the termination failure.
+  * 2a2. HobbyHub does not claim that the application exited successfully.
+  * 2a3. Previously persisted member data remains unchanged.
+
+    Use case ends.
 
 ### Non-Functional Requirements
 
