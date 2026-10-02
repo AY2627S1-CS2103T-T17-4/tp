@@ -284,6 +284,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* *`    | coordinator             | filter members by availability                                                 | find people who are free at a specific time               |
 | `* *`    | coordinator             | create a new group/team for a specific hobby                                   | organize regular meetups or leagues                       |
 | `* *`    | coordinator             | add members to a specific group                                                | manage the roster for that group                          |
+| `* *`    | coordinator             | list all members being managed                                                 | see which members are currnetly under me                  |
 | `* *`    | coordinator             | list all members in a specific group                                           | see who is participating in that group                    |
 | `* * *`  | coordinator             | remove a member from the system                                                | keep the database clean when someone leaves the community |
 | `* * *`  | coordinator             | edit an existing member's contact information                                  | ensure their details are up to date                       |
