@@ -260,13 +260,18 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
-* prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
+A single community hobby-group coordinator who
+* manages prospective and existing members of one or more hobby groups
+* records member details such as hobbies, skill level, availability, and area
+* needs to find suitable members when organising activities
+* manually decides which members to match or assign to groups
+* prefers fast, keyboard-driven workflows
+* is reasonably comfortable using CLI applications
+* does not require members to log in or access the application directly
 
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value proposition**: Help a hobby-group coordinator manage members and matches quickly from the keyboard by storing member details locally, supporting fast searches and filters, and allowing the coordinator to record matches and group memberships without relying on spreadsheets or remote services.
+
+HobbyHub is a single-user, coordinator-driven tool. It does not provide member accounts or automated black-box matching.
 
 
 ### User stories
@@ -327,11 +332,20 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
-2.  Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
-3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
+| ID | Category | Requirement |
+| --- | --- | --- |
+| NFR01 | Portability | HobbyHub should run on Windows, macOS, and Linux systems with JDK 25 or later and the required JavaFX runtime. |
+| NFR02 | Capacity| HobbyHub should support at least 1000 member records while preserving all MVP functionality. |
+| NFR03 | Performance | For a local dataset of up to 1000 members, common operations such as adding a member, searching by name, and applying a basic filter should complete within two seconds under normal operations. |
+| NFR04 | Usability | All core workflows should be usable through keyboard-driven commands without requiring mouse interaction or relying solely on colour, animation, or pointer-based interaction. |
+| NFR05 | Availability | All MVP functions should work without requiring an Internet connection, remote API, or hosted database. |
+| NFR06 | Privacy | Member data should remain on the coordinator's local machine unless the coordinator explicitly exports it. |
+| NFR07 | Reliability | Invalid commands should not partially modify stored data. |
+| NFR08 | Robustness | Validation and persistence failures should be reported clearly without causing the application to crash. |
+| NFR09 | Data portability | Member data should be stored in a local, human-readable format that can be inspected or backed up using standard file-management tools. |
+| NFR10 | Error clarity | Every invalid MVP command should produce an error message that identifies the invalid or missing input and, where applicable, states the expected format. |
+| NFR11 | UI | The main window should remain usable at a minimum resolution of 1024 × 768 pixels, with no command input, result display, or member information clipped at that resolution. |
 
-*{More to be added}*
 
 ### Glossary
 

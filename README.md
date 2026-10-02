@@ -42,6 +42,8 @@ The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy 
 
 ## Usage
 
+## Documentation
+
 ### Prerequisites
 
 - Java Development Kit (JDK) 25 or later
