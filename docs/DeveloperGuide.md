@@ -260,13 +260,18 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
-* prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
+A single community hobby-group coordinator who
+* manages prospective and existing members of one or more hobby groups
+* records member details such as hobbies, skill level, availability, and area
+* needs to find suitable members when organising activities
+* manually decides which members to match or assign to groups
+* prefers fast, keyboard-driven workflows
+* is reasonably comfortable using CLI applications
+* does not require members to log in or access the application directly
 
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value proposition**: Help a hobby-group coordinator manage members and matches quickly from the keyboard by storing member details locally, supporting fast searches and filters, and allowing the coordinator to record matches and group memberships without relying on spreadsheets or remote services.
+
+HobbyHub is a single-user, coordinator-driven tool. It does not provide member accounts or automated black-box matching.
 
 
 ### User stories
