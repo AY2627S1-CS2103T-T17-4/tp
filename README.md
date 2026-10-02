@@ -40,6 +40,9 @@ The MVP is intentionally small and local. It focuses on the minimum workflow nee
 
 The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy search, multiple hobbies, phone-number support, backup commands, confirmations, undo/redo, and command aliases are outside the MVP and planned for later iterations.
 
+## Usage
+
+## Documentation
 
 
 
