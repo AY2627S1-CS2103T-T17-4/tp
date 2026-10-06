@@ -77,7 +77,7 @@ public class EditCommand extends Command {
         }
 
         Person personToEdit = lastShownList.get(index.getZeroBased());
-        Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
+        Person editedPerson = editPersonDescriptor.createEditedPerson(personToEdit);
 
         if (!personToEdit.isSamePerson(editedPerson) && model.hasPerson(editedPerson)) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
@@ -86,22 +86,6 @@ public class EditCommand extends Command {
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)));
-    }
-
-    /**
-     * Creates and returns a {@code Person} with the details of {@code personToEdit}
-     * edited with {@code editPersonDescriptor}.
-     */
-    private static Person createEditedPerson(Person personToEdit, EditPersonDescriptor editPersonDescriptor) {
-        assert personToEdit != null;
-
-        Name updatedName = editPersonDescriptor.getName().orElse(personToEdit.getName());
-        Phone updatedPhone = editPersonDescriptor.getPhone().orElse(personToEdit.getPhone());
-        Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
-        Address updatedAddress = editPersonDescriptor.getAddress().orElse(personToEdit.getAddress());
-        Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
-
-        return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags);
     }
 
     @Override
@@ -153,38 +137,58 @@ public class EditCommand extends Command {
         }
 
         /**
+         * Creates and returns a {@code Person} with the details of {@code personToEdit}
+         * edited with this descriptor's fields.
+         */
+        public Person createEditedPerson(Person personToEdit) {
+            requireNonNull(personToEdit);
+
+            Name updatedName = getName().orElse(personToEdit.getName());
+            Phone updatedPhone = getPhone().orElse(personToEdit.getPhone());
+            Email updatedEmail = getEmail().orElse(personToEdit.getEmail());
+            Address updatedAddress = getAddress().orElse(personToEdit.getAddress());
+            Set<Tag> updatedTags = getTags().orElse(personToEdit.getTags());
+
+            return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags);
+        }
+
+        /**
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
             return CollectionUtil.isAnyNonNull(name, phone, email, address, tags);
         }
 
-        public void setName(Name name) {
+        public EditPersonDescriptor setName(Name name) {
             this.name = name;
+            return this;
         }
 
         public Optional<Name> getName() {
             return Optional.ofNullable(name);
         }
 
-        public void setPhone(Phone phone) {
+        public EditPersonDescriptor setPhone(Phone phone) {
             this.phone = phone;
+            return this;
         }
 
         public Optional<Phone> getPhone() {
             return Optional.ofNullable(phone);
         }
 
-        public void setEmail(Email email) {
+        public EditPersonDescriptor setEmail(Email email) {
             this.email = email;
+            return this;
         }
 
         public Optional<Email> getEmail() {
             return Optional.ofNullable(email);
         }
 
-        public void setAddress(Address address) {
+        public EditPersonDescriptor setAddress(Address address) {
             this.address = address;
+            return this;
         }
 
         public Optional<Address> getAddress() {
@@ -195,8 +199,9 @@ public class EditCommand extends Command {
          * Sets {@code tags} to this object's {@code tags}.
          * A defensive copy of {@code tags} is used internally.
          */
-        public void setTags(Set<Tag> tags) {
+        public EditPersonDescriptor setTags(Set<Tag> tags) {
             this.tags = (tags != null) ? new HashSet<>(tags) : null;
+            return this;
         }
 
         /**
