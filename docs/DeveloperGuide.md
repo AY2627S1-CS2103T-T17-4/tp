@@ -280,27 +280,42 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 # HobbyHub — User Stories
 
-| Priority | As a …                  | I want to …                                                                    | So that I can…                                            |
-| -------- | ----------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------- |
-| `* * *`  | coordinator             | add a new member profile with their name, contact info, and primary hobby      | keep track of everyone joining the community              |
-| `* *`    | coordinator             | update a member's availability schedule (e.g., weekends, evenings)             | know when they are free for matches                       |
-| `* * *`  | coordinator             | view a member's full profile including hobbies, skill levels, and availability | quickly assess their details before making a match        |
-| `* * *`  | coordinator             | search for members by a specific hobby                                         | find all potential participants for a specific activity   |
-| `* *`    | coordinator             | filter members by availability                                                 | find people who are free at a specific time               |
-| `* *`    | coordinator             | create a new group/team for a specific hobby                                   | organize regular meetups or leagues                       |
-| `* *`    | coordinator             | add members to a specific group                                                | manage the roster for that group                          |
-| `* *`    | coordinator             | list all members being managed                                                 | see which members are currnetly under me                  |
-| `* *`    | coordinator             | list all members in a specific group                                           | see who is participating in that group                    |
-| `* * *`  | coordinator             | remove a member from the system                                                | keep the database clean when someone leaves the community |
-| `* * *`  | coordinator             | edit an existing member's contact information                                  | ensure their details are up to date                       |
-| `*`      | experienced coordinator | use keyboard shortcuts or aliases for common commands                          | work even faster without typing long commands             |
-| `* *`    | coordinator             | view all matches for a specific group                                          | see the full matching status of that group                |
-| `* *`    | coordinator             | view all groups a specific member belongs to                                   | quickly check their group memberships                     |
-| `* *`    | coordinator             | remove a member from one group without deleting their profile                  | update memberships as interests change                    |
-| `* *`    | new coordinator         | view a built-in help/command list                                              | learn how to use HobbyHub without external docs           |
-| `*`      | new coordinator         | undo my last action                                                            | recover quickly from an accidental edit or deletion       |
-| `* * *`  | coordinator             | view all members                                                               | see the people I am currently managing                    |
+# HobbyHub — User Stories
 
+| Priority | As a …                  | I want to …                                                                       | So that I can…                                                   |
+| -------- | ------                  | -----------                                                                       | ---------------                                                  |
+| `* * *`  | coordinator             | add a new member profile with their name, contact info, and primary hobby         | keep track of everyone joining the community                     |
+| `* *`    | coordinator             | assign a skill level (e.g., beginner, intermediate, advanced) to a member's hobby | match them with appropriately skilled partners                   |
+| `* *`    | coordinator             | update a member's availability schedule (e.g., weekends, evenings)                | know when they are free for matches                              |
+| `* * *`  | coordinator             | view a member's full profile including hobbies, skill levels, and availability    | quickly assess their details before making a match               |
+| `* * *`  | coordinator             | search for members by a specific hobby                                            | find all potential participants for a specific activity          |
+| `* *`    | coordinator             | filter members by skill level within a specific hobby                             | create balanced groups or competitive matches                    |
+| `* *`    | coordinator             | filter members by availability                                                    | find people who are free at a specific time                      |
+| `* *`    | coordinator             | combine search filters (e.g., hobby + skill + availability)                       | find the exact right person for a specific slot                  |
+| `* *`    | coordinator             | create a new group/team for a specific hobby                                      | organize regular meetups or leagues                              |
+| `* *`    | coordinator             | add members to a specific group                                                   | manage the roster for that group                                 |
+| `* *`    | coordinator             | list all members in a specific group                                              | see who is participating in that group                           |
+| `* * *`  | coordinator             | record a match between two or more members                                        | keep track of who played whom                                    |
+| `*`      | coordinator             | add notes or results to a recorded match                                          | remember the outcome or any issues                               |
+| `*`      | coordinator             | view the match history for a specific member                                      | see their past activity and opponents                            |
+| `* * *`  | coordinator             | remove a member from the system                                                   | keep the database clean when someone leaves the community        |
+| `* * *`  | coordinator             | edit an existing member's contact information                                     | ensure their details are up to date                              |
+| `*`      | coordinator             | export the member list to a CSV file                                              | share it or use it in other tools if necessary                   |
+| `*`      | coordinator             | import members from a CSV file                                                    | quickly onboard a large group of people                          |
+| `*`      | coordinator             | view statistics (e.g., total members, most popular hobbies)                       | understand the health and interests of the community             |
+| `*`      | experienced coordinator | use keyboard shortcuts or aliases for common commands                             | work even faster without typing long commands                    |
+| `* *`    | coordinator             | list all members who don't yet have a match                                       | quickly see who still needs matching                             |
+| `* *`    | coordinator             | view all matches for a specific group                                             | see the full matching status of that group                       |
+| `* *`    | coordinator             | end/remove an existing match                                                      | update records when a match is no longer active                  |
+| `* *`    | coordinator             | view all groups a specific member belongs to                                      | quickly check their group memberships                            |
+| `* *`    | coordinator             | remove a member from one group without deleting their profile                     | update memberships as interests change                           |
+| `*`      | coordinator             | mark a member as inactive instead of deleting them                                | keep history while excluding them from active searches           |
+| `*`      | coordinator             | reactivate a previously inactive member                                           | resume managing a returning member without recreating their data |
+| `*`      | coordinator             | filter search results to only active members                                      | avoid contacting people who've left the community                |
+| `* *`    | new coordinator         | view a built-in help/command list                                                 | learn how to use HobbyHub without external docs                  |
+| `*`      | new coordinator         | load the app pre-populated with sample data                                       | see how it looks/behaves before entering real data               |
+| `*`      | new coordinator         | undo my last action                                                               | recover quickly from an accidental edit or deletion              |
+| `* * *`  | coordinator             | view all members                                                                  | see the people I am currently managing                           |
 ### Use cases
 
 (For all use cases below, the **System** is `HobbyHub` and the **Actor** is the `coordinator`, unless specified otherwise)
