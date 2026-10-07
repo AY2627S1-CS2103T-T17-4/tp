@@ -23,7 +23,7 @@ The product direction, user stories, and external MVP behaviour have been specif
 | Add member | Add a new member with a name, unique email address, and primary hobby.                                                 | MVP |
 | List all members | Display all members currently being managed.                                                                           | MVP |
 | Remove member | Remove an existing member using their unique email address.                                                            | MVP |
-| Search members by name | Search for members using case-insensitive partial-name matching.                                                       | MVP |
+| Search members by name or by hobby | Search members by name or hobby using case-insensitive partial matching.                                                       | MVP |
 | Automatic data saving | Save member data automatically after every successful data-changing command and reload it when the application starts. | MVP |
 | Exit program | Exit HobbyHub cleanly without losing successfully saved data.                                                          | MVP |
 
@@ -54,6 +54,7 @@ The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy 
 | Add member | `add -n "NAME" -c EMAIL -h HOBBY` | `add -n "John Doe" -c john@example.com -h Chess` |
 | List all members | `list` | `list` |
 | Search members by name | `search -n NAME` | `search -n John` |
+| Search members by hobby | `search -h HOBBY` | `search -h Chess` |
 | Remove member | `remove -c EMAIL` | `remove -c john@example.com` |
 | Exit program | `exit` | `exit` |
 
@@ -61,6 +62,7 @@ Notes:
 - Values containing spaces (e.g. names) must be enclosed in double quotation marks.
 - Command words and option flags (`-n`, `-c`, `-h`) are lowercase and case-sensitive.
 - Data is saved automatically after every successful data-changing command, and reloaded on startup.
+- Search command takes exactly one of -n or -h.
 
 ## Authors
 

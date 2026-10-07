@@ -478,7 +478,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case ends.
 
-**Use case: UC04 - Search members by name**
+**Use case: UC04 - Search members by name or hobby**
 
 **Preconditions**
 
@@ -487,16 +487,16 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **MSS**
 
 1. Coordinator initiates a member search.
-2. Coordinator supplies a name or name fragment.
+2. Coordinator supplies either a name fragment or a hobby fragment.
 3. HobbyHub validates the search term.
-4. HobbyHub identifies members whose names contain the search term, ignoring letter case.
+4. HobbyHub identifies members whose name or hobby (whichever was supplied) contains the search term, ignoring letter case.
 5. HobbyHub returns the matching member records to the coordinator.
 
    Use case ends.
 
 **Guarantees**
 
-* HobbyHub displays all members whose names match the search criteria.
+* HobbyHub displays all members whose names or hobbies match the search criteria.
 * No member data is changed.
 
 **Extensions**
@@ -506,9 +506,14 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   * 1a1. HobbyHub reports that the request format is invalid.
   * 1a2. HobbyHub does not perform a search or modify any member records.
 
+* 1b. The coordinator supplies both a name and a hobby.
+
+  * 1b1. HobbyHub reports that only one search criterion can be given.
+  * 1b2. HobbyHub does not perform a search. Use case ends.
+
     Use case ends.
 
-* 2a. The coordinator does not provide a name or name fragment.
+* 2a. The coordinator does not provide a name or hobby fragment.
 
   * 2a1. HobbyHub reports that a non-empty search term is required.
   * 2a2. HobbyHub does not perform a search or modify any member records.
