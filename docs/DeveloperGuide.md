@@ -283,12 +283,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* * *` | US02 | coordinator | list all members | view the members currently under my management |
 | `* * *` | US03 | coordinator | remove a member using their unique email address | keep the member list accurate |
 | `* * *` | US04 | coordinator | search for members by name using case-insensitive partial matching | retrieve a member quickly |
-| `* * *` | US05 | coordinator | save member data automatically after successful changes and restore it when the application restarts | avoid losing records between sessions |
-| `* * *` | US06 | coordinator | exit the application cleanly | close the application without losing saved data |
-| `* *` | US07 | coordinator | view a member's complete profile | understand the member's interests and participation needs |
-| `* *` | US08 | coordinator | edit a member's information | correct outdated or inaccurate records |
-| `* *` | coordinator | record a member's hobbies, skill level, availability, and area | identify suitable participants for activities |
-| `* *` | US10 | coordinator | search members by hobby | focus on members interested in a particular activity |
+| `* * *` | US05 | coordinator | search members by hobby | focus on members interested in a particular activity |
+| `* * *` | US06 | coordinator | save member data automatically after successful changes and restore it when the application restarts | avoid losing records between sessions |
+| `* * *` | US07 | coordinator | exit the application cleanly | close the application without losing saved data |
+| `* *` | US08 | coordinator | view a member's complete profile | understand the member's interests and participation needs |
+| `* *` | US09 | coordinator | edit a member's information | correct outdated or inaccurate records |
+| `* *` | US10 | coordinator | record a member's hobbies, skill level, availability, and area | identify suitable participants for activities |
 | `* *` | US11 | coordinator | filter members by availability and skill level | identify members suitable for a planned activity |
 | `* *` | US12 | coordinator | combine several search criteria | narrow down a large member list efficiently |
 | `* *` | US13 | coordinator | preview the shared attributes of two members | evaluate a potential pairing before recording it |
