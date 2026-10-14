@@ -3,6 +3,7 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_HOBBY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
@@ -45,6 +46,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
             + "[" + PREFIX_TAG + "TAG]...\n"
+            + "[" + PREFIX_HOBBY + "HOBBY]...\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";
@@ -122,6 +124,7 @@ public class EditCommand extends Command {
         private Email email;
         private Address address;
         private Set<Tag> tags;
+        private Hobby hobby;
 
         public EditPersonDescriptor() {}
 
@@ -135,6 +138,7 @@ public class EditCommand extends Command {
             setEmail(toCopy.email);
             setAddress(toCopy.address);
             setTags(toCopy.tags);
+            setHobby(toCopy.hobby);
         }
 
         /**
@@ -148,7 +152,7 @@ public class EditCommand extends Command {
             Phone updatedPhone = getPhone().orElse(personToEdit.getPhone());
             Email updatedEmail = getEmail().orElse(personToEdit.getEmail());
             Address updatedAddress = getAddress().orElse(personToEdit.getAddress());
-            Hobby updatedHobby = personToEdit.getHobby();
+            Hobby updatedHobby = getHobby().orElse(personToEdit.getHobby());
             Set<Tag> updatedTags = getTags().orElse(personToEdit.getTags());
 
             return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedHobby, updatedTags);
@@ -158,7 +162,7 @@ public class EditCommand extends Command {
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, phone, email, address, tags);
+            return CollectionUtil.isAnyNonNull(name, phone, email, address, tags, hobby);
         }
 
         public EditPersonDescriptor setName(Name name) {
@@ -215,6 +219,15 @@ public class EditCommand extends Command {
             return (tags != null) ? Optional.of(Collections.unmodifiableSet(tags)) : Optional.empty();
         }
 
+        public Optional<Hobby> getHobby() {
+            return Optional.ofNullable(hobby);
+        }
+
+        public EditPersonDescriptor setHobby(Hobby hobby) {
+            this.hobby = hobby;
+            return this;
+        }
+
         @Override
         public boolean equals(Object other) {
             if (other == this) {
@@ -230,7 +243,8 @@ public class EditCommand extends Command {
                     && Objects.equals(phone, otherEditPersonDescriptor.phone)
                     && Objects.equals(email, otherEditPersonDescriptor.email)
                     && Objects.equals(address, otherEditPersonDescriptor.address)
-                    && Objects.equals(tags, otherEditPersonDescriptor.tags);
+                    && Objects.equals(tags, otherEditPersonDescriptor.tags)
+                    && Objects.equals(hobby, otherEditPersonDescriptor.hobby);
         }
 
         @Override
@@ -241,6 +255,7 @@ public class EditCommand extends Command {
                     .add("email", email)
                     .add("address", address)
                     .add("tags", tags)
+                    .add("hobby", hobby)
                     .toString();
         }
     }
