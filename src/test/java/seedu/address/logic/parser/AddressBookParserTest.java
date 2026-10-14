@@ -8,7 +8,6 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +21,7 @@ import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.SearchCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.person.HobbyContainsKeywordsPredicate;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
@@ -69,10 +69,13 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_search() throws Exception {
-        List<String> keywords = List.of("foo", "bar", "baz");
-        SearchCommand command = (SearchCommand) parser.parseCommand(
-                SearchCommand.COMMAND_WORD + " " + keywords.stream().collect(Collectors.joining(" ")));
-        assertEquals(new SearchCommand(new NameContainsKeywordsPredicate(keywords)), command);
+        SearchCommand nameSearch = (SearchCommand) parser.parseCommand(
+                SearchCommand.COMMAND_WORD + " -n foo");
+        assertEquals(new SearchCommand(new NameContainsKeywordsPredicate(List.of("foo"))), nameSearch);
+
+        SearchCommand hobbySearch = (SearchCommand) parser.parseCommand(
+                SearchCommand.COMMAND_WORD + " -h chess");
+        assertEquals(new SearchCommand(new HobbyContainsKeywordsPredicate(List.of("chess"))), hobbySearch);
     }
 
     @Test
