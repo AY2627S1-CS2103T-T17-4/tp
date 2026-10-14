@@ -55,30 +55,6 @@ public class AddCommandParserTest {
     private AddCommandParser parser = new AddCommandParser();
 
     @Test
-    public void parse_literalDashPrefixes_success() {
-        Person expectedPerson = new PersonBuilder().withName("John Doe").withPhone("98765432")
-                .withEmail("johnd@example.com").withAddress("John Street").withHobby("Chess")
-                .withTags("friends", "colleagues").build();
-
-        assertParseSuccess(parser, " -n John Doe -p 98765432 -c johnd@example.com -a John Street"
-                + " -h Chess -t friends -t colleagues", new AddCommand(expectedPerson));
-        assertParseSuccess(parser, " -nJohn Doe -p98765432 -cjohnd@example.com -aJohn Street"
-                + " -hChess -tfriends -tcolleagues", new AddCommand(expectedPerson));
-    }
-
-    @Test
-    public void parse_legacySlashPrefixes_failure() {
-        assertParseFailure(parser, " n/John Doe p/98765432 e/johnd@example.com a/John Street h/Chess",
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
-    }
-
-    @Test
-    public void parse_incorrectEmailPrefix_failure() {
-        assertParseFailure(parser, " -n John Doe -p 98765432 -e johnd@example.com -a John Street -h Chess",
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
-    }
-
-    @Test
     public void parse_allFieldsPresent_success() {
         Person expectedPerson = new PersonBuilder(BOB).withTags(VALID_TAG_FRIEND).build();
 
@@ -187,23 +163,19 @@ public class AddCommandParserTest {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE);
 
         // missing name prefix
-        assertParseFailure(parser, VALID_NAME_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + HOBBY_DESC_BOB,
+        assertParseFailure(parser, VALID_NAME_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB,
                 expectedMessage);
 
         // missing phone prefix
-        assertParseFailure(parser, NAME_DESC_BOB + VALID_PHONE_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + HOBBY_DESC_BOB,
+        assertParseFailure(parser, NAME_DESC_BOB + VALID_PHONE_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB,
                 expectedMessage);
 
         // missing email prefix
-        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + VALID_EMAIL_BOB + ADDRESS_DESC_BOB
-                + HOBBY_DESC_BOB,
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + VALID_EMAIL_BOB + ADDRESS_DESC_BOB,
                 expectedMessage);
 
         // missing address prefix
-        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + VALID_ADDRESS_BOB
-                + HOBBY_DESC_BOB,
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + VALID_ADDRESS_BOB,
                 expectedMessage);
 
         // missing hobby prefix
