@@ -30,6 +30,10 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 
    * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
 
+   * `search -n John` : Finds members whose names contain `John`.
+
+   * `search -h Chess` : Finds members whose hobbies contain `Chess`.
+
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
    * `clear` : Deletes all contacts.
@@ -109,22 +113,20 @@ Examples:
 *  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
 *  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 
-### Locating persons by name: `find`
+### Searching members: `search`
 
-Finds persons whose names contain any of the given keywords.
+Finds members whose names or hobbies contain the specified fragment.
 
-Format: `find KEYWORD [MORE_KEYWORDS]`
+Format: `search -n NAME_FRAGMENT` or `search -h HOBBY_FRAGMENT`
 
-* The search is case-insensitive; for example, `hans` matches `Hans`.
-* Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
-* The search considers only names.
-* Only full words match; for example, `Han` does not match `Hans`.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* The search is case-insensitive and supports partial matching; for example, `search -n hans` matches `Hans` and `Johannes`.
+* Use exactly one search option: `-n` searches names and `-h` searches hobbies.
+* A quoted fragment may contain spaces, such as `search -n "Alice Bob"` or `search -h "Board Games"`.
+* Search terms that do not match any member return an empty result list.
 
 Examples:
-* `find John` returns `john` and `John Doe`
-* `find alex david` returns `Alex Yeoh`, `David Li`<br>
-  ![result for 'find alex david'](images/findAlexDavidResult.png)
+* `search -n John` finds members whose names contain `John`.
+* `search -h chess` finds members whose hobbies contain `chess`.
 
 ### Deleting a person: `delete`
 
@@ -138,7 +140,7 @@ Format: `delete INDEX`
 
 Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `search -n Betsy` followed by `delete 1` deletes the 1st person in the search results.
 
 ### Clearing all entries: `clear`
 
@@ -193,6 +195,6 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
-**Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
+**Search** | `search -n NAME_FRAGMENT` or `search -h HOBBY_FRAGMENT`<br> e.g., `search -n James` or `search -h Chess`
 **List** | `list`
 **Help** | `help`
