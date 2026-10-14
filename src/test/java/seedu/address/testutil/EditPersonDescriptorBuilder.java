@@ -72,6 +72,9 @@ public class EditPersonDescriptorBuilder {
         return this;
     }
 
+    /**
+     * Sets the {@code Hobby} of the {@code EditPersonDescriptor} that we are building.
+     */
     public EditPersonDescriptorBuilder withHobby(String hobby) {
         descriptor.setHobby(new Hobby(hobby));
         return this;
