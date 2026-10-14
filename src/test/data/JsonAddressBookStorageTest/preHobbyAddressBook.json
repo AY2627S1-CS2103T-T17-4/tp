@@ -1,0 +1,9 @@
+{
+  "persons": [ {
+    "name": "Legacy Person",
+    "phone": "9482424",
+    "email": "legacy@example.com",
+    "address": "4th street",
+    "tags": [ "friends" ]
+  } ]
+}
