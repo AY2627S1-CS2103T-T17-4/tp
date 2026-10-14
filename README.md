@@ -51,7 +51,7 @@ The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy 
 
 | Command | Format | Example |
 | --- | --- | --- |
-| Add member | `add -n "NAME" -c EMAIL -h HOBBY` | `add -n "John Doe" -c john@example.com -h Chess` |
+| Add member | `add -n NAME -c EMAIL -h HOBBY` | `add -n John Doe -c john@example.com -h Chess` |
 | List all members | `list` | `list` |
 | Search members by name | `search -n NAME` | `search -n John` |
 | Search members by hobby | `search -h HOBBY` | `search -h Chess` |
