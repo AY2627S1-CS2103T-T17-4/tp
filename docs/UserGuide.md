@@ -28,7 +28,7 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
+   * `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h Chess` : Adds a contact named `John Doe` to the Address Book.
 
    * `search -n John` : Finds members whose names contain `John`.
 
@@ -51,16 +51,16 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 **:information_source: Notes about the command format:**<br>
 
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
-  For example, in `add n/NAME`, replace `NAME` with a value such as `John Doe`.
+  For example, in `add -n NAME`, replace `NAME` with a value such as `John Doe`.
 
 * Items in square brackets are optional.<br>
-  For example, `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
+  For example, `-n NAME [-t TAG]` can be used as `-n John Doe -t friend` or as `-n John Doe`.
 
 * Items followed by `…`​ can appear zero or more times.<br>
-  For example, `[t/TAG]…​` may be omitted, or written as `t/friend` or `t/friend t/family`.
+  For example, `[-t TAG]…​` may be omitted, or written as `-t friend` or `-t friend -t family`.
 
 * Parameters can be in any order.<br>
-  For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
+  For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
 
 * Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
@@ -81,15 +81,23 @@ Format: `help`
 
 Adds a person to the address book.
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​`
+Format: `add -n NAME -p PHONE_NUMBER -c EMAIL -a ADDRESS -h HOBBY [-t TAG]…​`
+
+* Name, phone number, email, address, and hobby are all required and must not be empty.
+* Supply each required option once. Only `-t` may be repeated to add multiple tags.
+* Names must contain only letters, digits, and spaces. Phone numbers must contain at least three digits and no other characters.
+* Use a valid email address, such as `johnd@example.com`. Each tag must contain only letters and digits.
+* Hobbies must start with a letter or digit and may contain letters, digits, spaces, and `&`, `+`, `'`, `/`, or `-`.
+* Multiword names, addresses, and hobbies do not need quotes; for example, `-h Board Games`.
+* A person with the same name as an existing person cannot be added.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A person can have any number of tags, including zero.
 </div>
 
 Examples:
-* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
-* `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
+* `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h Chess`
+* `add -n Betsy Crowe -t friend -c betsycrowe@example.com -a Newgate Prison -p 1234567 -t criminal -h Chess`
 
 ### Listing all persons: `list`
 
@@ -101,17 +109,18 @@ Format: `list`
 
 Edits an existing person in the address book.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
+Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-t TAG]…​`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
-* To remove all of a person's tags, enter `t/` without a tag after it.
+* To remove all of a person's tags, enter `-t` without a tag after it.
+* Hobby cannot currently be changed with `edit`.
 
 Examples:
-*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-*  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+* `edit 1 -p 91234567 -c johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
+* `edit 2 -n Betsy Crower -t` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 
 ### Searching members: `search`
 
@@ -171,15 +180,15 @@ Format: `exit`
 
 ### Saving the data
 
-AddressBook automatically saves data after every command. You do not need to save manually.
+HobbyHub automatically saves data after every successful command. You do not need to save manually.
 
 ### Editing the data file
 
-AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
+HobbyHub data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until you run a command (AddressBook saves after every command). Still, we recommend backing up the file before editing it.<br>
-Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
+If your changes make the data file invalid, HobbyHub starts with an empty address book at the next run. The invalid file remains on disk until you run a successful command (HobbyHub saves after every successful command). Still, we recommend backing up the file before editing it.<br>
+Furthermore, certain edits can cause HobbyHub to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
 ### Archiving data files `[coming in v2.0]`
@@ -191,7 +200,7 @@ _Details coming soon ..._
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous AddressBook home folder.
+**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous HobbyHub home folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -206,11 +215,12 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
+**Add** | `add -n NAME -p PHONE_NUMBER -c EMAIL -a ADDRESS -h HOBBY [-t TAG]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -t friend -t colleague -h Chess`
 **Clear** | `clear`
 **Remove** | `remove -c EMAIL`<br> e.g., `remove -c alexyeoh@example.com`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
+**Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-t TAG]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
 **Search** | `search -n NAME_FRAGMENT` or `search -h HOBBY_FRAGMENT`<br> e.g., `search -n James` or `search -h Chess`
 **List** | `list`
 **Help** | `help`
+**Exit** | `exit`
