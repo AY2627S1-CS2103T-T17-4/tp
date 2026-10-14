@@ -30,6 +30,10 @@ public class SearchCommandParserTest {
         // Quoted multi-word fragments are accepted.
         assertParseSuccess(parser, " -n \"Alice Bob\"",
                 new SearchCommand(new NameContainsKeywordsPredicate(List.of("Alice Bob"))));
+
+        // An unmatched opening quote is treated as part of the search fragment.
+        assertParseSuccess(parser, " -n \"Alice",
+                new SearchCommand(new NameContainsKeywordsPredicate(List.of("\"Alice"))));
     }
 
     @Test
@@ -43,6 +47,7 @@ public class SearchCommandParserTest {
     public void parse_missingOrMultipleCriteria_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, SearchCommand.MESSAGE_USAGE);
         assertParseFailure(parser, " Alice", expectedMessage);
+        assertParseFailure(parser, " stray -n Alice", expectedMessage);
         assertParseFailure(parser, " -n Alice -h Chess", expectedMessage);
         assertParseFailure(parser, " -n", expectedMessage);
     }
