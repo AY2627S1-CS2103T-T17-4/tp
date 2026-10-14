@@ -20,6 +20,7 @@ public class Person {
     private final Name name;
     private final Phone phone;
     private final Email email;
+    private final Hobby hobby;
 
     // Data fields
     private final Address address;
@@ -28,12 +29,13 @@ public class Person {
     /**
      * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
-        requireAllNonNull(name, phone, email, address, tags);
+    public Person(Name name, Phone phone, Email email, Address address, Hobby hobby, Set<Tag> tags) {
+        requireAllNonNull(name, phone, email, address, hobby, tags);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
+        this.hobby = hobby;
         this.tags.addAll(tags);
     }
 
@@ -51,6 +53,10 @@ public class Person {
 
     public Address getAddress() {
         return address;
+    }
+
+    public Hobby getHobby() {
+        return hobby;
     }
 
     /**
@@ -93,13 +99,14 @@ public class Person {
                 && phone.equals(otherPerson.phone)
                 && email.equals(otherPerson.email)
                 && address.equals(otherPerson.address)
+                && hobby.equals(otherPerson.hobby)
                 && tags.equals(otherPerson.tags);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags);
+        return Objects.hash(name, phone, email, address, hobby, tags);
     }
 
     @Override
@@ -109,6 +116,7 @@ public class Person {
                 .add("phone", phone)
                 .add("email", email)
                 .add("address", address)
+                .add("hobby", hobby)
                 .add("tags", tags)
                 .toString();
     }
