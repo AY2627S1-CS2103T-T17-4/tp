@@ -2,29 +2,30 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Predicate;
+
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.model.Model;
-import seedu.address.model.person.NameContainsKeywordsPredicate;
+import seedu.address.model.person.Person;
 
 /**
- * Searches and lists all persons in the address book whose name contains any of the argument keywords.
- * Keyword matching is case insensitive.
+ * Searches and lists all persons in the address book matching the selected search predicate.
  */
 public class SearchCommand extends Command {
 
     public static final String COMMAND_WORD = "search";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Searches for all persons whose names/hobbies "
-            + "contain any of the specified keywords (case-insensitive) and displays them as a list "
+            + "contain the specified fragment (case-insensitive) and displays them as a list "
             + "with index numbers.\n"
-            + "Parameters: KEYWORD [MORE_KEYWORDS]...\n"
-            + "Example: " + COMMAND_WORD + " alice bob charlie";
+            + "Parameters: -n NAME_FRAGMENT | -h HOBBY_FRAGMENT\n"
+            + "Example: " + COMMAND_WORD + " -n alice";
 
-    private final NameContainsKeywordsPredicate predicate;
+    private final Predicate<Person> predicate;
 
-    public SearchCommand(NameContainsKeywordsPredicate predicate) {
-        this.predicate = predicate;
+    public SearchCommand(Predicate<Person> predicate) {
+        this.predicate = requireNonNull(predicate);
     }
 
     @Override

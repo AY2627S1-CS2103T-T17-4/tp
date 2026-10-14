@@ -34,7 +34,7 @@ The MVP is intentionally small and local. It focuses on the minimum workflow nee
 - Add a member with a name, unique email address, and primary hobby.
 - List all members.
 - Remove a member by email address.
-- Search members by name using case-insensitive partial matching.
+- Search members by name or hobby using case-insensitive partial matching.
 - Save data automatically after each successful data-changing command.
 - Exit the application cleanly.
 

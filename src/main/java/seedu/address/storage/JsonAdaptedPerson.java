@@ -24,6 +24,7 @@ import seedu.address.model.tag.Tag;
 class JsonAdaptedPerson {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
+    public static final String DEFAULT_HOBBY = "Unspecified";
 
     private final String name;
     private final String phone;
@@ -106,13 +107,13 @@ class JsonAdaptedPerson {
         }
         final Address modelAddress = new Address(address);
 
-        if (hobby == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Hobby.class.getSimpleName()));
-        }
-        if (!Hobby.isValidHobby(hobby)) {
+        // Hobby was introduced after existing data files had already been created. Use a valid placeholder for
+        // legacy records that do not contain the field, while continuing to reject invalid explicit values.
+        String hobbyValue = hobby == null ? DEFAULT_HOBBY : hobby;
+        if (!Hobby.isValidHobby(hobbyValue)) {
             throw new IllegalValueException(Hobby.MESSAGE_CONSTRAINTS);
         }
-        final Hobby modelHobby = new Hobby(hobby);
+        final Hobby modelHobby = new Hobby(hobbyValue);
 
         final Set<Tag> modelTags = new HashSet<>(personTags);
         return new Person(modelName, modelPhone, modelEmail, modelAddress, modelHobby, modelTags);

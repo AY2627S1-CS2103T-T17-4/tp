@@ -51,6 +51,17 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void readAddressBook_preHobbyData_usesDefaultHobbyAndPreservesDetails() throws Exception {
+        ReadOnlyAddressBook addressBook = readAddressBook("preHobbyAddressBook.json").get();
+
+        assertEquals(1, addressBook.getPersonList().size());
+        assertEquals("Legacy Person", addressBook.getPersonList().get(0).getName().fullName);
+        assertEquals("legacy@example.com", addressBook.getPersonList().get(0).getEmail().value);
+        assertEquals("Unspecified", addressBook.getPersonList().get(0).getHobby().value);
+        assertEquals(1, addressBook.getPersonList().get(0).getTags().size());
+    }
+
+    @Test
     public void readAddressBook_invalidPersonAddressBook_throwDataLoadingException() {
         assertThrows(DataLoadingException.class, () -> readAddressBook("invalidPersonAddressBook.json"));
     }

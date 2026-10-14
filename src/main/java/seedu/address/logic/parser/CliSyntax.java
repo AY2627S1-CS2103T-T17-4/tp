@@ -13,4 +13,8 @@ public class CliSyntax {
     public static final Prefix PREFIX_HOBBY = new Prefix("-h");
     public static final Prefix PREFIX_TAG = new Prefix("-t");
 
+    /* Search-specific prefix definitions */
+    public static final Prefix PREFIX_SEARCH_NAME = new Prefix("-n");
+    public static final Prefix PREFIX_SEARCH_HOBBY = new Prefix("-h");
+
 }
