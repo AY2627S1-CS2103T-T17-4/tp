@@ -142,6 +142,21 @@ Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `search -n Betsy` followed by `delete 1` deletes the 1st person in the search results.
 
+### Removing a member by contact email: `remove`
+
+Format: `remove -c EMAIL`
+
+Removes the member whose email matches `EMAIL`, ignoring capitalization. The command searches
+all stored members, including members hidden by the current search filter. Removal is immediate
+and saved automatically.
+
+Only one `-c` option is accepted. Missing or invalid emails, extra arguments, unexpected options,
+and repeated `-c` options are rejected. An email may optionally be enclosed in double quotes.
+If no member matches, an error is shown. If multiple members share the email, no member is removed;
+use `list` and `delete INDEX` to resolve the duplicate records first.
+
+Example: `remove -c alexyeoh@example.com`
+
 ### Clearing all entries: `clear`
 
 Clears all entries from the address book.
@@ -193,6 +208,7 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
 **Clear** | `clear`
+**Remove** | `remove -c EMAIL`<br> e.g., `remove -c alexyeoh@example.com`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
 **Search** | `search -n NAME_FRAGMENT` or `search -h HOBBY_FRAGMENT`<br> e.g., `search -n James` or `search -h Chess`
