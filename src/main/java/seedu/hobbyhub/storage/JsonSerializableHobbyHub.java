@@ -1,0 +1,61 @@
+package seedu.hobbyhub.storage;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
+
+import seedu.hobbyhub.commons.exceptions.IllegalValueException;
+import seedu.hobbyhub.model.HobbyHub;
+import seedu.hobbyhub.model.ReadOnlyHobbyHub;
+import seedu.hobbyhub.model.member.Member;
+
+/**
+ * An Immutable HobbyHub that is serializable to JSON format.
+ */
+@JsonRootName(value = "addressbook")
+class JsonSerializableHobbyHub {
+
+    public static final String MESSAGE_DUPLICATE_MEMBER = "Members list contains duplicate member(s).";
+
+    @JsonProperty("persons")
+    private final List<JsonAdaptedMember> members = new ArrayList<>();
+
+    /**
+     * Constructs a {@code JsonSerializableHobbyHub} with the given members.
+     */
+    @JsonCreator
+    public JsonSerializableHobbyHub(@JsonProperty("persons") List<JsonAdaptedMember> members) {
+        this.members.addAll(members);
+    }
+
+    /**
+     * Converts a given {@code ReadOnlyHobbyHub} into this class for Jackson use.
+     *
+     * @param source future changes to this will not affect the created {@code JsonSerializableHobbyHub}.
+     */
+    public JsonSerializableHobbyHub(ReadOnlyHobbyHub source) {
+        members.addAll(source.getMemberList().stream().map(JsonAdaptedMember::new).collect(Collectors.toList()));
+    }
+
+    /**
+     * Converts this HobbyHub into the model's {@code HobbyHub} object.
+     *
+     * @throws IllegalValueException if there were any data constraints violated.
+     */
+    public HobbyHub toModelType() throws IllegalValueException {
+        HobbyHub hobbyHub = new HobbyHub();
+        for (JsonAdaptedMember jsonAdaptedMember : members) {
+            Member member = jsonAdaptedMember.toModelType();
+            if (hobbyHub.hasMember(member)) {
+                throw new IllegalValueException(MESSAGE_DUPLICATE_MEMBER);
+            }
+            hobbyHub.addMember(member);
+        }
+        return hobbyHub;
+    }
+
+}
