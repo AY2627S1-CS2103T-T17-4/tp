@@ -18,27 +18,27 @@ The product direction, user stories, and external MVP behaviour have been specif
 
 ## MVP features
 
-| Feature | Description                                                                                                            | Status |
-| --- |------------------------------------------------------------------------------------------------------------------------| --- |
-| Add member | Add a new member with a name, unique email address, and primary hobby.                                                 | MVP |
-| List all members | Display all members currently being managed.                                                                           | MVP |
-| Remove member | Remove an existing member using their unique email address.                                                            | MVP |
-| Search members by name or by hobby | Search members by name or hobby using case-insensitive partial matching.                                                       | MVP |
+| Feature | Description                                                                                                          | Status |
+| --- |----------------------------------------------------------------------------------------------------------------------| --- |
+| Add member | Add a new member with a name, phone number, email, address, hobby, and optional tags.                                              | MVP |
+| List all members | Display all members currently being managed.                                                                         | MVP |
+| Delete member | Delete a member by the index number shown in the current list.                                                       | MVP |
+| Search members by name or by hobby | Search members by name or hobby using case-insensitive partial matching.                                                     | MVP |
 | Automatic data saving | Save member data automatically after every successful data-changing command and reload it when the application starts. | MVP |
-| Exit program | Exit HobbyHub cleanly without losing successfully saved data.                                                          | MVP |
+| Exit program | Exit HobbyHub cleanly without losing successfully saved data.                                                        | MVP |
 
 ## MVP scope
 
 The MVP is intentionally small and local. It focuses on the minimum workflow needed for a coordinator to maintain a usable member list:
 
-- Add a member with a name, unique email address, and primary hobby.
+- Add a member with a name, phone number, email, address, hobby, and optional tags.
 - List all members.
-- Remove a member by email address.
+- Delete a member by their index in the displayed list.
 - Search members by name or hobby using case-insensitive partial matching.
 - Save data automatically after each successful data-changing command.
 - Exit the application cleanly.
 
-The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy search, multiple hobbies, phone-number support, backup commands, confirmations, undo/redo, and command aliases are outside the MVP and planned for later iterations.
+The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy search, multiple hobbies, backup commands, confirmations, undo/redo, and command aliases are outside the MVP and planned for later iterations.
 
 ## Documentation
 
@@ -51,18 +51,18 @@ The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy 
 
 | Command | Format | Example |
 | --- | --- | --- |
-| Add member | `add -n NAME -c EMAIL -h HOBBY` | `add -n John Doe -c john@example.com -h Chess` |
+| Add member | `add -n NAME -p PHONE -c EMAIL -a ADDRESS -h HOBBY [-t TAG]...` | `add -n John Doe -p 98765432 -c john@example.com -a 311 Clementi Ave 2 -h Chess` |
 | List all members | `list` | `list` |
 | Search members by name | `search -n NAME` | `search -n John` |
 | Search members by hobby | `search -h HOBBY` | `search -h Chess` |
-| Remove member | `remove -c EMAIL` | `remove -c john@example.com` |
+| Delete member | `delete INDEX` | `delete 2` |
 | Exit program | `exit` | `exit` |
 
 Notes:
-- Values containing spaces (e.g. names) must be enclosed in double quotation marks.
-- Command words and option flags (`-n`, `-c`, `-h`) are lowercase and case-sensitive.
+- Command words and option flags (`-n`, `-c`, `-h`, `-p`, `-a`, `-t`) are lowercase and case-sensitive.
 - Data is saved automatically after every successful data-changing command, and reloaded on startup.
 - Search command takes exactly one of -n or -h.
+- INDEX refers to the number shown in the current list; after search, it refers to the filtered list.
 
 ## Authors
 
