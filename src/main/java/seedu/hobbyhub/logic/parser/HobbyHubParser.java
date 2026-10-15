@@ -16,7 +16,6 @@ import seedu.hobbyhub.logic.commands.EditCommand;
 import seedu.hobbyhub.logic.commands.ExitCommand;
 import seedu.hobbyhub.logic.commands.HelpCommand;
 import seedu.hobbyhub.logic.commands.ListCommand;
-import seedu.hobbyhub.logic.commands.RemoveCommand;
 import seedu.hobbyhub.logic.commands.SearchCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 
@@ -55,7 +54,6 @@ public class HobbyHubParser {
         return switch (commandWord) {
             case AddCommand.COMMAND_WORD -> new AddCommandParser().parse(arguments);
             case EditCommand.COMMAND_WORD -> new EditCommandParser().parse(arguments);
-            case RemoveCommand.COMMAND_WORD -> new RemoveCommandParser().parse(arguments);
             case DeleteCommand.COMMAND_WORD -> new DeleteCommandParser().parse(arguments);
             case ClearCommand.COMMAND_WORD -> new ClearCommand();
             case SearchCommand.COMMAND_WORD -> new SearchCommandParser().parse(arguments);

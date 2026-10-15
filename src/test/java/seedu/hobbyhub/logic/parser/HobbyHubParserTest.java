@@ -19,10 +19,8 @@ import seedu.hobbyhub.logic.commands.EditCommand.EditMemberDescriptor;
 import seedu.hobbyhub.logic.commands.ExitCommand;
 import seedu.hobbyhub.logic.commands.HelpCommand;
 import seedu.hobbyhub.logic.commands.ListCommand;
-import seedu.hobbyhub.logic.commands.RemoveCommand;
 import seedu.hobbyhub.logic.commands.SearchCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
-import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.HobbyContainsKeywordsPredicate;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.NameContainsKeywordsPredicate;
@@ -42,9 +40,9 @@ public class HobbyHubParserTest {
     }
 
     @Test
-    public void parseCommand_remove() throws Exception {
-        assertEquals(new RemoveCommand(new Email("john@email.com")),
-                parser.parseCommand("remove -c john@email.com"));
+    public void parseCommand_remove_throwsUnknownCommand() {
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, ()
+            -> parser.parseCommand("remove -c john@email.com"));
     }
 
     @Test
