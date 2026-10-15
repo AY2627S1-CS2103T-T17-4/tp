@@ -48,9 +48,9 @@ public class MainApp extends Application {
         logger.info("=============================[ Initializing HobbyHub ]===========================");
         super.init();
 
-        JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(USER_PREFS_FILE_PATH);
+        JsonUserPrefsStorage userPrefsStorage = createUserPrefsStorage();
         UserPrefs userPrefs = initPrefs(userPrefsStorage);
-        JsonHobbyHubStorage hobbyHubStorage = new JsonHobbyHubStorage(HOBBY_HUB_FILE_PATH);
+        JsonHobbyHubStorage hobbyHubStorage = createHobbyHubStorage();
         storage = new StorageManager(hobbyHubStorage, userPrefsStorage);
 
         model = initModelManager(storage, userPrefs);
@@ -58,6 +58,20 @@ public class MainApp extends Application {
         logic = new LogicManager(model, storage);
 
         ui = new UiManager(logic, storage.getHobbyHubFilePath());
+    }
+
+    /**
+     * Creates the storage used for application preferences.
+     */
+    protected JsonUserPrefsStorage createUserPrefsStorage() {
+        return new JsonUserPrefsStorage(USER_PREFS_FILE_PATH);
+    }
+
+    /**
+     * Creates the storage used for HobbyHub data.
+     */
+    protected JsonHobbyHubStorage createHobbyHubStorage() {
+        return new JsonHobbyHubStorage(HOBBY_HUB_FILE_PATH);
     }
 
     /**

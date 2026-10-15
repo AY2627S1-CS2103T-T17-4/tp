@@ -167,6 +167,21 @@ public class UniqueMemberListTest {
     }
 
     @Test
+    public void iteratorAndEqualityMethods() {
+        uniqueMemberList.add(ALICE);
+
+        UniqueMemberList sameMembers = new UniqueMemberList();
+        sameMembers.add(ALICE);
+
+        assertEquals(ALICE, uniqueMemberList.iterator().next());
+        assertEquals(uniqueMemberList, uniqueMemberList);
+        assertEquals(uniqueMemberList, sameMembers);
+        assertEquals(uniqueMemberList.hashCode(), sameMembers.hashCode());
+        assertFalse(uniqueMemberList.equals(null));
+        assertFalse(uniqueMemberList.equals(ALICE));
+    }
+
+    @Test
     public void toStringMethod() {
         assertEquals(uniqueMemberList.asUnmodifiableObservableList().toString(), uniqueMemberList.toString());
     }

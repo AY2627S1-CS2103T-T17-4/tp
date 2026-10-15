@@ -82,6 +82,17 @@ public class HobbyHubTest {
     }
 
     @Test
+    public void equalityAndHashCodeMethods() {
+        HobbyHub sameHobbyHub = new HobbyHub();
+
+        assertEquals(hobbyHub, hobbyHub);
+        assertEquals(hobbyHub, sameHobbyHub);
+        assertEquals(hobbyHub.hashCode(), sameHobbyHub.hashCode());
+        assertFalse(hobbyHub.equals(null));
+        assertFalse(hobbyHub.equals(ALICE));
+    }
+
+    @Test
     public void toStringMethod() {
         String expected = HobbyHub.class.getCanonicalName() + "{members=" + hobbyHub.getMemberList() + "}";
         assertEquals(expected, hobbyHub.toString());
