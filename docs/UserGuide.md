@@ -28,7 +28,7 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 
    * `list` : Lists all contacts.
 
-   * `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h Chess` : Adds a contact named `John Doe` to the Address Book.
+   * `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h Chess` : Adds a contact named `John Doe` to the HobbyHub.
 
    * `search -n John` : Finds members whose names contain `John`.
 
@@ -79,7 +79,7 @@ Format: `help`
 
 ### Adding a person: `add`
 
-Adds a person to the address book.
+Adds a person to HobbyHub.
 
 Format: `add -n NAME -p PHONE_NUMBER -c EMAIL -a ADDRESS -h HOBBY [-t TAG]…​`
 
@@ -101,22 +101,21 @@ Examples:
 
 ### Listing all persons: `list`
 
-Shows a list of all persons in the address book.
+Shows a list of all persons in HobbyHub.
 
 Format: `list`
 
 ### Editing a person: `edit`
 
-Edits an existing person in the address book.
+Edits an existing person in HobbyHub.
 
-Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-t TAG]…​`
+Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h HOBBY] [-t TAG]…​`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `-t` without a tag after it.
-* Hobby cannot currently be changed with `edit`.
 
 Examples:
 * `edit 1 -p 91234567 -c johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
@@ -130,7 +129,7 @@ Format: `search -n NAME_FRAGMENT` or `search -h HOBBY_FRAGMENT`
 
 * The search is case-insensitive and supports partial matching; for example, `search -n hans` matches `Hans` and `Johannes`.
 * Use exactly one search option: `-n` searches names and `-h` searches hobbies.
-* A quoted fragment may contain spaces, such as `search -n "Alice Bob"` or `search -h "Board Games"`.
+* The fragment may contain spaces, such as `search -n Alice Lee` or `search -h Board Games`.
 * Search terms that do not match any member return an empty result list.
 
 Examples:
@@ -139,7 +138,7 @@ Examples:
 
 ### Deleting a person: `delete`
 
-Deletes the specified person from the address book.
+Deletes the specified person from HobbyHub.
 
 Format: `delete INDEX`
 
@@ -148,12 +147,12 @@ Format: `delete INDEX`
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
+* `list` followed by `delete 2` deletes the 2nd person in HobbyHub.
 * `search -n Betsy` followed by `delete 1` deletes the 1st person in the search results.
 
 ### Clearing all entries: `clear`
 
-Clears all entries from the address book.
+Clears all entries from HobbyHub.
 
 Format: `clear`
 
@@ -172,7 +171,7 @@ HobbyHub automatically saves data after every successful command. You do not nee
 HobbyHub data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, HobbyHub starts with an empty address book at the next run. The invalid file remains on disk until you run a successful command (HobbyHub saves after every successful command). Still, we recommend backing up the file before editing it.<br>
+If your changes make the data file invalid, HobbyHub starts with an empty member list at the next run. The invalid file remains on disk until you run a successful command (HobbyHub saves after every successful command). Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause HobbyHub to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -203,7 +202,7 @@ Action | Format, Examples
 **Add** | `add -n NAME -p PHONE_NUMBER -c EMAIL -a ADDRESS -h HOBBY [-t TAG]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -t friend -t colleague -h Chess`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-t TAG]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
+**Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h HOBBY] [-t TAG]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
 **Search** | `search -n NAME_FRAGMENT` or `search -h HOBBY_FRAGMENT`<br> e.g., `search -n James` or `search -h Chess`
 **List** | `list`
 **Help** | `help`

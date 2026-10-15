@@ -284,9 +284,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 | Priority | ID | As a …​ | I want to …​ | So that I can…​ |
 | -------- | -- | ------- | ------------ | ---------------- |
-| `* * *` | US01 | coordinator | add a member with a name, email address, and primary hobby | maintain an up-to-date member list |
+| `* * *` | US01 | coordinator | add a member with a name, phone number, email, address, hobby and optional tags | maintain an up-to-date member list |
 | `* * *` | US02 | coordinator | list all members | view the members currently under my management |
-| `* * *` | US03 | coordinator | remove a member using their unique email address | keep the member list accurate |
+| `* * *` | US03 | coordinator | delete a member by index | keep the member list accurate |
 | `* * *` | US04 | coordinator | search for members by name using case-insensitive partial matching | retrieve a member quickly |
 | `* * *` | US05 | coordinator | search members by hobby | focus on members interested in a particular activity |
 | `* * *` | US06 | coordinator | save member data automatically after successful changes and restore it when the application restarts | avoid losing records between sessions |
@@ -418,68 +418,58 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case ends.
 
-**Use case: UC03 - Remove a member**
+**Use case: UC03 - Delete a member**
 
 **Preconditions**
 
 * HobbyHub is running.
-* The member to be removed exists.
+* The member to be deleted is shown in the displayed member list.
 
 **MSS**
 
-1. Coordinator initiates the removal of a member.
-2. Coordinator supplies the member's unique email address.
-3. HobbyHub validates the email address.
-4. HobbyHub locates the corresponding member record.
-5. HobbyHub removes the member record.
+1. Coordinator requests to list members, or searches for members (UC04).
+2. HobbyHub shows the displayed member list, each member with an index number.
+3. Coordinator requests to delete the member at a specific index in the displayed list.
+4. HobbyHub validates the index.
+5. HobbyHub deletes the member record.
 6. HobbyHub persists the updated member data.
-7. HobbyHub records the successful removal.
+7. HobbyHub reports the successful deletion.
 
    Use case ends.
 
 **Guarantees**
 
-* The selected member is no longer available in the member list.
-* The removed member remains absent after HobbyHub is relaunched.
+* The deleted member is no longer available in the member list.
+* The deleted member remains absent after HobbyHub is relaunched.
 * Other member records remain unchanged.
 
 **Extensions**
 
-* 2a. The coordinator does not provide an email address.
+* 2a. The displayed member list is empty.
 
-  * 2a1. HobbyHub reports that an email address is required.
-  * 2a2. HobbyHub does not remove or modify any member record.
+  Use case ends.
 
-    Use case ends.
+* 3a. The coordinator does not provide an index.
 
-* 3a. The supplied email address is invalid.
+    * 3a1. HobbyHub reports the correct command format.
+    * 3a2. HobbyHub does not delete or modify any member record.
 
-  * 3a1. HobbyHub reports the invalid email address and the expected format.
-  * 3a2. HobbyHub does not remove or modify any member record.
+      Use case ends.
 
-    Use case ends.
+* 4a. The index is not a positive integer, or is larger than the number of members displayed.
 
-* 4a. No member has the supplied email address.
+    * 4a1. HobbyHub reports that the index is invalid.
+    * 4a2. HobbyHub does not delete or modify any member record.
 
-  * 4a1. HobbyHub reports that no matching member was found.
-  * 4a2. HobbyHub does not remove or modify any member record.
-
-    Use case ends.
+      Use case ends.
 
 * 6a. HobbyHub cannot persist the updated member data.
 
-  * 6a1. HobbyHub reports the persistence failure.
-  * 6a2. HobbyHub does not record the removal as successful.
-  * 6a3. HobbyHub preserves the previously persisted member data.
+    * 6a1. HobbyHub reports the persistence failure.
+    * 6a2. HobbyHub preserves the previously persisted member data.
 
-    Use case ends.
-
-* *a. The coordinator cancels the operation before the member record is removed.
-
-  * *a1. HobbyHub ends the operation without modifying the member data.
-
-    Use case ends.
-
+      Use case ends.
+  
 **Use case: UC04 - Search members by name or hobby**
 
 **Preconditions**
