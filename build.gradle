@@ -28,9 +28,14 @@ test {
     useJUnitPlatform()
     jvmArgs(
             '-Dglass.platform=Monocle',
+            '-Djavafx.platform=monocle',
             '-Dmonocle.platform=Headless',
             '-Dprism.order=sw',
-            '-Djava.awt.headless=true'
+            '-Djava.awt.headless=true',
+            '--add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED',
+            '--add-exports=javafx.graphics/com.sun.javafx.util=ALL-UNNAMED',
+            '--add-exports=javafx.graphics/com.sun.javafx.logging=ALL-UNNAMED',
+            '--add-exports=javafx.base/com.sun.javafx.logging=ALL-UNNAMED'
     )
     finalizedBy jacocoTestReport
 }
@@ -75,7 +80,7 @@ dependencies {
 
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
-    testRuntimeOnly 'org.testfx:openjfx-monocle:17.0.10'
+    testImplementation 'org.testfx:openjfx-monocle:17.0.10@jar'
 }
 
 shadowJar {
