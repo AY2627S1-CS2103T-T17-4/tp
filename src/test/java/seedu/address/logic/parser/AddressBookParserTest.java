@@ -20,10 +20,8 @@ import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
-import seedu.address.logic.commands.RemoveCommand;
 import seedu.address.logic.commands.SearchCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.person.Email;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
@@ -42,9 +40,9 @@ public class AddressBookParserTest {
     }
 
     @Test
-    public void parseCommand_remove() throws Exception {
-        assertEquals(new RemoveCommand(new Email("john@email.com")),
-                parser.parseCommand("remove -c john@email.com"));
+    public void parseCommand_remove_throwsUnknownCommand() {
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, ()
+            -> parser.parseCommand("remove -c john@email.com"));
     }
 
     @Test
