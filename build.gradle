@@ -26,6 +26,12 @@ checkstyle {
 
 test {
     useJUnitPlatform()
+    jvmArgs(
+            '-Dglass.platform=Monocle',
+            '-Dmonocle.platform=Headless',
+            '-Dprism.order=sw',
+            '-Djava.awt.headless=true'
+    )
     finalizedBy jacocoTestReport
 }
 
@@ -69,6 +75,7 @@ dependencies {
 
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
+    testRuntimeOnly 'org.testfx:openjfx-monocle:17.0.10'
 }
 
 shadowJar {
