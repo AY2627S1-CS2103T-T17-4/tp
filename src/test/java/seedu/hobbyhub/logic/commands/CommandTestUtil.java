@@ -17,8 +17,8 @@ import seedu.hobbyhub.commons.core.index.Index;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.model.HobbyHub;
 import seedu.hobbyhub.model.Model;
-import seedu.hobbyhub.model.member.NameContainsKeywordsPredicate;
 import seedu.hobbyhub.model.member.Member;
+import seedu.hobbyhub.model.member.NameContainsKeywordsPredicate;
 import seedu.hobbyhub.testutil.EditMemberDescriptorBuilder;
 
 /**

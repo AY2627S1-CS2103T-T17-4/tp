@@ -16,8 +16,8 @@ import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
-import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Member;
+import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
 import seedu.hobbyhub.model.tag.Tag;
 
