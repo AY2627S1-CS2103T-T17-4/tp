@@ -2,6 +2,7 @@ package seedu.hobbyhub.testutil;
 
 import seedu.hobbyhub.model.HobbyHub;
 import seedu.hobbyhub.model.member.Member;
+import seedu.hobbyhub.model.session.Session;
 
 /**
  * A utility class to help with building HobbyHub objects.
@@ -25,6 +26,14 @@ public class HobbyHubBuilder {
      */
     public HobbyHubBuilder withMember(Member member) {
         hobbyHub.addMember(member);
+        return this;
+    }
+
+    /**
+     * Adds a new {@code Session} to the {@code HobbyHub} that we are building.
+     */
+    public HobbyHubBuilder withSession(Session session) {
+        hobbyHub.addSession(session);
         return this;
     }
 

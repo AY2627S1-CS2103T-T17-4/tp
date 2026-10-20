@@ -1,0 +1,42 @@
+{
+  "_comment": "Two sessions with the same name, ignoring case",
+  "persons": [
+    {
+      "name": "Alice Pauline",
+      "phone": "94351253",
+      "email": "alice@example.com",
+      "address": "123, Jurong West Ave 6, #08-111",
+      "hobby": "Chess",
+      "tags": [
+        "friends"
+      ]
+    },
+    {
+      "name": "Benson Meier",
+      "phone": "98765432",
+      "email": "johnd@example.com",
+      "address": "311, Clementi Ave 2, #02-25",
+      "hobby": "Photography",
+      "tags": [
+        "owesMoney",
+        "friends"
+      ]
+    }
+  ],
+  "sessions": [
+    {
+      "name": "Weekend Chess Meetup",
+      "date": "2026-10-24",
+      "members": [
+        "alice@example.com"
+      ]
+    },
+    {
+      "name": "weekend chess meetup",
+      "date": "2026-11-01",
+      "members": [
+        "johnd@example.com"
+      ]
+    }
+  ]
+}
