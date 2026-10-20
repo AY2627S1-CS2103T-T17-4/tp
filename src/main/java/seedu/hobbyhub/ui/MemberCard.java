@@ -54,7 +54,7 @@ public class MemberCard extends UiPart<Region> {
         phone.setText(member.getPhone().value);
         address.setText(member.getAddress().value);
         email.setText(member.getEmail().value);
-        hobby.setText(member.getHobby().value);
+        hobby.setText(String.join(", ", member.getHobbies().stream().map(Object::toString).toList()));
         member.getTags().stream()
                 .sorted(Comparator.comparing(tag -> tag.tagName))
                 .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));

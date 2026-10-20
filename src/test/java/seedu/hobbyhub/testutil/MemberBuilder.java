@@ -1,6 +1,7 @@
 package seedu.hobbyhub.testutil;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import seedu.hobbyhub.model.member.Address;
@@ -27,7 +28,7 @@ public class MemberBuilder {
     private Phone phone;
     private Email email;
     private Address address;
-    private Hobby hobby;
+    private List<Hobby> hobbies;
     private Set<Tag> tags;
 
     /**
@@ -38,7 +39,7 @@ public class MemberBuilder {
         phone = new Phone(DEFAULT_PHONE);
         email = new Email(DEFAULT_EMAIL);
         address = new Address(DEFAULT_ADDRESS);
-        hobby = new Hobby(DEFAULT_HOBBY);
+        hobbies = List.of(new Hobby(DEFAULT_HOBBY));
         tags = new HashSet<>();
     }
 
@@ -50,7 +51,7 @@ public class MemberBuilder {
         phone = memberToCopy.getPhone();
         email = memberToCopy.getEmail();
         address = memberToCopy.getAddress();
-        hobby = memberToCopy.getHobby();
+        hobbies = memberToCopy.getHobbies();
         tags = new HashSet<>(memberToCopy.getTags());
     }
 
@@ -82,7 +83,7 @@ public class MemberBuilder {
      * Sets the {@code Hobby} of the {@code Member} that we are building.
      */
     public MemberBuilder withHobby(String hobby) {
-        this.hobby = new Hobby(hobby);
+        this.hobbies = List.of(new Hobby(hobby));
         return this;
     }
 
@@ -102,8 +103,14 @@ public class MemberBuilder {
         return this;
     }
 
+    /** Sets all hobbies for the member. */
+    public MemberBuilder withHobbies(Hobby... hobbies) {
+        this.hobbies = List.of(hobbies);
+        return this;
+    }
+
     public Member build() {
-        return new Member(name, phone, email, address, hobby, tags);
+        return new Member(name, phone, email, address, hobbies, tags);
     }
 
 }

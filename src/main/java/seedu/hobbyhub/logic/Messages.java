@@ -43,8 +43,8 @@ public class Messages {
                 .append(member.getEmail())
                 .append("; Address: ")
                 .append(member.getAddress())
-                .append("; Hobby: ")
-                .append(member.getHobby())
+                .append("; Hobbies: ")
+                .append(member.getHobbies().stream().map(Object::toString).collect(Collectors.joining(", ")))
                 .append("; Tags: ");
         member.getTags().forEach(builder::append);
         return builder.toString();

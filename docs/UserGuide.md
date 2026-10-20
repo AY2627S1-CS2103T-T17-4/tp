@@ -207,3 +207,14 @@ Action | Format, Examples
 **List** | `list`
 **Help** | `help`
 **Exit** | `exit`
+
+### Hobby skill levels
+
+Member profiles can store multiple hobbies, each with a Beginner, Intermediate, or Advanced skill level.
+All stored hobbies and their skill levels appear on the member card, and hobby searches match any hobby name.
+Existing data with a single hobby loads with Beginner as its skill level.
+
+In this increment, the existing `add` and `edit` commands still accept one `-h HOBBY` value and assign
+Beginner. Editing `-h` replaces the member's hobby list with that single hobby; editing other fields
+preserves all stored hobbies and skill levels. Syntax for entering multiple hobbies and skill levels
+will be introduced separately.

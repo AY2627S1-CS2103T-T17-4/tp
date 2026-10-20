@@ -99,7 +99,7 @@ public class MemberTest {
     public void toStringMethod() {
         String expected = Member.class.getCanonicalName() + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
                 + ", email=" + ALICE.getEmail() + ", address=" + ALICE.getAddress()
-                + ", hobby=" + ALICE.getHobby() + ", tags=" + ALICE.getTags() + "}";
+                + ", hobbies=" + ALICE.getHobbies() + ", tags=" + ALICE.getTags() + "}";
         assertEquals(expected, ALICE.toString());
     }
 }

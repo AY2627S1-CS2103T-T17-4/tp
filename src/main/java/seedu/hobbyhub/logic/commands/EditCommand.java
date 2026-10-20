@@ -152,10 +152,10 @@ public class EditCommand extends Command {
             Phone updatedPhone = getPhone().orElse(memberToEdit.getPhone());
             Email updatedEmail = getEmail().orElse(memberToEdit.getEmail());
             Address updatedAddress = getAddress().orElse(memberToEdit.getAddress());
-            Hobby updatedHobby = getHobby().orElse(memberToEdit.getHobby());
+            List<Hobby> updatedHobbies = getHobby().map(List::of).orElse(memberToEdit.getHobbies());
             Set<Tag> updatedTags = getTags().orElse(memberToEdit.getTags());
 
-            return new Member(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedHobby, updatedTags);
+            return new Member(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedHobbies, updatedTags);
         }
 
         /**
