@@ -216,5 +216,7 @@ Existing data with a single hobby loads with Beginner as its skill level.
 
 In this increment, the existing `add` and `edit` commands still accept one `-h HOBBY` value and assign
 Beginner. Editing `-h` replaces the member's hobby list with that single hobby; editing other fields
-preserves all stored hobbies and skill levels. Syntax for entering multiple hobbies and skill levels
+preserves all stored hobbies and skill levels. If an edit changes the hobby list or resets its skill level,
+the result explicitly states that the previous hobbies and skill levels were replaced.
+Syntax for entering multiple hobbies and skill levels
 will be introduced separately.
