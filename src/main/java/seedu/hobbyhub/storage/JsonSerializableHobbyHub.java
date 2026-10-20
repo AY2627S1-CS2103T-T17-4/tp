@@ -1,7 +1,10 @@
 package seedu.hobbyhub.storage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -60,7 +63,7 @@ class JsonSerializableHobbyHub {
 
     /**
      * Converts this HobbyHub into the model's {@code HobbyHub} object.
-     * Emails in a session that do not belong to any member are dropped.
+     * Emails in a session are matched to members ignoring case, and emails that match no member are dropped.
      *
      * @throws IllegalValueException if there were any data constraints violated.
      */
@@ -74,11 +77,12 @@ class JsonSerializableHobbyHub {
             hobbyHub.addMember(member);
         }
 
-        Set<Email> memberEmails = hobbyHub.getMemberList().stream()
-                .map(Member::getEmail)
-                .collect(Collectors.toSet());
+        Map<String, Email> memberEmails = new HashMap<>();
+        for (Member member : hobbyHub.getMemberList()) {
+            memberEmails.putIfAbsent(member.getEmail().value.toLowerCase(), member.getEmail());
+        }
         for (JsonAdaptedSession jsonAdaptedSession : sessions) {
-            Session session = removeUnknownMembers(jsonAdaptedSession.toModelType(), memberEmails);
+            Session session = resolveMembers(jsonAdaptedSession.toModelType(), memberEmails);
             if (hobbyHub.hasSession(session)) {
                 throw new IllegalValueException(MESSAGE_DUPLICATE_SESSION);
             }
@@ -88,19 +92,24 @@ class JsonSerializableHobbyHub {
     }
 
     /**
-     * Returns a copy of {@code session} without the emails that are not in {@code memberEmails}.
+     * Returns a copy of {@code session} whose emails are those of the matching members, compared ignoring case.
+     * Emails that match no member are dropped.
+     *
+     * @param memberEmails the members' emails, keyed by the email in lower case.
      */
-    private static Session removeUnknownMembers(Session session, Set<Email> memberEmails) {
-        Session result = session;
+    private static Session resolveMembers(Session session, Map<String, Email> memberEmails) {
+        Set<Email> resolved = new HashSet<>();
         for (Email email : session.getMembers()) {
-            if (!memberEmails.contains(email)) {
+            Email memberEmail = memberEmails.get(email.value.toLowerCase());
+            if (memberEmail == null) {
                 logger.warning("Session " + session.getName() + " refers to unknown member " + email
                         + ". The member is removed from the session.");
-                result = result.withoutMember(email);
+            } else {
+                resolved.add(memberEmail);
             }
         }
-        assert result.getMembers().stream().allMatch(memberEmails::contains);
-        return result;
+        assert memberEmails.values().containsAll(resolved);
+        return new Session(session.getName(), session.getDate(), resolved);
     }
 
 }

@@ -29,6 +29,8 @@ public class JsonSerializableHobbyHubTest {
     private static final Path DUPLICATE_SESSION_FILE = TEST_DATA_FOLDER.resolve("duplicateSessionHobbyHub.json");
     private static final Path SESSION_WITH_UNKNOWN_MEMBER_FILE =
             TEST_DATA_FOLDER.resolve("sessionWithUnknownMemberHobbyHub.json");
+    private static final Path SESSION_WITH_MIXED_CASE_EMAIL_FILE =
+            TEST_DATA_FOLDER.resolve("sessionWithMixedCaseEmailHobbyHub.json");
 
     @Test
     public void toModelType_typicalMembersFileWithUnknownHobbyField_success() throws Exception {
@@ -86,6 +88,15 @@ public class JsonSerializableHobbyHubTest {
         HobbyHub expectedHobbyHub = new HobbyHubBuilder().withMember(ALICE).withMember(BENSON)
                 .withSession(new SessionBuilder(CHESS_MEETUP).withMembers(ALICE.getEmail().value).build())
                 .build();
+        assertEquals(expectedHobbyHub, dataFromFile.toModelType());
+    }
+
+    @Test
+    public void toModelType_sessionWithMixedCaseEmails_matchedToMembers() throws Exception {
+        JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(SESSION_WITH_MIXED_CASE_EMAIL_FILE,
+                JsonSerializableHobbyHub.class).get();
+        HobbyHub expectedHobbyHub = new HobbyHubBuilder().withMember(ALICE).withMember(BENSON)
+                .withSession(CHESS_MEETUP).build();
         assertEquals(expectedHobbyHub, dataFromFile.toModelType());
     }
 

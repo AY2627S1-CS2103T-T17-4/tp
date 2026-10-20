@@ -174,6 +174,41 @@ public class HobbyHubTest {
     }
 
     @Test
+    public void setMember_emailChanged_sessionsUseNewEmail() {
+        HobbyHub hobbyHubWithSessions = getTypicalHobbyHubWithSessions();
+        Member editedBenson = new MemberBuilder(BENSON).withEmail("benson@example.com").build();
+        hobbyHubWithSessions.setMember(BENSON, editedBenson);
+
+        // BENSON was in both typical sessions
+        for (Session session : hobbyHubWithSessions.getSessionList()) {
+            assertFalse(session.hasMember(BENSON.getEmail()));
+            assertTrue(session.hasMember(editedBenson.getEmail()));
+        }
+        // other members are unchanged
+        assertTrue(hobbyHubWithSessions.getSessionList().get(0).hasMember(ALICE.getEmail()));
+    }
+
+    @Test
+    public void setMember_emailCaseChanged_sessionsUseNewEmail() {
+        HobbyHub hobbyHubWithSessions = getTypicalHobbyHubWithSessions();
+        Member editedAlice = new MemberBuilder(ALICE).withEmail(ALICE.getEmail().value.toUpperCase()).build();
+        hobbyHubWithSessions.setMember(ALICE, editedAlice);
+
+        Session chessMeetup = hobbyHubWithSessions.getSessionList().get(0);
+        assertTrue(chessMeetup.getMembers().contains(editedAlice.getEmail()));
+        assertFalse(chessMeetup.getMembers().contains(ALICE.getEmail()));
+    }
+
+    @Test
+    public void setMember_emailUnchanged_sessionsUnchanged() {
+        HobbyHub hobbyHubWithSessions = getTypicalHobbyHubWithSessions();
+        List<Session> sessionsBefore = List.copyOf(hobbyHubWithSessions.getSessionList());
+        Member editedBenson = new MemberBuilder(BENSON).withAddress(VALID_ADDRESS_BOB).build();
+        hobbyHubWithSessions.setMember(BENSON, editedBenson);
+        assertEquals(sessionsBefore, hobbyHubWithSessions.getSessionList());
+    }
+
+    @Test
     public void getSessionList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> hobbyHub.getSessionList().remove(0));
     }

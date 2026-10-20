@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import seedu.hobbyhub.commons.util.ToStringBuilder;
@@ -14,7 +15,7 @@ import seedu.hobbyhub.model.member.Email;
 
 /**
  * Represents a Session in the HobbyHub: an activity on a date that members can be assigned to.
- * Members are referred to by their email, which is unique and cannot be edited.
+ * Members are referred to by their email, which is unique ignoring case.
  * Guarantees: details are present and not null, field values are validated, immutable.
  */
 public class Session {
@@ -52,10 +53,20 @@ public class Session {
 
     /**
      * Returns true if the member with the given email is assigned to this session.
+     * Emails are compared ignoring case, the same way members are.
      */
     public boolean hasMember(Email email) {
         requireNonNull(email);
-        return members.contains(email);
+        return findMember(email).isPresent();
+    }
+
+    /**
+     * Returns the stored email that matches {@code email} ignoring case, if any.
+     */
+    private Optional<Email> findMember(Email email) {
+        return members.stream()
+                .filter(member -> member.value.equalsIgnoreCase(email.value))
+                .findFirst();
     }
 
     /**
@@ -72,7 +83,7 @@ public class Session {
     }
 
     /**
-     * Returns a copy of this session with the member with the given email removed.
+     * Returns a copy of this session with the member with the given email removed, matching ignoring case.
      * The member must be assigned to this session.
      */
     public Session withoutMember(Email email) {
@@ -80,7 +91,7 @@ public class Session {
         assert hasMember(email) : "Callers should check hasMember before removing a member";
 
         Set<Email> updatedMembers = new HashSet<>(members);
-        updatedMembers.remove(email);
+        updatedMembers.remove(findMember(email).get());
         return new Session(name, date, updatedMembers);
     }
 

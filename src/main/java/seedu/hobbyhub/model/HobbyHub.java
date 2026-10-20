@@ -82,11 +82,20 @@ public class HobbyHub implements ReadOnlyHobbyHub {
      * Replaces the given member {@code target} in the list with {@code editedMember}.
      * {@code target} must exist in the HobbyHub.
      * The member identity of {@code editedMember} must not be the same as another existing member in the HobbyHub.
+     * If the email changes, every session {@code target} is assigned to is updated to the new email.
      */
     public void setMember(Member target, Member editedMember) {
         requireNonNull(editedMember);
 
         members.setMember(target, editedMember);
+
+        Email oldEmail = target.getEmail();
+        Email newEmail = editedMember.getEmail();
+        if (!oldEmail.equals(newEmail)) {
+            for (Session session : getSessionsWith(oldEmail)) {
+                sessions.setSession(session, session.withoutMember(oldEmail).withMember(newEmail));
+            }
+        }
     }
 
     /**
@@ -97,12 +106,18 @@ public class HobbyHub implements ReadOnlyHobbyHub {
         members.remove(key);
 
         Email email = key.getEmail();
-        List<Session> sessionsWithMember = sessions.asUnmodifiableObservableList().stream()
-                .filter(session -> session.hasMember(email))
-                .toList();
-        for (Session session : sessionsWithMember) {
+        for (Session session : getSessionsWith(email)) {
             sessions.setSession(session, session.withoutMember(email));
         }
+    }
+
+    /**
+     * Returns the sessions that the member with the given email is assigned to.
+     */
+    private List<Session> getSessionsWith(Email email) {
+        return sessions.asUnmodifiableObservableList().stream()
+                .filter(session -> session.hasMember(email))
+                .toList();
     }
 
     //// session-level operations

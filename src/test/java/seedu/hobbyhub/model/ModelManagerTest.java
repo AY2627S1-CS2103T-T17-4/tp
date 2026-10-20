@@ -19,9 +19,11 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.commons.core.GuiSettings;
+import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.NameContainsKeywordsPredicate;
 import seedu.hobbyhub.model.session.Session;
 import seedu.hobbyhub.testutil.HobbyHubBuilder;
+import seedu.hobbyhub.testutil.MemberBuilder;
 
 public class ModelManagerTest {
 
@@ -151,6 +153,15 @@ public class ModelManagerTest {
         modelManager = new ModelManager(getTypicalHobbyHubWithSessions(), new UserPrefs());
         modelManager.deleteMember(BENSON);
         assertEquals(List.of(), modelManager.getSessionsOf(BENSON));
+    }
+
+    @Test
+    public void setMember_emailChanged_memberKeepsSessions() {
+        modelManager = new ModelManager(getTypicalHobbyHubWithSessions(), new UserPrefs());
+        Member editedAlice = new MemberBuilder(ALICE).withEmail("alice.pauline@example.com").build();
+        modelManager.setMember(ALICE, editedAlice);
+        assertEquals(1, modelManager.getSessionsOf(editedAlice).size());
+        assertEquals(List.of(), modelManager.getSessionsOf(ALICE));
     }
 
     @Test

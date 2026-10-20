@@ -57,6 +57,18 @@ public class SessionTest {
     }
 
     @Test
+    public void hasMember_differentCase_returnsTrue() {
+        assertTrue(CHESS_MEETUP.hasMember(new Email(ALICE.getEmail().value.toUpperCase())));
+    }
+
+    @Test
+    public void withoutMember_differentCase_removesStoredEmail() {
+        Session updated = CHESS_MEETUP.withoutMember(new Email(ALICE.getEmail().value.toUpperCase()));
+        assertFalse(updated.hasMember(ALICE.getEmail()));
+        assertEquals(1, updated.getMembers().size());
+    }
+
+    @Test
     public void withMember_newMember_returnsSessionWithMember() {
         Session updated = CHESS_MEETUP.withMember(CARL.getEmail());
         assertTrue(updated.hasMember(CARL.getEmail()));
