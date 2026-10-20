@@ -66,8 +66,8 @@ public class HobbyCommandParsingTest {
         assertParseSuccess(new AddCommandParser(), REQUIRED_FIELDS
                 + " -h Chess:Advanced -h \"Table Tennis:Intermediate\"", new AddCommand(member));
         assertParseSuccess(new AddCommandParser(), REQUIRED_FIELDS
-                + " -h Chess:Advanced -h \"Table Tennis:Intermediate\" -t friends",
-                new AddCommand(new MemberBuilder(member).withTags("friends").build()));
+                + " -h Chess:Advanced -h \"Table Tennis:Intermediate\" -g friends",
+                new AddCommand(new MemberBuilder(member).withGroups("friends").build()));
     }
 
     @Test

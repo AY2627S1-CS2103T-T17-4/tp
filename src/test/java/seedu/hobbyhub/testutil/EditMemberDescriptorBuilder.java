@@ -6,13 +6,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import seedu.hobbyhub.logic.commands.EditCommand.EditMemberDescriptor;
+import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
-import seedu.hobbyhub.model.tag.Tag;
 
 /**
  * A utility class to help with building EditMemberDescriptor objects.
@@ -38,7 +38,7 @@ public class EditMemberDescriptorBuilder {
         descriptor.setPhone(member.getPhone());
         descriptor.setEmail(member.getEmail());
         descriptor.setAddress(member.getAddress());
-        descriptor.setTags(member.getTags());
+        descriptor.setGroups(member.getGroups());
         descriptor.setHobbies(member.getHobbies());
     }
 
@@ -83,12 +83,12 @@ public class EditMemberDescriptorBuilder {
     }
 
     /**
-     * Parses the {@code tags} into a {@code Set<Tag>} and sets it to the {@code EditMemberDescriptor}
+     * Parses the {@code groups} into a {@code Set<Group>} and sets it to the {@code EditMemberDescriptor}
      * that we are building.
      */
-    public EditMemberDescriptorBuilder withTags(String... tags) {
-        Set<Tag> tagSet = Stream.of(tags).map(Tag::new).collect(Collectors.toSet());
-        descriptor.setTags(tagSet);
+    public EditMemberDescriptorBuilder withGroups(String... groups) {
+        Set<Group> groupSet = Stream.of(groups).map(Group::new).collect(Collectors.toSet());
+        descriptor.setGroups(groupSet);
         return this;
     }
 

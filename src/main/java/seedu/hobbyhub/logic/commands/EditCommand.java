@@ -3,10 +3,10 @@ package seedu.hobbyhub.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_PHONE;
-import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.hobbyhub.model.Model.PREDICATE_SHOW_ALL_MEMBERS;
 
 import java.util.Collections;
@@ -23,13 +23,13 @@ import seedu.hobbyhub.commons.util.ToStringBuilder;
 import seedu.hobbyhub.logic.Messages;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.model.Model;
+import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
-import seedu.hobbyhub.model.tag.Tag;
 
 /**
  * Edits the details of an existing member in the HobbyHub.
@@ -46,7 +46,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_PHONE + "PHONE] "
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
-            + "[" + PREFIX_TAG + "TAG]...\n"
+            + "[" + PREFIX_GROUP + "GROUP]...\n"
             + "[" + PREFIX_HOBBY + " \"HOBBY:SKILL\"]...\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
@@ -124,21 +124,21 @@ public class EditCommand extends Command {
         private Phone phone;
         private Email email;
         private Address address;
-        private Set<Tag> tags;
+        private Set<Group> groups;
         private List<Hobby> hobbies;
 
         public EditMemberDescriptor() {}
 
         /**
          * Copy constructor.
-         * A defensive copy of {@code tags} is used internally.
+         * A defensive copy of {@code groups} is used internally.
          */
         public EditMemberDescriptor(EditMemberDescriptor toCopy) {
             setName(toCopy.name);
             setPhone(toCopy.phone);
             setEmail(toCopy.email);
             setAddress(toCopy.address);
-            setTags(toCopy.tags);
+            setGroups(toCopy.groups);
             setHobbies(toCopy.hobbies);
         }
 
@@ -154,16 +154,16 @@ public class EditCommand extends Command {
             Email updatedEmail = getEmail().orElse(memberToEdit.getEmail());
             Address updatedAddress = getAddress().orElse(memberToEdit.getAddress());
             List<Hobby> updatedHobbies = getHobbies().orElse(memberToEdit.getHobbies());
-            Set<Tag> updatedTags = getTags().orElse(memberToEdit.getTags());
+            Set<Group> updatedGroups = getGroups().orElse(memberToEdit.getGroups());
 
-            return new Member(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedHobbies, updatedTags);
+            return new Member(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedHobbies, updatedGroups);
         }
 
         /**
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, phone, email, address, tags, hobbies);
+            return CollectionUtil.isAnyNonNull(name, phone, email, address, groups, hobbies);
         }
 
         public EditMemberDescriptor setName(Name name) {
@@ -203,21 +203,21 @@ public class EditCommand extends Command {
         }
 
         /**
-         * Sets {@code tags} to this object's {@code tags}.
-         * A defensive copy of {@code tags} is used internally.
+         * Sets {@code groups} to this object's {@code groups}.
+         * A defensive copy of {@code groups} is used internally.
          */
-        public EditMemberDescriptor setTags(Set<Tag> tags) {
-            this.tags = (tags != null) ? new HashSet<>(tags) : null;
+        public EditMemberDescriptor setGroups(Set<Group> groups) {
+            this.groups = (groups != null) ? new HashSet<>(groups) : null;
             return this;
         }
 
         /**
-         * Returns an unmodifiable tag set, which throws {@code UnsupportedOperationException}
+         * Returns an unmodifiable group set, which throws {@code UnsupportedOperationException}
          * if modification is attempted.
-         * Returns {@code Optional#empty()} if {@code tags} is null.
+         * Returns {@code Optional#empty()} if {@code groups} is null.
          */
-        public Optional<Set<Tag>> getTags() {
-            return (tags != null) ? Optional.of(Collections.unmodifiableSet(tags)) : Optional.empty();
+        public Optional<Set<Group>> getGroups() {
+            return (groups != null) ? Optional.of(Collections.unmodifiableSet(groups)) : Optional.empty();
         }
 
         /** Returns the first supplied hobby for compatibility with single-hobby callers. */
@@ -269,7 +269,7 @@ public class EditCommand extends Command {
                     && Objects.equals(phone, otherEditMemberDescriptor.phone)
                     && Objects.equals(email, otherEditMemberDescriptor.email)
                     && Objects.equals(address, otherEditMemberDescriptor.address)
-                    && Objects.equals(tags, otherEditMemberDescriptor.tags)
+                    && Objects.equals(groups, otherEditMemberDescriptor.groups)
                     && Objects.equals(hobbies, otherEditMemberDescriptor.hobbies);
         }
 
@@ -280,7 +280,7 @@ public class EditCommand extends Command {
                     .add("phone", phone)
                     .add("email", email)
                     .add("address", address)
-                    .add("tags", tags)
+                    .add("groups", groups)
                     .add("hobbies", hobbies)
                     .toString();
         }

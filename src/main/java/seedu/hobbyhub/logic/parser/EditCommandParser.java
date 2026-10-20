@@ -4,10 +4,11 @@ import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_LEGACY_TAG;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_PHONE;
-import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +19,7 @@ import seedu.hobbyhub.commons.core.index.Index;
 import seedu.hobbyhub.logic.commands.EditCommand;
 import seedu.hobbyhub.logic.commands.EditCommand.EditMemberDescriptor;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
-import seedu.hobbyhub.model.tag.Tag;
+import seedu.hobbyhub.model.group.Group;
 
 /**
  * Parses input arguments and creates a new EditCommand object
@@ -34,7 +35,12 @@ public class EditCommandParser implements Parser<EditCommand> {
         requireNonNull(args);
         ArgumentMultimap argMultimap =
                 ArgumentTokenizer
-                    .tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS, PREFIX_TAG, PREFIX_HOBBY);
+                    .tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS,
+                            PREFIX_GROUP, PREFIX_HOBBY, PREFIX_LEGACY_TAG);
+
+        if (argMultimap.getValue(PREFIX_LEGACY_TAG).isPresent()) {
+            throw new ParseException("The -t option has been replaced by -g for groups.");
+        }
 
         Index index;
 
@@ -63,7 +69,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         if (argMultimap.getValue(PREFIX_HOBBY).isPresent()) {
             editMemberDescriptor.setHobbies(ParserUtil.parseHobbies(argMultimap.getAllValues(PREFIX_HOBBY)));
         }
-        parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editMemberDescriptor::setTags);
+        parseGroupsForEdit(argMultimap.getAllValues(PREFIX_GROUP)).ifPresent(editMemberDescriptor::setGroups);
 
         if (!editMemberDescriptor.isAnyFieldEdited()) {
             throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);
@@ -73,18 +79,18 @@ public class EditCommandParser implements Parser<EditCommand> {
     }
 
     /**
-     * Parses {@code Collection<String> tags} into a {@code Set<Tag>} if {@code tags} is non-empty.
-     * If {@code tags} contains only one element which is an empty string, it will be parsed into a
-     * {@code Set<Tag>} containing zero tags.
+     * Parses {@code Collection<String> groups} into a {@code Set<Group>} if {@code groups} is non-empty.
+     * If {@code groups} contains only one element which is an empty string, it will be parsed into a
+     * {@code Set<Group>} containing zero groups.
      */
-    private Optional<Set<Tag>> parseTagsForEdit(Collection<String> tags) throws ParseException {
-        assert tags != null;
+    private Optional<Set<Group>> parseGroupsForEdit(Collection<String> groups) throws ParseException {
+        assert groups != null;
 
-        if (tags.isEmpty()) {
+        if (groups.isEmpty()) {
             return Optional.empty();
         }
-        Collection<String> tagSet = tags.size() == 1 && tags.contains("") ? Collections.emptySet() : tags;
-        return Optional.of(ParserUtil.parseTags(tagSet));
+        Collection<String> groupSet = groups.size() == 1 && groups.contains("") ? Collections.emptySet() : groups;
+        return Optional.of(ParserUtil.parseGroups(groupSet));
     }
 
 }
