@@ -5,7 +5,9 @@ import seedu.hobbyhub.commons.core.GuiSettings;
 import seedu.hobbyhub.logic.commands.CommandResult;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
+import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.member.Member;
+import seedu.hobbyhub.model.session.Session;
 
 /**
  * API of the Logic component
@@ -22,6 +24,12 @@ public interface Logic {
 
     /** Returns an unmodifiable view of the filtered list of members */
     ObservableList<Member> getFilteredMemberList();
+
+    /** Returns an unmodifiable view of the filtered list of sessions */
+    ObservableList<Session> getFilteredSessionList();
+
+    /** Returns the list currently shown to the user */
+    ListState getListState();
 
     /**
      * Returns the user prefs' GUI settings.

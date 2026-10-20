@@ -18,6 +18,7 @@ import seedu.hobbyhub.commons.core.GuiSettings;
 import seedu.hobbyhub.logic.Messages;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.model.HobbyHub;
+import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.ReadOnlyHobbyHub;
 import seedu.hobbyhub.model.ReadOnlyUserPrefs;
@@ -175,6 +176,16 @@ public class AddCommandTest {
 
         @Override
         public List<Session> getSessionsOf(Member member) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public ListState getListState() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void setListState(ListState listState) {
             throw new AssertionError("This method should not be called.");
         }
     }

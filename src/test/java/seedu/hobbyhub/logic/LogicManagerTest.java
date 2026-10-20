@@ -2,6 +2,7 @@ package seedu.hobbyhub.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_MEMBER_DISPLAYED_INDEX;
+import static seedu.hobbyhub.logic.Messages.MESSAGE_SESSION_COMMAND_UNAVAILABLE;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
@@ -24,6 +25,7 @@ import seedu.hobbyhub.logic.commands.CommandResult;
 import seedu.hobbyhub.logic.commands.ListCommand;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
+import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.ModelManager;
 import seedu.hobbyhub.model.ReadOnlyHobbyHub;
@@ -72,6 +74,19 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_listSessions_switchesListAndRoutesCommands() throws Exception {
+        logic.execute(ListCommand.COMMAND_WORD + " " + ListCommand.FLAG_SESSIONS);
+        assertEquals(ListState.SESSIONS, logic.getListState());
+
+        // add now goes to the session parser
+        assertThrows(ParseException.class, String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "add"), ()
+            -> logic.execute(AddCommand.COMMAND_WORD + " -n Golf Meet -d 2026-10-24"));
+
+        logic.execute(ListCommand.COMMAND_WORD + " " + ListCommand.FLAG_MEMBERS);
+        assertEquals(ListState.MEMBERS, logic.getListState());
+    }
+
+    @Test
     public void execute_storageThrowsIoException_throwsCommandException() {
         assertCommandFailureForExceptionFromStorage(DUMMY_IO_EXCEPTION, String.format(
                 LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()));
@@ -86,6 +101,16 @@ public class LogicManagerTest {
     @Test
     public void getFilteredMemberList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredMemberList().remove(0));
+    }
+
+    @Test
+    public void getFilteredSessionList_modifyList_throwsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredSessionList().remove(0));
+    }
+
+    @Test
+    public void getListState_initially_isMembers() {
+        assertEquals(ListState.MEMBERS, logic.getListState());
     }
 
     /**
