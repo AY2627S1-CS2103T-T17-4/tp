@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_EMAIL_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_HOBBY_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_NAME_BOB;
@@ -33,22 +34,21 @@ public class MemberTest {
         // null -> returns false
         assertFalse(ALICE.isSameMember(null));
 
-        // same name, all other attributes different -> returns true
-        Member editedAlice = new MemberBuilder(ALICE).withPhone(VALID_PHONE_BOB).withEmail(VALID_EMAIL_BOB)
+        // same email, all other attributes different -> returns true
+        Member editedAlice = new MemberBuilder(ALICE).withName(VALID_NAME_BOB).withPhone(VALID_PHONE_BOB)
                 .withAddress(VALID_ADDRESS_BOB).withTags(VALID_TAG_HUSBAND).build();
         assertTrue(ALICE.isSameMember(editedAlice));
 
-        // different name, all other attributes same -> returns false
-        editedAlice = new MemberBuilder(ALICE).withName(VALID_NAME_BOB).build();
+        // different email, all other attributes same -> returns false
+        editedAlice = new MemberBuilder(ALICE).withEmail(VALID_EMAIL_BOB).build();
         assertFalse(ALICE.isSameMember(editedAlice));
 
-        // name differs in case, all other attributes same -> returns false
-        Member editedBob = new MemberBuilder(BOB).withName(VALID_NAME_BOB.toLowerCase()).build();
-        assertFalse(BOB.isSameMember(editedBob));
+        // email differs in case, all other attributes same -> returns true
+        Member editedBob = new MemberBuilder(BOB).withEmail(VALID_EMAIL_BOB.toUpperCase()).build();
+        assertTrue(BOB.isSameMember(editedBob));
 
-        // name has trailing spaces, all other attributes same -> returns false
-        String nameWithTrailingSpaces = VALID_NAME_BOB + " ";
-        editedBob = new MemberBuilder(BOB).withName(nameWithTrailingSpaces).build();
+        // same name, different email -> returns false
+        editedBob = new MemberBuilder(BOB).withEmail(VALID_EMAIL_AMY).build();
         assertFalse(BOB.isSameMember(editedBob));
     }
 

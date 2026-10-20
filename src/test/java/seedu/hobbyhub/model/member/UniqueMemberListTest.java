@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalMembers.ALICE;
@@ -48,6 +49,21 @@ public class UniqueMemberListTest {
     @Test
     public void add_nullMember_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> uniqueMemberList.add(null));
+    }
+
+    @Test
+    public void add_sameNameDifferentEmail_success() {
+        uniqueMemberList.add(ALICE);
+        Member otherAlice = new MemberBuilder(ALICE).withEmail(VALID_EMAIL_BOB).build();
+        uniqueMemberList.add(otherAlice);
+        assertTrue(uniqueMemberList.contains(otherAlice));
+    }
+
+    @Test
+    public void add_sameEmailDifferentCase_throwsDuplicateMemberException() {
+        uniqueMemberList.add(ALICE);
+        Member aliceUpperCaseEmail = new MemberBuilder(BOB).withEmail(ALICE.getEmail().value.toUpperCase()).build();
+        assertThrows(DuplicateMemberException.class, () -> uniqueMemberList.add(aliceUpperCaseEmail));
     }
 
     @Test
