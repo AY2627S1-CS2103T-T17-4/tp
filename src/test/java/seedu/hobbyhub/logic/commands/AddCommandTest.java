@@ -22,6 +22,7 @@ import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.ReadOnlyHobbyHub;
 import seedu.hobbyhub.model.ReadOnlyUserPrefs;
 import seedu.hobbyhub.model.member.Member;
+import seedu.hobbyhub.model.session.Session;
 import seedu.hobbyhub.testutil.MemberBuilder;
 
 public class AddCommandTest {
@@ -139,6 +140,41 @@ public class AddCommandTest {
 
         @Override
         public void updateFilteredMemberList(Predicate<Member> predicate) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public boolean hasSession(Session session) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void deleteSession(Session target) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void addSession(Session session) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void setSession(Session target, Session editedSession) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public ObservableList<Session> getFilteredSessionList() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void updateFilteredSessionList(Predicate<Session> predicate) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public List<Session> getSessionsOf(Member member) {
             throw new AssertionError("This method should not be called.");
         }
     }

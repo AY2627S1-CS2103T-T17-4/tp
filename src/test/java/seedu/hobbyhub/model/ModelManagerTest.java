@@ -4,9 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.model.Model.PREDICATE_SHOW_ALL_MEMBERS;
+import static seedu.hobbyhub.model.Model.PREDICATE_SHOW_ALL_SESSIONS;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalMembers.ALICE;
 import static seedu.hobbyhub.testutil.TypicalMembers.BENSON;
+import static seedu.hobbyhub.testutil.TypicalMembers.CARL;
+import static seedu.hobbyhub.testutil.TypicalMembers.DANIEL;
+import static seedu.hobbyhub.testutil.TypicalSessions.CHESS_MEETUP;
+import static seedu.hobbyhub.testutil.TypicalSessions.CYCLING_TRIP;
+import static seedu.hobbyhub.testutil.TypicalSessions.getTypicalHobbyHubWithSessions;
 
 import java.util.List;
 
@@ -14,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.commons.core.GuiSettings;
 import seedu.hobbyhub.model.member.NameContainsKeywordsPredicate;
+import seedu.hobbyhub.model.session.Session;
 import seedu.hobbyhub.testutil.HobbyHubBuilder;
 
 public class ModelManagerTest {
@@ -74,6 +81,79 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void hasSession_nullSession_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> modelManager.hasSession(null));
+    }
+
+    @Test
+    public void hasSession_sessionNotInHobbyHub_returnsFalse() {
+        assertFalse(modelManager.hasSession(CHESS_MEETUP));
+    }
+
+    @Test
+    public void addSession_validSession_sessionAddedAndShown() {
+        modelManager.addSession(CHESS_MEETUP);
+        assertTrue(modelManager.hasSession(CHESS_MEETUP));
+        assertEquals(List.of(CHESS_MEETUP), modelManager.getFilteredSessionList());
+    }
+
+    @Test
+    public void deleteSession_existingSession_sessionRemoved() {
+        modelManager.addSession(CHESS_MEETUP);
+        modelManager.deleteSession(CHESS_MEETUP);
+        assertFalse(modelManager.hasSession(CHESS_MEETUP));
+    }
+
+    @Test
+    public void setSession_existingSession_sessionReplaced() {
+        modelManager.addSession(CHESS_MEETUP);
+        Session editedChess = CHESS_MEETUP.withMember(CARL.getEmail());
+        modelManager.setSession(CHESS_MEETUP, editedChess);
+        assertEquals(List.of(editedChess), modelManager.getFilteredSessionList());
+    }
+
+    @Test
+    public void updateFilteredSessionList_predicate_filtersSessions() {
+        modelManager = new ModelManager(getTypicalHobbyHubWithSessions(), new UserPrefs());
+        modelManager.updateFilteredSessionList(session -> session.equals(CYCLING_TRIP));
+        assertEquals(List.of(CYCLING_TRIP), modelManager.getFilteredSessionList());
+
+        modelManager.updateFilteredSessionList(PREDICATE_SHOW_ALL_SESSIONS);
+        assertEquals(List.of(CHESS_MEETUP, CYCLING_TRIP), modelManager.getFilteredSessionList());
+    }
+
+    @Test
+    public void getFilteredSessionList_modifyList_throwsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> modelManager.getFilteredSessionList().remove(0));
+    }
+
+    @Test
+    public void getSessionsOf() {
+        modelManager = new ModelManager(getTypicalHobbyHubWithSessions(), new UserPrefs());
+        assertThrows(NullPointerException.class, () -> modelManager.getSessionsOf(null));
+
+        // member in one session
+        assertEquals(List.of(CHESS_MEETUP), modelManager.getSessionsOf(ALICE));
+
+        // member in two sessions
+        assertEquals(List.of(CHESS_MEETUP, CYCLING_TRIP), modelManager.getSessionsOf(BENSON));
+
+        // member in no session
+        assertEquals(List.of(), modelManager.getSessionsOf(DANIEL));
+
+        // still counts sessions hidden by the session filter
+        modelManager.updateFilteredSessionList(session -> false);
+        assertEquals(List.of(CHESS_MEETUP), modelManager.getSessionsOf(ALICE));
+    }
+
+    @Test
+    public void deleteMember_memberInSessions_removedFromSessions() {
+        modelManager = new ModelManager(getTypicalHobbyHubWithSessions(), new UserPrefs());
+        modelManager.deleteMember(BENSON);
+        assertEquals(List.of(), modelManager.getSessionsOf(BENSON));
+    }
+
+    @Test
     public void equals() {
         HobbyHub hobbyHub = new HobbyHubBuilder().withMember(ALICE).withMember(BENSON).build();
         HobbyHub differentHobbyHub = new HobbyHub();
@@ -103,6 +183,16 @@ public class ModelManagerTest {
 
         // resets modelManager to initial state for upcoming tests
         modelManager.updateFilteredMemberList(PREDICATE_SHOW_ALL_MEMBERS);
+
+        // different sessions -> returns false
+        HobbyHub hobbyHubWithSession = new HobbyHubBuilder().withMember(ALICE).withMember(BENSON)
+                .withSession(CHESS_MEETUP).build();
+        assertFalse(modelManager.equals(new ModelManager(hobbyHubWithSession, userPrefs)));
+
+        // different filtered session list -> returns false
+        ModelManager modelManagerWithSession = new ModelManager(hobbyHubWithSession, userPrefs);
+        modelManagerWithSession.updateFilteredSessionList(session -> false);
+        assertFalse(modelManagerWithSession.equals(new ModelManager(hobbyHubWithSession, userPrefs)));
 
         // different userPrefs -> returns false
         UserPrefs differentUserPrefs = new UserPrefs();

@@ -1,5 +1,6 @@
 package seedu.hobbyhub.model.util;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,6 +13,8 @@ import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
+import seedu.hobbyhub.model.session.Session;
+import seedu.hobbyhub.model.session.SessionName;
 import seedu.hobbyhub.model.tag.Tag;
 
 /**
@@ -41,10 +44,22 @@ public class SampleDataUtil {
         };
     }
 
+    public static Session[] getSampleSessions() {
+        return new Session[] {
+            new Session(new SessionName("Weekend Chess Meetup"), LocalDate.of(2026, 10, 24),
+                getEmailSet("alexyeoh@example.com", "berniceyu@example.com")),
+            new Session(new SessionName("Sunday Hike"), LocalDate.of(2026, 10, 25),
+                getEmailSet("charlotte@example.com", "irfan@example.com", "royb@example.com"))
+        };
+    }
+
     public static ReadOnlyHobbyHub getSampleHobbyHub() {
         HobbyHub sampleAb = new HobbyHub();
         for (Member sampleMember : getSampleMembers()) {
             sampleAb.addMember(sampleMember);
+        }
+        for (Session sampleSession : getSampleSessions()) {
+            sampleAb.addSession(sampleSession);
         }
         return sampleAb;
     }
@@ -55,6 +70,15 @@ public class SampleDataUtil {
     public static Set<Tag> getTagSet(String... strings) {
         return Arrays.stream(strings)
                 .map(Tag::new)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns an email set containing the list of strings given.
+     */
+    public static Set<Email> getEmailSet(String... strings) {
+        return Arrays.stream(strings)
+                .map(Email::new)
                 .collect(Collectors.toSet());
     }
 
