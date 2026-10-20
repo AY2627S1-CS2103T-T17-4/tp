@@ -53,7 +53,7 @@ public class EditCommand extends Command {
 
     public static final String MESSAGE_EDIT_MEMBER_SUCCESS = "Edited member: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
-    public static final String MESSAGE_DUPLICATE_MEMBER = "This member already exists in the HobbyHub.";
+    public static final String MESSAGE_DUPLICATE_MEMBER = "A member with this email already exists.";
 
     private final Index index;
     private final EditMemberDescriptor editMemberDescriptor;

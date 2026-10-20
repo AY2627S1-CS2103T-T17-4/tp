@@ -68,7 +68,7 @@ public class Member {
     }
 
     /**
-     * Returns true if both members have the same name.
+     * Returns true if both members have the same email, ignoring case.
      * This defines a weaker notion of equality between two members.
      */
     public boolean isSameMember(Member otherMember) {
@@ -77,7 +77,7 @@ public class Member {
         }
 
         return otherMember != null
-                && otherMember.getName().equals(getName());
+                && otherMember.getEmail().value.equalsIgnoreCase(getEmail().value);
     }
 
     /**

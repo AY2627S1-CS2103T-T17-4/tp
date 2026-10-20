@@ -39,7 +39,7 @@ public class AddCommand extends Command {
             + PREFIX_TAG + " owesMoney";
 
     public static final String MESSAGE_SUCCESS = "New member added: %1$s";
-    public static final String MESSAGE_DUPLICATE_MEMBER = "This member already exists in the HobbyHub.";
+    public static final String MESSAGE_DUPLICATE_MEMBER = "A member with this email already exists.";
 
     private final Member toAdd;
 
