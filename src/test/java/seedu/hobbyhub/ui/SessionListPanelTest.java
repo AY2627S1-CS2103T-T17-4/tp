@@ -30,6 +30,11 @@ public class SessionListPanelTest {
             cell.updateItem(null, true);
             assertNull(cell.getGraphic());
             assertNull(cell.getText());
+
+            // a non-empty cell without a session is also left blank
+            cell.updateItem(null, false);
+            assertNull(cell.getGraphic());
+            assertNull(cell.getText());
         });
     }
 }

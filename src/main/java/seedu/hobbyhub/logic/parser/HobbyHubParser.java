@@ -62,21 +62,15 @@ public class HobbyHubParser {
         // Lower level log messages are used sparingly to minimize noise in the code.
         logger.fine("Command word: " + commandWord + "; Arguments: " + arguments + "; List: " + listState);
 
-        boolean isMemberList = listState == ListState.MEMBERS;
-
         return switch (commandWord) {
-            case AddCommand.COMMAND_WORD -> isMemberList
-                    ? new AddCommandParser().parse(arguments)
-                    : new AddSessionCommandParser().parse(arguments);
-            case EditCommand.COMMAND_WORD -> isMemberList
-                    ? new EditCommandParser().parse(arguments)
-                    : new EditSessionCommandParser().parse(arguments);
-            case DeleteCommand.COMMAND_WORD -> isMemberList
-                    ? new DeleteCommandParser().parse(arguments)
-                    : new DeleteSessionCommandParser().parse(arguments);
-            case SearchCommand.COMMAND_WORD -> isMemberList
-                    ? new SearchCommandParser().parse(arguments)
-                    : new SearchSessionCommandParser().parse(arguments);
+            case AddCommand.COMMAND_WORD ->
+                parseForList(listState, new AddCommandParser(), new AddSessionCommandParser(), arguments);
+            case EditCommand.COMMAND_WORD ->
+                parseForList(listState, new EditCommandParser(), new EditSessionCommandParser(), arguments);
+            case DeleteCommand.COMMAND_WORD ->
+                parseForList(listState, new DeleteCommandParser(), new DeleteSessionCommandParser(), arguments);
+            case SearchCommand.COMMAND_WORD ->
+                parseForList(listState, new SearchCommandParser(), new SearchSessionCommandParser(), arguments);
             case ClearCommand.COMMAND_WORD -> new ClearCommand();
             case ListCommand.COMMAND_WORD -> new ListCommandParser().parse(arguments);
             case ExitCommand.COMMAND_WORD -> new ExitCommand();
@@ -86,6 +80,16 @@ public class HobbyHubParser {
                 throw new ParseException(MESSAGE_UNKNOWN_COMMAND);
             }
         };
+    }
+
+    /**
+     * Parses {@code arguments} with {@code memberParser} if the member list is showing,
+     * or with {@code sessionParser} if the session list is showing.
+     */
+    private static Command parseForList(ListState listState, Parser<? extends Command> memberParser,
+            Parser<? extends Command> sessionParser, String arguments) throws ParseException {
+        Parser<? extends Command> parser = listState == ListState.MEMBERS ? memberParser : sessionParser;
+        return parser.parse(arguments);
     }
 
 }
