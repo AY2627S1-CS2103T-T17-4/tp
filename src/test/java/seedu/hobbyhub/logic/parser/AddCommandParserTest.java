@@ -30,7 +30,6 @@ import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
-import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.hobbyhub.logic.parser.CommandParserTestUtil.assertParseFailure;
@@ -117,16 +116,11 @@ public class AddCommandParserTest {
         assertParseFailure(parser, ADDRESS_DESC_AMY + validExpectedMemberString,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_ADDRESS));
 
-        // multiple hobbies
-        assertParseFailure(parser, HOBBY_DESC_AMY + validExpectedMemberString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_HOBBY));
-
         // multiple fields repeated
         assertParseFailure(parser,
                 validExpectedMemberString + PHONE_DESC_AMY + EMAIL_DESC_AMY + NAME_DESC_AMY + ADDRESS_DESC_AMY
                         + HOBBY_DESC_AMY + validExpectedMemberString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME, PREFIX_ADDRESS, PREFIX_EMAIL, PREFIX_PHONE,
-                        PREFIX_HOBBY));
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME, PREFIX_ADDRESS, PREFIX_EMAIL, PREFIX_PHONE));
 
         // invalid value followed by valid value
 
@@ -146,9 +140,8 @@ public class AddCommandParserTest {
         assertParseFailure(parser, INVALID_ADDRESS_DESC + validExpectedMemberString,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_ADDRESS));
 
-        // invalid hobby
-        assertParseFailure(parser, INVALID_HOBBY_DESC + validExpectedMemberString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_HOBBY));
+        // invalid hobby is rejected even when followed by a valid hobby
+        assertParseFailure(parser, INVALID_HOBBY_DESC + validExpectedMemberString, Hobby.MESSAGE_CONSTRAINTS);
 
         // valid value followed by invalid value
 
@@ -168,9 +161,8 @@ public class AddCommandParserTest {
         assertParseFailure(parser, validExpectedMemberString + INVALID_ADDRESS_DESC,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_ADDRESS));
 
-        // invalid hobby
-        assertParseFailure(parser, validExpectedMemberString + INVALID_HOBBY_DESC,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_HOBBY));
+        // invalid hobby is rejected even when preceded by a valid hobby
+        assertParseFailure(parser, validExpectedMemberString + INVALID_HOBBY_DESC, Hobby.MESSAGE_CONSTRAINTS);
     }
 
     @Test

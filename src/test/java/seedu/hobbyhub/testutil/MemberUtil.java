@@ -35,7 +35,8 @@ public class MemberUtil {
         sb.append(PREFIX_PHONE + member.getPhone().value + " ");
         sb.append(PREFIX_EMAIL + member.getEmail().value + " ");
         sb.append(PREFIX_ADDRESS + member.getAddress().value + " ");
-        sb.append(PREFIX_HOBBY + member.getHobby().value + " ");
+        member.getHobbies().forEach(hobby -> sb.append(PREFIX_HOBBY).append(" \"")
+                .append(hobby.value).append(":").append(hobby.getSkillLevel()).append("\" "));
         member.getTags().stream().forEach(
             s -> sb.append(PREFIX_TAG + s.tagName + " ")
         );
@@ -51,6 +52,8 @@ public class MemberUtil {
         descriptor.getPhone().ifPresent(phone -> sb.append(PREFIX_PHONE).append(phone.value).append(" "));
         descriptor.getEmail().ifPresent(email -> sb.append(PREFIX_EMAIL).append(email.value).append(" "));
         descriptor.getAddress().ifPresent(address -> sb.append(PREFIX_ADDRESS).append(address.value).append(" "));
+        descriptor.getHobbies().ifPresent(hobbies -> hobbies.forEach(hobby -> sb.append(PREFIX_HOBBY)
+                .append(" \"").append(hobby.value).append(":").append(hobby.getSkillLevel()).append("\" ")));
         if (descriptor.getTags().isPresent()) {
             Set<Tag> tags = descriptor.getTags().get();
             if (tags.isEmpty()) {

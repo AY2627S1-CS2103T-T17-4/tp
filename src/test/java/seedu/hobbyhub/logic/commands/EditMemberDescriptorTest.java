@@ -70,8 +70,8 @@ public class EditMemberDescriptorTest {
                 + editMemberDescriptor.getPhone().orElse(null) + ", email="
                 + editMemberDescriptor.getEmail().orElse(null) + ", address="
                 + editMemberDescriptor.getAddress().orElse(null) + ", tags="
-                + editMemberDescriptor.getTags().orElse(null) + ", hobby="
-                + editMemberDescriptor.getHobby().orElse(null) + "}";
+                + editMemberDescriptor.getTags().orElse(null) + ", hobbies="
+                + editMemberDescriptor.getHobbies().orElse(null) + "}";
         assertEquals(expected, editMemberDescriptor.toString());
     }
 }

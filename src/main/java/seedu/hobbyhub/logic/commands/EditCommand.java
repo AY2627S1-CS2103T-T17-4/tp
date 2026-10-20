@@ -12,6 +12,7 @@ import static seedu.hobbyhub.model.Model.PREDICATE_SHOW_ALL_MEMBERS;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -46,7 +47,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
             + "[" + PREFIX_TAG + "TAG]...\n"
-            + "[" + PREFIX_HOBBY + "HOBBY]...\n"
+            + "[" + PREFIX_HOBBY + " \"HOBBY:SKILL\"]...\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";
@@ -124,7 +125,7 @@ public class EditCommand extends Command {
         private Email email;
         private Address address;
         private Set<Tag> tags;
-        private Hobby hobby;
+        private List<Hobby> hobbies;
 
         public EditMemberDescriptor() {}
 
@@ -138,7 +139,7 @@ public class EditCommand extends Command {
             setEmail(toCopy.email);
             setAddress(toCopy.address);
             setTags(toCopy.tags);
-            setHobby(toCopy.hobby);
+            setHobbies(toCopy.hobbies);
         }
 
         /**
@@ -152,7 +153,7 @@ public class EditCommand extends Command {
             Phone updatedPhone = getPhone().orElse(memberToEdit.getPhone());
             Email updatedEmail = getEmail().orElse(memberToEdit.getEmail());
             Address updatedAddress = getAddress().orElse(memberToEdit.getAddress());
-            List<Hobby> updatedHobbies = getHobby().map(List::of).orElse(memberToEdit.getHobbies());
+            List<Hobby> updatedHobbies = getHobbies().orElse(memberToEdit.getHobbies());
             Set<Tag> updatedTags = getTags().orElse(memberToEdit.getTags());
 
             return new Member(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedHobbies, updatedTags);
@@ -162,7 +163,7 @@ public class EditCommand extends Command {
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, phone, email, address, tags, hobby);
+            return CollectionUtil.isAnyNonNull(name, phone, email, address, tags, hobbies);
         }
 
         public EditMemberDescriptor setName(Name name) {
@@ -219,12 +220,37 @@ public class EditCommand extends Command {
             return (tags != null) ? Optional.of(Collections.unmodifiableSet(tags)) : Optional.empty();
         }
 
+        /** Returns the first supplied hobby for compatibility with single-hobby callers. */
         public Optional<Hobby> getHobby() {
-            return Optional.ofNullable(hobby);
+            return getHobbies().map(List::getFirst);
         }
 
+        /** Sets one hobby, replacing all previously supplied hobbies. */
         public EditMemberDescriptor setHobby(Hobby hobby) {
-            this.hobby = hobby;
+            return setHobbies(hobby == null ? null : List.of(hobby));
+        }
+
+        /** Returns all supplied hobbies as an immutable list, or empty if this field is not edited. */
+        public Optional<List<Hobby>> getHobbies() {
+            return Optional.ofNullable(hobbies);
+        }
+
+        /** Copies the hobbies to apply. A null list leaves the field unedited. */
+        public EditMemberDescriptor setHobbies(List<Hobby> hobbies) {
+            if (hobbies != null) {
+                // Reuse the member's list invariants, without requiring a partially constructed member.
+                if (hobbies.isEmpty()) {
+                    throw new IllegalArgumentException(Member.MESSAGE_HOBBIES_REQUIRED);
+                }
+                Set<String> names = new HashSet<>();
+                for (Hobby hobby : hobbies) {
+                    requireNonNull(hobby);
+                    if (!names.add(hobby.value.trim().toLowerCase(Locale.ROOT))) {
+                        throw new IllegalArgumentException(Member.MESSAGE_DUPLICATE_HOBBY);
+                    }
+                }
+            }
+            this.hobbies = hobbies == null ? null : List.copyOf(hobbies);
             return this;
         }
 
@@ -244,7 +270,7 @@ public class EditCommand extends Command {
                     && Objects.equals(email, otherEditMemberDescriptor.email)
                     && Objects.equals(address, otherEditMemberDescriptor.address)
                     && Objects.equals(tags, otherEditMemberDescriptor.tags)
-                    && Objects.equals(hobby, otherEditMemberDescriptor.hobby);
+                    && Objects.equals(hobbies, otherEditMemberDescriptor.hobbies);
         }
 
         @Override
@@ -255,7 +281,7 @@ public class EditCommand extends Command {
                     .add("email", email)
                     .add("address", address)
                     .add("tags", tags)
-                    .add("hobby", hobby)
+                    .add("hobbies", hobbies)
                     .toString();
         }
     }

@@ -27,14 +27,14 @@ public class AddCommand extends Command {
             + PREFIX_PHONE + " PHONE "
             + PREFIX_EMAIL + " EMAIL "
             + PREFIX_ADDRESS + " ADDRESS "
-            + PREFIX_HOBBY + " HOBBY "
+            + PREFIX_HOBBY + " \"HOBBY:SKILL\" [" + PREFIX_HOBBY + " \"HOBBY:SKILL\"]... "
             + "[" + PREFIX_TAG + " TAG]...\n"
             + "Example: " + COMMAND_WORD + " "
             + PREFIX_NAME + " John Doe "
             + PREFIX_PHONE + " 98765432 "
             + PREFIX_EMAIL + " johnd@example.com "
             + PREFIX_ADDRESS + " 311, Clementi Ave 2, #02-25 "
-            + PREFIX_HOBBY + " Chess "
+            + PREFIX_HOBBY + " \"Chess:Beginner\" "
             + PREFIX_TAG + " friends "
             + PREFIX_TAG + " owesMoney";
 

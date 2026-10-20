@@ -1,5 +1,6 @@
 package seedu.hobbyhub.testutil;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,6 +39,7 @@ public class EditMemberDescriptorBuilder {
         descriptor.setEmail(member.getEmail());
         descriptor.setAddress(member.getAddress());
         descriptor.setTags(member.getTags());
+        descriptor.setHobbies(member.getHobbies());
     }
 
     /**
@@ -87,6 +89,12 @@ public class EditMemberDescriptorBuilder {
     public EditMemberDescriptorBuilder withTags(String... tags) {
         Set<Tag> tagSet = Stream.of(tags).map(Tag::new).collect(Collectors.toSet());
         descriptor.setTags(tagSet);
+        return this;
+    }
+
+    /** Sets the complete hobby list to replace the member's hobbies. */
+    public EditMemberDescriptorBuilder withHobbies(Hobby... hobbies) {
+        descriptor.setHobbies(List.of(hobbies));
         return this;
     }
 

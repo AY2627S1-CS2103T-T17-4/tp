@@ -2,8 +2,11 @@ package seedu.hobbyhub.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import seedu.hobbyhub.commons.core.index.Index;
@@ -12,14 +15,20 @@ import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
+import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
+import seedu.hobbyhub.model.member.SkillLevel;
 import seedu.hobbyhub.model.tag.Tag;
 
 /**
  * Contains utility methods used for parsing strings in the various *Parser classes.
  */
 public class ParserUtil {
+
+    public static final String MESSAGE_INVALID_HOBBY_FORMAT =
+            "Use -h \"HOBBY:SKILL\", with one hobby name and one skill level.";
+    public static final String MESSAGE_INVALID_SKILL = "Skill level must be Beginner, Intermediate, or Advanced.";
 
     public static final String MESSAGE_INVALID_INDEX = "Index must be a positive integer.";
 
@@ -97,18 +106,54 @@ public class ParserUtil {
     }
 
     /**
-     * Parses a {@code String hobby} into a {@code Hobby}.
-     * Leading and trailing whitespaces will be trimmed.
-     *
-     * @throws ParseException if the given {@code hobby} is invalid.
+     * Parses a hobby name with an optional skill suffix, e.g. {@code "Table Tennis:Advanced"}.
+     * Balanced outer double quotes and surrounding whitespace are removed.
+     * Legacy names without a colon default to Beginner; an explicit suffix must be valid.
      */
     public static Hobby parseHobby(String hobby) throws ParseException {
         requireNonNull(hobby);
-        String trimmedHobby = hobby.trim();
-        if (!Hobby.isValidHobby(trimmedHobby)) {
+        String value = hobby.trim();
+        if (value.startsWith("\"") && value.endsWith("\"") && value.length() >= 2) {
+            value = value.substring(1, value.length() - 1).trim();
+        }
+        if (value.contains("\"")) {
+            throw new ParseException(MESSAGE_INVALID_HOBBY_FORMAT);
+        }
+        String[] parts = value.split(":", -1);
+        if (parts.length > 2) {
+            throw new ParseException(MESSAGE_INVALID_HOBBY_FORMAT);
+        }
+        String name = parts[0].trim();
+        if (!Hobby.isValidHobby(name)) {
             throw new ParseException(Hobby.MESSAGE_CONSTRAINTS);
         }
-        return new Hobby(trimmedHobby);
+        if (parts.length == 1) {
+            return new Hobby(name);
+        }
+        for (SkillLevel level : SkillLevel.values()) {
+            if (level.toString().equalsIgnoreCase(parts[1].trim())) {
+                return new Hobby(name, level);
+            }
+        }
+        throw new ParseException(MESSAGE_INVALID_SKILL);
+    }
+
+    /** Parses all hobby options in input order, rejecting repeated hobby names regardless of skill level. */
+    public static List<Hobby> parseHobbies(Collection<String> hobbies) throws ParseException {
+        requireNonNull(hobbies);
+        if (hobbies.isEmpty()) {
+            throw new ParseException(Member.MESSAGE_HOBBIES_REQUIRED);
+        }
+        List<Hobby> parsed = new ArrayList<>();
+        Set<String> names = new HashSet<>();
+        for (String value : hobbies) {
+            Hobby hobby = parseHobby(value);
+            if (!names.add(hobby.value.toLowerCase(Locale.ROOT))) {
+                throw new ParseException(Member.MESSAGE_DUPLICATE_HOBBY);
+            }
+            parsed.add(hobby);
+        }
+        return List.copyOf(parsed);
     }
 
     /**

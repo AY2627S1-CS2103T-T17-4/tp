@@ -61,7 +61,7 @@ public class EditCommandParser implements Parser<EditCommand> {
             editMemberDescriptor.setAddress(ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get()));
         }
         if (argMultimap.getValue(PREFIX_HOBBY).isPresent()) {
-            editMemberDescriptor.setHobby(ParserUtil.parseHobby(argMultimap.getValue(PREFIX_HOBBY).get()));
+            editMemberDescriptor.setHobbies(ParserUtil.parseHobbies(argMultimap.getAllValues(PREFIX_HOBBY)));
         }
         parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editMemberDescriptor::setTags);
 
