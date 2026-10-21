@@ -53,6 +53,8 @@ public class EditCommand extends Command {
             + PREFIX_EMAIL + "johndoe@example.com";
 
     public static final String MESSAGE_EDIT_MEMBER_SUCCESS = "Edited member: %1$s";
+    public static final String MESSAGE_HOBBIES_REPLACED =
+            "Hobby list replaced. Only the supplied hobbies and skill levels were kept.";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_DUPLICATE_MEMBER = "A member with this email already exists.";
 
@@ -89,7 +91,11 @@ public class EditCommand extends Command {
 
         model.setMember(memberToEdit, editedMember);
         model.updateFilteredMemberList(PREDICATE_SHOW_ALL_MEMBERS);
-        return new CommandResult(String.format(MESSAGE_EDIT_MEMBER_SUCCESS, Messages.format(editedMember)));
+        String feedback = String.format(MESSAGE_EDIT_MEMBER_SUCCESS, Messages.format(editedMember));
+        if (!memberToEdit.getHobbies().equals(editedMember.getHobbies())) {
+            feedback += "\n" + MESSAGE_HOBBIES_REPLACED;
+        }
+        return new CommandResult(feedback);
     }
 
     @Override
