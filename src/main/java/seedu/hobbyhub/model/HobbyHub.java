@@ -48,6 +48,7 @@ public class HobbyHub implements ReadOnlyHobbyHub {
      */
     public void setSessions(List<Session> sessions) {
         this.sessions.setSessions(sessions);
+        refreshMemberSessions();
     }
 
     /**
@@ -76,6 +77,7 @@ public class HobbyHub implements ReadOnlyHobbyHub {
      */
     public void addMember(Member p) {
         members.add(p);
+        refreshMemberSessions();
     }
 
     /**
@@ -96,6 +98,7 @@ public class HobbyHub implements ReadOnlyHobbyHub {
                 sessions.setSession(session, session.withoutMember(oldEmail).withMember(newEmail));
             }
         }
+        refreshMemberSessions();
     }
 
     /**
@@ -109,6 +112,7 @@ public class HobbyHub implements ReadOnlyHobbyHub {
         for (Session session : getSessionsWith(email)) {
             sessions.setSession(session, session.withoutMember(email));
         }
+        refreshMemberSessions();
     }
 
     /**
@@ -118,6 +122,18 @@ public class HobbyHub implements ReadOnlyHobbyHub {
         return sessions.asUnmodifiableObservableList().stream()
                 .filter(session -> session.hasMember(email))
                 .toList();
+    }
+
+    /** Updates each member's stored session list to match the session assignments. */
+    private void refreshMemberSessions() {
+        for (Member member : List.copyOf(getMemberList())) {
+            List<Session> assignedSessions = sessions.asUnmodifiableObservableList().stream()
+                    .filter(session -> session.hasMember(member.getEmail()))
+                    .toList();
+            if (!member.getSessions().equals(assignedSessions)) {
+                members.setMember(member, member.withSessions(assignedSessions));
+            }
+        }
     }
 
     //// session-level operations
@@ -136,6 +152,7 @@ public class HobbyHub implements ReadOnlyHobbyHub {
      */
     public void addSession(Session session) {
         sessions.add(session);
+        refreshMemberSessions();
     }
 
     /**
@@ -147,6 +164,7 @@ public class HobbyHub implements ReadOnlyHobbyHub {
         requireNonNull(editedSession);
 
         sessions.setSession(target, editedSession);
+        refreshMemberSessions();
     }
 
     /**
@@ -155,6 +173,7 @@ public class HobbyHub implements ReadOnlyHobbyHub {
      */
     public void removeSession(Session key) {
         sessions.remove(key);
+        refreshMemberSessions();
     }
 
     //// util methods
