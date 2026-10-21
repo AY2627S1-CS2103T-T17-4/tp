@@ -162,7 +162,8 @@ public class EditCommand extends Command {
             List<Hobby> updatedHobbies = getHobbies().orElse(memberToEdit.getHobbies());
             Set<Group> updatedGroups = getGroups().orElse(memberToEdit.getGroups());
 
-            return new Member(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedHobbies, updatedGroups);
+            return new Member(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedHobbies, updatedGroups,
+                    memberToEdit.getSessions());
         }
 
         /**

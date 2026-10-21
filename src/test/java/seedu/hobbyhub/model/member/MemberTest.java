@@ -14,9 +14,12 @@ import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalMembers.ALICE;
 import static seedu.hobbyhub.testutil.TypicalMembers.BOB;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.testutil.MemberBuilder;
+import seedu.hobbyhub.testutil.SessionBuilder;
 
 public class MemberTest {
 
@@ -93,13 +96,18 @@ public class MemberTest {
         // different groups -> returns false
         editedAlice = new MemberBuilder(ALICE).withGroups(VALID_GROUP_HUSBAND).build();
         assertFalse(ALICE.equals(editedAlice));
+
+        // different assigned sessions -> returns false
+        editedAlice = ALICE.withSessions(List.of(new SessionBuilder().withMembers(ALICE.getEmail().value).build()));
+        assertFalse(ALICE.equals(editedAlice));
     }
 
     @Test
     public void toStringMethod() {
         String expected = Member.class.getCanonicalName() + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
                 + ", email=" + ALICE.getEmail() + ", address=" + ALICE.getAddress()
-                + ", hobbies=" + ALICE.getHobbies() + ", groups=" + ALICE.getGroups() + "}";
+                + ", hobbies=" + ALICE.getHobbies() + ", groups=" + ALICE.getGroups()
+                + ", sessions=" + ALICE.getSessions() + "}";
         assertEquals(expected, ALICE.toString());
     }
 }

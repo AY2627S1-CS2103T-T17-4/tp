@@ -12,6 +12,7 @@ import java.util.Set;
 
 import seedu.hobbyhub.commons.util.ToStringBuilder;
 import seedu.hobbyhub.model.group.Group;
+import seedu.hobbyhub.model.session.Session;
 
 /**
  * Represents a Member in the HobbyHub.
@@ -31,6 +32,7 @@ public class Member {
     // Data fields
     private final Address address;
     private final Set<Group> groups = new HashSet<>();
+    private final List<Session> sessions;
 
     /**
      * Every field must be present and not null.
@@ -44,8 +46,17 @@ public class Member {
      * The hobby list is copied and its order is preserved for display.
      */
     public Member(Name name, Phone phone, Email email, Address address, List<Hobby> hobbies, Set<Group> groups) {
-        requireAllNonNull(name, phone, email, address, hobbies, groups);
+        this(name, phone, email, address, hobbies, groups, List.of());
+    }
+
+    /**
+     * Constructs a member with at least one hobby and the sessions they are assigned to.
+     */
+    public Member(Name name, Phone phone, Email email, Address address, List<Hobby> hobbies, Set<Group> groups,
+            List<Session> sessions) {
+        requireAllNonNull(name, phone, email, address, hobbies, groups, sessions);
         requireAllNonNull(hobbies);
+        requireAllNonNull(sessions);
         checkArgument(!hobbies.isEmpty(), MESSAGE_HOBBIES_REQUIRED);
         long uniqueNames = hobbies.stream()
                 .map(hobby -> hobby.value.trim().toLowerCase(Locale.ROOT)).distinct().count();
@@ -56,6 +67,7 @@ public class Member {
         this.address = address;
         this.hobbies = List.copyOf(hobbies);
         this.groups.addAll(groups);
+        this.sessions = List.copyOf(sessions);
     }
 
     public Name getName() {
@@ -95,6 +107,16 @@ public class Member {
         return Collections.unmodifiableSet(groups);
     }
 
+    /** Returns the immutable list of sessions assigned to this member. */
+    public List<Session> getSessions() {
+        return sessions;
+    }
+
+    /** Returns a copy of this member with the given assigned sessions. */
+    public Member withSessions(List<Session> sessions) {
+        return new Member(name, phone, email, address, hobbies, groups, sessions);
+    }
+
     /**
      * Returns true if both members have the same email, ignoring case.
      * This defines a weaker notion of equality between two members.
@@ -128,13 +150,14 @@ public class Member {
                 && email.equals(otherMember.email)
                 && address.equals(otherMember.address)
                 && hobbies.equals(otherMember.hobbies)
-                && groups.equals(otherMember.groups);
+                && groups.equals(otherMember.groups)
+                && sessions.equals(otherMember.sessions);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, hobbies, groups);
+        return Objects.hash(name, phone, email, address, hobbies, groups, sessions);
     }
 
     @Override
@@ -146,6 +169,7 @@ public class Member {
                 .add("address", address)
                 .add("hobbies", hobbies)
                 .add("groups", groups)
+                .add("sessions", sessions)
                 .toString();
     }
 

@@ -146,9 +146,13 @@ public class ModelManager implements Model {
     @Override
     public List<Session> getSessionsOf(Member member) {
         requireNonNull(member);
-        return hobbyHub.getSessionList().stream()
-                .filter(session -> session.hasMember(member.getEmail()))
-                .toList();
+        return hobbyHub.getMemberList().stream()
+                .filter(currentMember -> currentMember.isSameMember(member))
+                .findFirst()
+                .map(Member::getSessions)
+                .orElseGet(() -> hobbyHub.getSessionList().stream()
+                        .filter(session -> session.hasMember(member.getEmail()))
+                        .toList());
     }
 
     //=========== Filtered Session List Accessors ============================================================
