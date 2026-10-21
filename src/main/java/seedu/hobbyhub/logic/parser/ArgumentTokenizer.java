@@ -50,7 +50,9 @@ public class ArgumentTokenizer {
         int prefixPosition = findPrefixPosition(argsString, prefix.getPrefix(), 0);
         while (prefixPosition != -1) {
             PrefixPosition extendedPrefix = new PrefixPosition(prefix, prefixPosition);
-            positions.add(extendedPrefix);
+            if (!isInsideQuotes(argsString, prefixPosition)) {
+                positions.add(extendedPrefix);
+            }
             prefixPosition = findPrefixPosition(argsString, prefix.getPrefix(), prefixPosition);
         }
 
@@ -73,6 +75,17 @@ public class ArgumentTokenizer {
         int prefixIndex = argsString.indexOf(" " + prefix, fromIndex);
         return prefixIndex == -1 ? -1
                 : prefixIndex + 1; // +1 as offset for whitespace
+    }
+
+    /** Returns whether the given position is inside double quotes. */
+    private static boolean isInsideQuotes(String input, int position) {
+        boolean insideQuotes = false;
+        for (int i = 0; i < position; i++) {
+            if (input.charAt(i) == '"') {
+                insideQuotes = !insideQuotes;
+            }
+        }
+        return insideQuotes;
     }
 
     /**

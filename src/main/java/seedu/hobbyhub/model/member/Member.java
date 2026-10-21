@@ -1,42 +1,61 @@
 package seedu.hobbyhub.model.member;
 
+import static seedu.hobbyhub.commons.util.AppUtil.checkArgument;
 import static seedu.hobbyhub.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
 import seedu.hobbyhub.commons.util.ToStringBuilder;
-import seedu.hobbyhub.model.tag.Tag;
+import seedu.hobbyhub.model.group.Group;
 
 /**
  * Represents a Member in the HobbyHub.
  * Guarantees: details are present and not null, field values are validated, immutable.
  */
 public class Member {
+    public static final String MESSAGE_HOBBIES_REQUIRED = "A member must have at least one hobby.";
+    public static final String MESSAGE_DUPLICATE_HOBBY = "Hobby names must be unique, ignoring capitalization.";
 
     // Identity fields
     private final Name name;
     private final Phone phone;
     private final Email email;
-    private final Hobby hobby;
+
+    private final List<Hobby> hobbies;
 
     // Data fields
     private final Address address;
-    private final Set<Tag> tags = new HashSet<>();
+    private final Set<Group> groups = new HashSet<>();
 
     /**
      * Every field must be present and not null.
      */
-    public Member(Name name, Phone phone, Email email, Address address, Hobby hobby, Set<Tag> tags) {
-        requireAllNonNull(name, phone, email, address, hobby, tags);
+    public Member(Name name, Phone phone, Email email, Address address, Hobby hobby, Set<Group> groups) {
+        this(name, phone, email, address, List.of(hobby), groups);
+    }
+
+    /**
+     * Constructs a member with at least one hobby and no repeated hobby names, ignoring case.
+     * The hobby list is copied and its order is preserved for display.
+     */
+    public Member(Name name, Phone phone, Email email, Address address, List<Hobby> hobbies, Set<Group> groups) {
+        requireAllNonNull(name, phone, email, address, hobbies, groups);
+        requireAllNonNull(hobbies);
+        checkArgument(!hobbies.isEmpty(), MESSAGE_HOBBIES_REQUIRED);
+        long uniqueNames = hobbies.stream()
+                .map(hobby -> hobby.value.trim().toLowerCase(Locale.ROOT)).distinct().count();
+        checkArgument(uniqueNames == hobbies.size(), MESSAGE_DUPLICATE_HOBBY);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
-        this.hobby = hobby;
-        this.tags.addAll(tags);
+        this.hobbies = List.copyOf(hobbies);
+        this.groups.addAll(groups);
     }
 
     public Name getName() {
@@ -55,16 +74,25 @@ public class Member {
         return address;
     }
 
+    /**
+     * Returns the first hobby for compatibility with single-hobby callers.
+     * Callers working with the complete member profile should use {@link #getHobbies()}.
+     */
     public Hobby getHobby() {
-        return hobby;
+        return hobbies.getFirst();
+    }
+
+    /** Returns the immutable list of all hobbies and their skill levels. */
+    public List<Hobby> getHobbies() {
+        return hobbies;
     }
 
     /**
-     * Returns an immutable tag set, which throws {@code UnsupportedOperationException}
+     * Returns an immutable group set, which throws {@code UnsupportedOperationException}
      * if modification is attempted.
      */
-    public Set<Tag> getTags() {
-        return Collections.unmodifiableSet(tags);
+    public Set<Group> getGroups() {
+        return Collections.unmodifiableSet(groups);
     }
 
     /**
@@ -99,14 +127,14 @@ public class Member {
                 && phone.equals(otherMember.phone)
                 && email.equals(otherMember.email)
                 && address.equals(otherMember.address)
-                && hobby.equals(otherMember.hobby)
-                && tags.equals(otherMember.tags);
+                && hobbies.equals(otherMember.hobbies)
+                && groups.equals(otherMember.groups);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, hobby, tags);
+        return Objects.hash(name, phone, email, address, hobbies, groups);
     }
 
     @Override
@@ -116,8 +144,8 @@ public class Member {
                 .add("phone", phone)
                 .add("email", email)
                 .add("address", address)
-                .add("hobby", hobby)
-                .add("tags", tags)
+                .add("hobbies", hobbies)
+                .add("groups", groups)
                 .toString();
     }
 

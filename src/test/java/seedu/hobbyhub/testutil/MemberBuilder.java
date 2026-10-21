@@ -1,15 +1,16 @@
 package seedu.hobbyhub.testutil;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
-import seedu.hobbyhub.model.tag.Tag;
 import seedu.hobbyhub.model.util.SampleDataUtil;
 
 /**
@@ -27,8 +28,8 @@ public class MemberBuilder {
     private Phone phone;
     private Email email;
     private Address address;
-    private Hobby hobby;
-    private Set<Tag> tags;
+    private List<Hobby> hobbies;
+    private Set<Group> groups;
 
     /**
      * Creates a {@code MemberBuilder} with the default details.
@@ -38,8 +39,8 @@ public class MemberBuilder {
         phone = new Phone(DEFAULT_PHONE);
         email = new Email(DEFAULT_EMAIL);
         address = new Address(DEFAULT_ADDRESS);
-        hobby = new Hobby(DEFAULT_HOBBY);
-        tags = new HashSet<>();
+        hobbies = List.of(new Hobby(DEFAULT_HOBBY));
+        groups = new HashSet<>();
     }
 
     /**
@@ -50,8 +51,8 @@ public class MemberBuilder {
         phone = memberToCopy.getPhone();
         email = memberToCopy.getEmail();
         address = memberToCopy.getAddress();
-        hobby = memberToCopy.getHobby();
-        tags = new HashSet<>(memberToCopy.getTags());
+        hobbies = memberToCopy.getHobbies();
+        groups = new HashSet<>(memberToCopy.getGroups());
     }
 
     /**
@@ -63,10 +64,10 @@ public class MemberBuilder {
     }
 
     /**
-     * Parses the {@code tags} into a {@code Set<Tag>} and sets it to the {@code Member} that we are building.
+     * Parses the {@code groups} into a {@code Set<Group>} and sets it to the {@code Member} that we are building.
      */
-    public MemberBuilder withTags(String ... tags) {
-        this.tags = SampleDataUtil.getTagSet(tags);
+    public MemberBuilder withGroups(String ... groups) {
+        this.groups = SampleDataUtil.getGroupSet(groups);
         return this;
     }
 
@@ -82,7 +83,7 @@ public class MemberBuilder {
      * Sets the {@code Hobby} of the {@code Member} that we are building.
      */
     public MemberBuilder withHobby(String hobby) {
-        this.hobby = new Hobby(hobby);
+        this.hobbies = List.of(new Hobby(hobby));
         return this;
     }
 
@@ -102,8 +103,14 @@ public class MemberBuilder {
         return this;
     }
 
+    /** Sets all hobbies for the member. */
+    public MemberBuilder withHobbies(Hobby... hobbies) {
+        this.hobbies = List.of(hobbies);
+        return this;
+    }
+
     public Member build() {
-        return new Member(name, phone, email, address, hobby, tags);
+        return new Member(name, phone, email, address, hobbies, groups);
     }
 
 }

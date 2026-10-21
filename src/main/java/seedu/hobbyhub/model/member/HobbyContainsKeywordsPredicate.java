@@ -19,10 +19,9 @@ public class HobbyContainsKeywordsPredicate implements Predicate<Member> {
 
     @Override
     public boolean test(Member member) {
-        String lowerCaseHobby = member.getHobby().value.toLowerCase(Locale.ROOT);
-        return keywords.stream()
+        return member.getHobbies().stream().anyMatch(hobby -> keywords.stream()
                 .filter(keyword -> !keyword.isBlank())
-                .anyMatch(keyword -> lowerCaseHobby.contains(keyword.toLowerCase(Locale.ROOT)));
+                .anyMatch(keyword -> hobby.value.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT))));
     }
 
     @Override
