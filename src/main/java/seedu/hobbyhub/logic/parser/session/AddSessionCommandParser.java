@@ -42,8 +42,12 @@ public class AddSessionCommandParser implements Parser<AddSessionCommand> {
 
     /** Returns true if all required session fields are present. */
     private static boolean areRequiredFieldsPresent(ArgumentMultimap argumentMultimap) {
-        return argumentMultimap.getValue(PREFIX_NAME).isPresent()
-                && argumentMultimap.getValue(PREFIX_LOCATION).isPresent()
-                && argumentMultimap.getValue(PREFIX_DATETIME).isPresent();
+        if (argumentMultimap.getValue(PREFIX_NAME).isEmpty()) {
+            return false;
+        }
+        if (argumentMultimap.getValue(PREFIX_LOCATION).isEmpty()) {
+            return false;
+        }
+        return argumentMultimap.getValue(PREFIX_DATETIME).isPresent();
     }
 }
