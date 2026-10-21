@@ -30,27 +30,27 @@ public class SessionCommandParserStubsTest {
     }
 
     @Test
-    public void parse_addSession_missingName_throwsParseException() {
+    public void parse_addSessionMissingName_throwsParseException() {
         assertInvalidSessionCommandFormat("-l Golf Club -t 2026-10-24T14:00");
     }
 
     @Test
-    public void parse_addSession_missingLocation_throwsParseException() {
+    public void parse_addSessionMissingLocation_throwsParseException() {
         assertInvalidSessionCommandFormat("-n Golf Meet -t 2026-10-24T14:00");
     }
 
     @Test
-    public void parse_addSession_missingDateTime_throwsParseException() {
+    public void parse_addSessionMissingDateTime_throwsParseException() {
         assertInvalidSessionCommandFormat("-n Golf Meet -l Golf Club");
     }
 
     @Test
-    public void parse_addSession_preamble_throwsParseException() {
+    public void parse_addSessionPreamble_throwsParseException() {
         assertInvalidSessionCommandFormat("unexpected -n Golf Meet -l Golf Club -t 2026-10-24T14:00");
     }
 
     @Test
-    public void parse_addSession_duplicatePrefix_throwsParseException() {
+    public void parse_addSessionDuplicatePrefix_throwsParseException() {
         assertThrows(ParseException.class, () -> new AddSessionCommandParser().parse(
                 "-n Golf Meet -n Another Meet -l Golf Club -t 2026-10-24T14:00"));
     }

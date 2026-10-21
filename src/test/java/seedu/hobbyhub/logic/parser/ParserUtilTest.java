@@ -3,8 +3,6 @@ package seedu.hobbyhub.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_INDEX;
-import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_SESSION_DATE_TIME;
-import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_SESSION_LOCATION;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_FIRST_MEMBER;
 
@@ -162,8 +160,7 @@ public class ParserUtilTest {
 
     @Test
     public void parseSessionName_invalidValue_throwsParseException() {
-        assertThrows(ParseException.class, SessionName.MESSAGE_CONSTRAINTS,
-                () -> ParserUtil.parseSessionName("-Invalid"));
+        assertThrows(ParseException.class, () -> ParserUtil.parseSessionName("-Invalid"));
     }
 
     @Test
@@ -178,8 +175,7 @@ public class ParserUtilTest {
 
     @Test
     public void parseSessionLocation_blankValue_throwsParseException() {
-        assertThrows(ParseException.class, MESSAGE_INVALID_SESSION_LOCATION,
-                () -> ParserUtil.parseSessionLocation(" \t "));
+        assertThrows(ParseException.class, () -> ParserUtil.parseSessionLocation(" \t "));
     }
 
     @Test
@@ -194,8 +190,7 @@ public class ParserUtilTest {
 
     @Test
     public void parseSessionDateTime_invalidValue_throwsParseException() {
-        assertThrows(ParseException.class, MESSAGE_INVALID_SESSION_DATE_TIME,
-                () -> ParserUtil.parseSessionDateTime("next Saturday"));
+        assertThrows(ParseException.class, () -> ParserUtil.parseSessionDateTime("next Saturday"));
     }
 
     @Test

@@ -3,6 +3,8 @@ package seedu.hobbyhub.logic.commands.session;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.hobbyhub.logic.commands.session.AddSessionCommand.MESSAGE_DUPLICATE_SESSION;
+import static seedu.hobbyhub.logic.commands.session.AddSessionCommand.MESSAGE_WRONG_LIST;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalSessions.CHESS_MEETUP;
 import static seedu.hobbyhub.testutil.TypicalSessions.getTypicalHobbyHubWithSessions;
@@ -34,9 +36,9 @@ public class AddSessionCommandTest {
     @Test
     public void execute_memberList_throwsCommandException() {
         AddSessionCommand command = new AddSessionCommand(createSession("Golf Meetup"));
+        ModelManager model = new ModelManager();
 
-        assertThrows(CommandException.class, AddSessionCommand.MESSAGE_WRONG_LIST,
-                () -> command.execute(new ModelManager()));
+        assertThrows(CommandException.class, MESSAGE_WRONG_LIST, () -> command.execute(model));
     }
 
     @Test
@@ -45,8 +47,7 @@ public class AddSessionCommandTest {
         model.setListState(ListState.SESSIONS);
         AddSessionCommand command = new AddSessionCommand(CHESS_MEETUP);
 
-        assertThrows(CommandException.class, AddSessionCommand.MESSAGE_DUPLICATE_SESSION,
-                () -> command.execute(model));
+        assertThrows(CommandException.class, MESSAGE_DUPLICATE_SESSION, () -> command.execute(model));
     }
 
     @Test
