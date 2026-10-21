@@ -29,7 +29,7 @@ public class SessionCard extends UiPart<Region> {
     @FXML
     private Label date;
     @FXML
-    private Label location;
+    private Label locationLabel;
     @FXML
     private Label completed;
     @FXML
@@ -44,7 +44,7 @@ public class SessionCard extends UiPart<Region> {
         id.setText(displayedIndex + ". ");
         name.setText(session.getName().fullName);
         date.setText(session.getDate().format(DATE_TIME_FORMAT));
-        location.setText(session.getLocation());
+        locationLabel.setText(session.getLocation());
         completed.setText(session.isCompleted() ? "Completed" : "Not completed");
         int count = session.getMembers().size();
         memberCount.setText(count + (count == 1 ? " member" : " members"));
