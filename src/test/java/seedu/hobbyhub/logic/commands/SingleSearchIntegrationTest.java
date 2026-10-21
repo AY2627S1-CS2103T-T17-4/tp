@@ -139,7 +139,7 @@ public class SingleSearchIntegrationTest {
         Model model = createModel();
         execute(model, "search -n Alice");
         HobbyHub before = new HobbyHub(model.getHobbyHub());
-        for (String command : List.of("search -n Bob -g Chess", "search -sl Expert", "search -c alice",
+        for (String command : List.of("search -n Bob -n Alice", "search -sl Expert", "search -c alice",
                 "search -l Community", "search -p 91234567", "search -a Street")) {
             assertThrows(ParseException.class, () -> execute(model, command));
             assertEquals(List.of(alice), model.getFilteredMemberList());
@@ -147,7 +147,7 @@ public class SingleSearchIntegrationTest {
         }
         execute(model, "list -s");
         execute(model, "search -n Tennis");
-        for (String command : List.of("search -n Chess -done false", "search -t 2026-02-29",
+        for (String command : List.of("search -done false -done true", "search -t 2026-02-29",
                 "search -done yes", "search -g Chess", "search -c alice")) {
             assertThrows(ParseException.class, () -> execute(model, command));
             assertEquals(List.of(evening), model.getFilteredSessionList());

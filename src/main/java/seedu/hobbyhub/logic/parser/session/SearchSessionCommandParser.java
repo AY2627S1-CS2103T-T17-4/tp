@@ -8,6 +8,9 @@ import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_SEARCH_NAME;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 import seedu.hobbyhub.logic.commands.session.SearchSessionCommand;
 import seedu.hobbyhub.logic.parser.Parser;
@@ -15,17 +18,28 @@ import seedu.hobbyhub.logic.parser.ParserUtil;
 import seedu.hobbyhub.logic.parser.Prefix;
 import seedu.hobbyhub.logic.parser.SearchArgument;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
+import seedu.hobbyhub.model.AllMatchPredicate;
+import seedu.hobbyhub.model.session.Session;
 import seedu.hobbyhub.model.session.SessionSearchPredicate;
 import seedu.hobbyhub.model.session.SessionSearchPredicate.Field;
 
 /**
- * Parses a single session search criterion while the session list is showing.
+ * Parses session search criteria combined with AND while the session list is showing.
  */
 public class SearchSessionCommandParser implements Parser<SearchSessionCommand> {
     @Override
     public SearchSessionCommand parse(String args) throws ParseException {
-        SearchArgument argument = SearchArgument.parse(args, SearchSessionCommand.MESSAGE_USAGE,
+        List<SearchArgument> arguments = SearchArgument.parse(args, SearchSessionCommand.MESSAGE_USAGE,
                 PREFIX_SEARCH_NAME, PREFIX_LOCATION, PREFIX_DATETIME, PREFIX_SEARCH_COMPLETED, PREFIX_EMAIL);
+        List<Predicate<Session>> predicates = new ArrayList<>();
+        for (SearchArgument argument : arguments) {
+            predicates.add(parsePredicate(argument));
+        }
+        return new SearchSessionCommand(
+                predicates.size() == 1 ? predicates.getFirst() : new AllMatchPredicate<>(predicates));
+    }
+
+    private SessionSearchPredicate parsePredicate(SearchArgument argument) throws ParseException {
         Prefix prefix = argument.getPrefix();
         String query = argument.getQuery();
         Field field;
@@ -52,6 +66,6 @@ public class SearchSessionCommandParser implements Parser<SearchSessionCommand> 
                 throw new ParseException("Completion status must be true or false.");
             }
         }
-        return new SearchSessionCommand(new SessionSearchPredicate(field, query));
+        return new SessionSearchPredicate(field, query);
     }
 }

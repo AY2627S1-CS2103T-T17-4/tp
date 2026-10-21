@@ -16,10 +16,12 @@ public class SearchCommand extends Command {
 
     public static final String COMMAND_WORD = "search";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Filters members using exactly one option.\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Filters members using one or more options. "
+            + "All conditions must match. Hobby and skill must match the same hobby.\n"
             + "Names, hobbies and groups use case-insensitive partial matching; emails match in full.\n"
-            + "Parameters: -n NAME_FRAGMENT | -h HOBBY_FRAGMENT | -g GROUP_FRAGMENT | -c EMAIL "
-            + "| -sl SKILL_LEVEL (Beginner, Intermediate, Advanced)\n"
+            + "Parameters: [-n NAME_FRAGMENT] [-h HOBBY_FRAGMENT] [-g GROUP_FRAGMENT] [-c EMAIL] "
+            + "[-sl SKILL_LEVEL (Beginner, Intermediate, Advanced)]\n"
+            + "At least one option is required; each option can appear only once.\n"
             + "Example: " + COMMAND_WORD + " -n alice";
 
     private final Predicate<Member> predicate;

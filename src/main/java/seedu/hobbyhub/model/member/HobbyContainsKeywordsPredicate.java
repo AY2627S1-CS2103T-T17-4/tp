@@ -38,6 +38,11 @@ public class HobbyContainsKeywordsPredicate implements Predicate<Member> {
     }
 
     @Override
+    public int hashCode() {
+        return keywords.hashCode();
+    }
+
+    @Override
     public String toString() {
         return new ToStringBuilder(this).add("keywords", keywords).toString();
     }

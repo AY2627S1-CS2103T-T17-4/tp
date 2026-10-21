@@ -140,13 +140,19 @@ Examples:
 Search filters the currently displayed list. Use `list -m` to switch to members or `list -s` to switch to sessions,
 then enter a search command. You only need to switch when changing which type of records you want to search.
 
-Use exactly one option per search. Multiple options, repeated options, unsupported options, and empty queries are rejected.
+Use one or more distinct options per search, in any order. Every supplied condition must match (AND).
+Single-option searches continue to work. Repeated options, unsupported options, and empty queries are rejected.
+Invalid input leaves the previous search results unchanged.
 Each search replaces the previous filter and searches all records of the current type.
 Plain `list` shows all records in the current list again. Searching does not change stored data.
 Results use the normal member or session cards, with a message showing how many records matched.
 No matches produce an empty list and a count of zero.
 
 #### Member search options
+
+Format: `search [-n NAME_FRAGMENT] [-h HOBBY_FRAGMENT] [-g GROUP_FRAGMENT] [-c EMAIL] [-sl SKILL_LEVEL]`
+
+At least one option is required.
 
 | Field | Format | Matching rule |
 | --- | --- | --- |
@@ -156,8 +162,10 @@ No matches produce an empty list and a count of zero.
 | Email | `search -c EMAIL` | Complete, valid email address, ignoring case |
 | Skill level | `search -sl SKILL_LEVEL` | Any hobby at Beginner, Intermediate, or Advanced, ignoring case |
 
-Hobbies and groups are searched independently. A skill-level search matches any hobby at that level;
-it does not restrict the hobby name. Phone, address, and availability are not searchable.
+Hobbies and groups are searched independently. Without `-h`, a skill-level search matches any hobby at that level.
+When `-h` and `-sl` are combined, the same hobby must match both the name fragment and skill level.
+For example, a member with Chess:Beginner and Tennis:Advanced does not match `search -h Chess -sl Advanced`.
+Phone, address, and availability are not searchable.
 
 Examples after `list -m`:
 
@@ -166,8 +174,15 @@ Examples after `list -m`:
 * `search -g Weekend Club` finds members with a group name containing `Weekend Club`.
 * `search -c alice@example.com` finds the member with that email address.
 * `search -sl Advanced` finds members with at least one Advanced hobby.
+* `search -h Chess -sl Beginner` finds members whose Chess hobby is Beginner.
+* `search -n Alice -g Weekend` finds members whose name contains `Alice` and whose group name contains `Weekend`.
+* `search -n Alice -h Tennis -g Weekend -c alice@example.com -sl Advanced` requires all five conditions to match.
 
 #### Session search options
+
+Format: `search [-n NAME_FRAGMENT] [-l LOCATION_FRAGMENT] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]`
+
+At least one option is required. All conditions must match the same session.
 
 | Field | Format | Matching rule |
 | --- | --- | --- |
@@ -188,6 +203,9 @@ Examples after `list -s`:
 * `search -t 2026-10-24` finds every session on 24 October 2026.
 * `search -done false` finds incomplete sessions.
 * `search -c alice@example.com` finds every session that Alice participates in.
+* `search -l Community -t 2026-10-24` finds sessions at locations containing `Community` on that date.
+* `search -c alice@example.com -done false` finds incomplete sessions that Alice participates in.
+* `search -n Chess -l Community -t 2026-10-24 -done false -c alice@example.com` requires all five conditions to match.
 
 Text fragments can contain spaces. One surrounding pair of double quotes is optional:
 `search -n "Weekend Chess"` and `search -n Weekend Chess` are equivalent.
@@ -273,8 +291,8 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
-**Search members** | One of `search -n NAME`, `search -h HOBBY`, `search -g GROUP`, `search -c EMAIL`, `search -sl SKILL_LEVEL`
-**Search sessions** | One of `search -n NAME`, `search -l LOCATION`, `search -t YYYY-MM-DD`, `search -done true/false`, `search -c EMAIL`
+**Search members** | `search [-n NAME] [-h HOBBY] [-g GROUP] [-c EMAIL] [-sl SKILL_LEVEL]` (at least one option; AND matching)
+**Search sessions** | `search [-n NAME] [-l LOCATION] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]` (at least one option; AND matching)
 **List** | `list [-m \| -s]` switches lists with a flag, or shows all entries in the current list without one
 **Help** | `help`
 **Exit** | `exit`
