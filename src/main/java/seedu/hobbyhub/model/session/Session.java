@@ -3,7 +3,7 @@ package seedu.hobbyhub.model.session;
 import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.commons.util.CollectionUtil.requireAllNonNull;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -14,24 +14,28 @@ import seedu.hobbyhub.commons.util.ToStringBuilder;
 import seedu.hobbyhub.model.member.Email;
 
 /**
- * Represents a Session in the HobbyHub: an activity on a date that members can be assigned to.
+ * Represents a Session in the HobbyHub: an activity at a date and time that members can be assigned to.
  * Members are referred to by their email, which is unique ignoring case.
  * Guarantees: details are present and not null, field values are validated, immutable.
  */
 public class Session {
 
     private final SessionName name;
-    private final LocalDate date;
+    private final LocalDateTime date;
+    private final String location;
+    private final boolean completed;
     private final Set<Email> members = new HashSet<>();
 
     /**
      * Every field must be present and not null.
      */
-    public Session(SessionName name, LocalDate date, Set<Email> members) {
-        requireAllNonNull(name, date, members);
+    public Session(SessionName name, LocalDateTime date, String location, boolean completed, Set<Email> members) {
+        requireAllNonNull(name, date, location, members);
         requireAllNonNull(members);
         this.name = name;
         this.date = date;
+        this.location = location;
+        this.completed = completed;
         this.members.addAll(members);
     }
 
@@ -39,8 +43,16 @@ public class Session {
         return name;
     }
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public boolean isCompleted() {
+        return completed;
     }
 
     /**
@@ -79,7 +91,7 @@ public class Session {
 
         Set<Email> updatedMembers = new HashSet<>(members);
         updatedMembers.add(email);
-        return new Session(name, date, updatedMembers);
+        return new Session(name, date, location, completed, updatedMembers);
     }
 
     /**
@@ -92,7 +104,7 @@ public class Session {
 
         Set<Email> updatedMembers = new HashSet<>(members);
         updatedMembers.remove(findMember(email).get());
-        return new Session(name, date, updatedMembers);
+        return new Session(name, date, location, completed, updatedMembers);
     }
 
     /**
@@ -109,7 +121,7 @@ public class Session {
     }
 
     /**
-     * Returns true if both sessions have the same name, date and members.
+     * Returns true if both sessions have the same name, date, location, completion state and members.
      * This defines a stronger notion of equality between two sessions.
      */
     @Override
@@ -125,12 +137,14 @@ public class Session {
 
         return name.equals(otherSession.name)
                 && date.equals(otherSession.date)
+                && location.equals(otherSession.location)
+                && completed == otherSession.completed
                 && members.equals(otherSession.members);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, date, members);
+        return Objects.hash(name, date, location, completed, members);
     }
 
     @Override
@@ -138,6 +152,8 @@ public class Session {
         return new ToStringBuilder(this)
                 .add("name", name)
                 .add("date", date)
+                .add("location", location)
+                .add("completed", completed)
                 .add("members", members)
                 .toString();
     }

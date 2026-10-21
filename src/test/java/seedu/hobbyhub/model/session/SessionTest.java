@@ -10,7 +10,7 @@ import static seedu.hobbyhub.testutil.TypicalMembers.CARL;
 import static seedu.hobbyhub.testutil.TypicalSessions.CHESS_MEETUP;
 import static seedu.hobbyhub.testutil.TypicalSessions.CYCLING_TRIP;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,22 +24,26 @@ public class SessionTest {
     @Test
     public void constructor_null_throwsNullPointerException() {
         SessionName name = new SessionName("Golf Meet");
-        LocalDate date = LocalDate.of(2026, 10, 24);
+        LocalDateTime dateTime = LocalDateTime.of(2026, 10, 24, 14, 0);
+        String location = "Community Center";
         Set<Email> members = new HashSet<>();
-        assertThrows(NullPointerException.class, () -> new Session(null, date, members));
-        assertThrows(NullPointerException.class, () -> new Session(name, null, members));
-        assertThrows(NullPointerException.class, () -> new Session(name, date, null));
+        assertThrows(NullPointerException.class, () -> new Session(null, dateTime, location, false, members));
+        assertThrows(NullPointerException.class, () -> new Session(name, null, location, false, members));
+        assertThrows(NullPointerException.class, () -> new Session(name, dateTime, null, false, members));
+        assertThrows(NullPointerException.class, () -> new Session(name, dateTime, location, false, null));
 
         Set<Email> membersWithNull = new HashSet<>();
         membersWithNull.add(null);
-        assertThrows(NullPointerException.class, () -> new Session(name, date, membersWithNull));
+        assertThrows(NullPointerException.class,
+                () -> new Session(name, dateTime, location, false, membersWithNull));
     }
 
     @Test
     public void constructor_changeInputSet_sessionUnchanged() {
         Set<Email> members = new HashSet<>();
         members.add(ALICE.getEmail());
-        Session session = new Session(new SessionName("Golf Meet"), LocalDate.of(2026, 10, 24), members);
+        Session session = new Session(new SessionName("Golf Meet"), LocalDateTime.of(2026, 10, 24, 14, 0),
+                "Community Center", false, members);
         members.add(BENSON.getEmail());
         assertFalse(session.hasMember(BENSON.getEmail()));
     }
@@ -75,6 +79,8 @@ public class SessionTest {
         assertTrue(updated.hasMember(ALICE.getEmail()));
         assertEquals(CHESS_MEETUP.getName(), updated.getName());
         assertEquals(CHESS_MEETUP.getDate(), updated.getDate());
+        assertEquals(CHESS_MEETUP.getLocation(), updated.getLocation());
+        assertEquals(CHESS_MEETUP.isCompleted(), updated.isCompleted());
 
         // the original session is not changed
         assertFalse(CHESS_MEETUP.hasMember(CARL.getEmail()));
@@ -105,7 +111,7 @@ public class SessionTest {
         assertFalse(CHESS_MEETUP.isSameSession(null));
 
         // same name, all other attributes different -> returns true
-        Session editedChess = new SessionBuilder(CHESS_MEETUP).withDate("2026-12-01")
+        Session editedChess = new SessionBuilder(CHESS_MEETUP).withDateTime("2026-12-01T14:00")
                 .withMembers(CARL.getEmail().value).build();
         assertTrue(CHESS_MEETUP.isSameSession(editedChess));
 
@@ -143,18 +149,27 @@ public class SessionTest {
         assertFalse(CHESS_MEETUP.equals(editedChess));
 
         // different date -> returns false
-        editedChess = new SessionBuilder(CHESS_MEETUP).withDate("2026-12-01").build();
+        editedChess = new SessionBuilder(CHESS_MEETUP).withDateTime("2026-12-01T14:00").build();
         assertFalse(CHESS_MEETUP.equals(editedChess));
 
         // different members -> returns false
         editedChess = new SessionBuilder(CHESS_MEETUP).withMembers(CARL.getEmail().value).build();
+        assertFalse(CHESS_MEETUP.equals(editedChess));
+
+        // different location -> returns false
+        editedChess = new SessionBuilder(CHESS_MEETUP).withLocation("Another Place").build();
+        assertFalse(CHESS_MEETUP.equals(editedChess));
+
+        // different completion state -> returns false
+        editedChess = new SessionBuilder(CHESS_MEETUP).withCompleted(true).build();
         assertFalse(CHESS_MEETUP.equals(editedChess));
     }
 
     @Test
     public void toStringMethod() {
         String expected = Session.class.getCanonicalName() + "{name=" + CHESS_MEETUP.getName()
-                + ", date=" + CHESS_MEETUP.getDate() + ", members=" + CHESS_MEETUP.getMembers() + "}";
+                + ", date=" + CHESS_MEETUP.getDate() + ", location=" + CHESS_MEETUP.getLocation()
+                + ", completed=" + CHESS_MEETUP.isCompleted() + ", members=" + CHESS_MEETUP.getMembers() + "}";
         assertEquals(expected, CHESS_MEETUP.toString());
     }
 }

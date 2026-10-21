@@ -1,6 +1,6 @@
 package seedu.hobbyhub.testutil;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,10 +15,13 @@ import seedu.hobbyhub.model.util.SampleDataUtil;
 public class SessionBuilder {
 
     public static final String DEFAULT_NAME = "Weekend Chess Meetup";
-    public static final LocalDate DEFAULT_DATE = LocalDate.of(2026, 10, 24);
+    public static final LocalDateTime DEFAULT_DATE_TIME = LocalDateTime.of(2026, 10, 24, 14, 0);
+    public static final String DEFAULT_LOCATION = "Community Center";
 
     private SessionName name;
-    private LocalDate date;
+    private LocalDateTime dateTime;
+    private String location;
+    private boolean completed;
     private Set<Email> members;
 
     /**
@@ -26,7 +29,9 @@ public class SessionBuilder {
      */
     public SessionBuilder() {
         name = new SessionName(DEFAULT_NAME);
-        date = DEFAULT_DATE;
+        dateTime = DEFAULT_DATE_TIME;
+        location = DEFAULT_LOCATION;
+        completed = false;
         members = new HashSet<>();
     }
 
@@ -35,7 +40,9 @@ public class SessionBuilder {
      */
     public SessionBuilder(Session sessionToCopy) {
         name = sessionToCopy.getName();
-        date = sessionToCopy.getDate();
+        dateTime = sessionToCopy.getDate();
+        location = sessionToCopy.getLocation();
+        completed = sessionToCopy.isCompleted();
         members = new HashSet<>(sessionToCopy.getMembers());
     }
 
@@ -50,8 +57,20 @@ public class SessionBuilder {
     /**
      * Sets the date of the {@code Session} that we are building.
      */
-    public SessionBuilder withDate(String date) {
-        this.date = LocalDate.parse(date);
+    public SessionBuilder withDateTime(String dateTime) {
+        this.dateTime = LocalDateTime.parse(dateTime);
+        return this;
+    }
+
+    /** Sets the location of the {@code Session} that we are building. */
+    public SessionBuilder withLocation(String location) {
+        this.location = location;
+        return this;
+    }
+
+    /** Sets whether the {@code Session} that we are building is completed. */
+    public SessionBuilder withCompleted(boolean completed) {
+        this.completed = completed;
         return this;
     }
 
@@ -64,7 +83,7 @@ public class SessionBuilder {
     }
 
     public Session build() {
-        return new Session(name, date, members);
+        return new Session(name, dateTime, location, completed, members);
     }
 
 }

@@ -14,7 +14,8 @@ public class SessionCardTest {
     @Test
     public void constructor_populatesNameDateAndMemberCount() {
         FxTestHelper.runOnFxThread(() -> {
-            Session session = new SessionBuilder().withName("Golf Meet").withDate("2026-10-24")
+            Session session = new SessionBuilder().withName("Golf Meet").withDateTime("2026-10-24T14:00")
+                    .withLocation("Community Center").withCompleted(true)
                     .withMembers("alex@example.com", "bernice@example.com").build();
             SessionCard card = new SessionCard(session, 3);
             HBox root = (HBox) card.getRoot();
@@ -22,7 +23,9 @@ public class SessionCardTest {
             assertEquals(session, card.session);
             assertEquals("3. ", ((Label) root.lookup("#id")).getText());
             assertEquals("Golf Meet", ((Label) root.lookup("#name")).getText());
-            assertEquals("Sat, 24 Oct 2026", ((Label) root.lookup("#date")).getText());
+            assertEquals("Sat, 24 Oct 2026 at 2:00 PM", ((Label) root.lookup("#date")).getText());
+            assertEquals("Community Center", ((Label) root.lookup("#location")).getText());
+            assertEquals("Completed", ((Label) root.lookup("#completed")).getText());
             assertEquals("2 members", ((Label) root.lookup("#memberCount")).getText());
         });
     }

@@ -38,7 +38,7 @@ public class UniqueSessionListTest {
     @Test
     public void contains_sessionWithSameIdentityFieldsInList_returnsTrue() {
         uniqueSessionList.add(CHESS_MEETUP);
-        Session editedChess = new SessionBuilder(CHESS_MEETUP).withDate("2026-12-01").build();
+        Session editedChess = new SessionBuilder(CHESS_MEETUP).withDateTime("2026-12-01T14:00").build();
         assertTrue(uniqueSessionList.contains(editedChess));
     }
 
@@ -80,7 +80,7 @@ public class UniqueSessionListTest {
     @Test
     public void setSession_editedSessionHasSameIdentity_success() {
         uniqueSessionList.add(CHESS_MEETUP);
-        Session editedChess = new SessionBuilder(CHESS_MEETUP).withDate("2026-12-01").build();
+        Session editedChess = new SessionBuilder(CHESS_MEETUP).withDateTime("2026-12-01T14:00").build();
         uniqueSessionList.setSession(CHESS_MEETUP, editedChess);
         UniqueSessionList expectedUniqueSessionList = new UniqueSessionList();
         expectedUniqueSessionList.add(editedChess);

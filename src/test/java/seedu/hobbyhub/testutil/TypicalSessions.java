@@ -18,13 +18,16 @@ import seedu.hobbyhub.model.session.Session;
 public class TypicalSessions {
 
     public static final Session CHESS_MEETUP = new SessionBuilder().withName("Weekend Chess Meetup")
-            .withDate("2026-10-24").withMembers(ALICE.getEmail().value, BENSON.getEmail().value).build();
+            .withDateTime("2026-10-24T14:00").withLocation("Community Center")
+            .withMembers(ALICE.getEmail().value, BENSON.getEmail().value).build();
     public static final Session CYCLING_TRIP = new SessionBuilder().withName("Sunday Cycling Trip")
-            .withDate("2026-10-25").withMembers(BENSON.getEmail().value, CARL.getEmail().value).build();
+            .withDateTime("2026-10-25T09:00").withLocation("MacRitchie Reservoir")
+            .withMembers(BENSON.getEmail().value, CARL.getEmail().value).build();
 
     // Not in the typical HobbyHub
     public static final Session BOARD_GAME_NIGHT = new SessionBuilder().withName("Board Game Night")
-            .withDate("2026-10-30").withMembers(ALICE.getEmail().value).build();
+            .withDateTime("2026-10-30T19:00").withLocation("Community Center")
+            .withMembers(ALICE.getEmail().value).build();
 
     private TypicalSessions() {} // prevents instantiation
 
