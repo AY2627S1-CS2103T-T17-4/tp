@@ -95,6 +95,13 @@ public class Session {
     }
 
     /**
+     * Returns a copy of this session with its completion status set to {@code isCompleted}.
+     */
+    public Session withCompleted(boolean isCompleted) {
+        return new Session(name, date, location, isCompleted, members);
+    }
+
+    /**
      * Returns a copy of this session with the member with the given email removed, matching ignoring case.
      * The member must be assigned to this session.
      */

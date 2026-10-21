@@ -97,6 +97,15 @@ public class SessionTest {
     }
 
     @Test
+    public void withCompleted_changesOnlyCompletionStatus() {
+        Session completed = CHESS_MEETUP.withCompleted(true);
+
+        assertTrue(completed.isCompleted());
+        assertEquals(new SessionBuilder(CHESS_MEETUP).withCompleted(true).build(), completed);
+        assertEquals(CHESS_MEETUP, completed.withCompleted(false));
+    }
+
+    @Test
     public void withMember_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> CHESS_MEETUP.withMember(null));
         assertThrows(NullPointerException.class, () -> CHESS_MEETUP.withoutMember(null));
