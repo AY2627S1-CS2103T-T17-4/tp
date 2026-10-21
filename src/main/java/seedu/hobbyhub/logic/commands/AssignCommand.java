@@ -3,6 +3,7 @@ package seedu.hobbyhub.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Objects;
 
 import seedu.hobbyhub.commons.core.index.Index;
 import seedu.hobbyhub.commons.util.ToStringBuilder;
@@ -73,6 +74,11 @@ public class AssignCommand extends Command {
         }
         return memberIndex.equals(otherAssignCommand.memberIndex)
                 && sessionName.equals(otherAssignCommand.sessionName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(memberIndex.getZeroBased(), sessionName);
     }
 
     @Override

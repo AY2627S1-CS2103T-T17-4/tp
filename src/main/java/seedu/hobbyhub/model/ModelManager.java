@@ -150,7 +150,9 @@ public class ModelManager implements Model {
                 .filter(currentMember -> currentMember.isSameMember(member))
                 .findFirst()
                 .map(Member::getSessions)
-                .orElse(member.getSessions());
+                .orElseGet(() -> hobbyHub.getSessionList().stream()
+                        .filter(session -> session.hasMember(member.getEmail()))
+                        .toList());
     }
 
     //=========== Filtered Session List Accessors ============================================================
