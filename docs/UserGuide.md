@@ -81,10 +81,11 @@ Format: `help`
 
 Adds a person to HobbyHub.
 
-Format: `add -n NAME -p PHONE_NUMBER -c EMAIL -a ADDRESS -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…`
+Format: `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…`
 
-* Name, phone number, email, address, and hobby are all required and must not be empty.
-* Supply name, phone, email and address once. Repeat `-h` for additional hobbies and `-g` for additional groups.
+* Name, email and at least one hobby are required. Phone number and address are optional.
+* Omit `-p` or `-a` when those details are unknown. If supplied during add, each must have a valid, non-empty value.
+* Supply name and email once, and phone/address at most once if included. Repeat `-h` for additional hobbies and `-g` for additional groups.
 * Names must contain only letters, digits, and spaces. Phone numbers must contain at least three digits and no other characters.
 * Use a valid email address, such as `johnd@example.com`. Group names must start with a letter or digit and contain only letters, digits and spaces.
 * Hobbies must start with a letter or digit and may contain letters, digits, spaces, and `&`, `+`, `'`, `/`, or `-`.
@@ -98,6 +99,7 @@ A person can have any number of groups, including zero.
 </div>
 
 Examples:
+* `add -n Alice -c alice@example.com -h "Chess:Beginner"` Adds a member without phone or address.
 * `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h "Chess:Beginner" -h "Table Tennis:Advanced"`
 * `add -n Betsy Crowe -g friend -c betsycrowe@example.com -a Newgate Prison -p 1234567 -g criminal -h Chess`
 
@@ -116,6 +118,7 @@ Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOB
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
+* Omit `-p` or `-a` to preserve the current value. If supplied, the option requires a valid, non-empty value.
 * Supplying `-h` replaces the entire hobby list with the supplied hobbies and skill levels.
   Omitting `-h` preserves all hobbies. An empty `-h` is rejected; at least one hobby is required.
 * When editing groups, all of the person's existing groups are removed; adding groups is not cumulative.
@@ -254,3 +257,13 @@ to clear their groups. These operations preserve their hobbies, skill levels and
 The former `-t` option is rejected with guidance to use `-g`. Saved JSON files with legacy `tags`
 still load; those names become groups. Saving writes `groups` rather than `tags`. If a file contains
 both fields, their contents are combined without dropping either set of labels.
+
+### Optional contact details
+
+Phone and address can be omitted when adding a member. Missing values appear as `Not provided`
+on the member card and in command feedback. When editing, `-p` and `-a` require valid values;
+omitting either option leaves its value unchanged. Empty edit values are rejected.
+Name, email and hobbies remain required.
+
+Saved JSON omits absent phone/address fields. Older files with contact details still load, and
+missing, null or empty phone/address fields load as absent values. Malformed non-empty values are rejected.

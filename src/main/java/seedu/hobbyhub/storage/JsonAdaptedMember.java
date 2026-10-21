@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -28,8 +29,10 @@ class JsonAdaptedMember {
     public static final String DEFAULT_HOBBY = "Unspecified";
 
     private final String name;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private final String phone;
     private final String email;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private final String address;
     @JsonProperty(access = Access.WRITE_ONLY)
     private final String hobby;
@@ -102,13 +105,11 @@ class JsonAdaptedMember {
         }
         final Name modelName = new Name(name);
 
-        if (phone == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Phone.class.getSimpleName()));
-        }
-        if (!Phone.isValidPhone(phone)) {
+        String phoneValue = phone == null ? "" : phone;
+        if (!Phone.isValidPhone(phoneValue)) {
             throw new IllegalValueException(Phone.MESSAGE_CONSTRAINTS);
         }
-        final Phone modelPhone = new Phone(phone);
+        final Phone modelPhone = new Phone(phoneValue);
 
         if (email == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Email.class.getSimpleName()));
@@ -118,13 +119,11 @@ class JsonAdaptedMember {
         }
         final Email modelEmail = new Email(email);
 
-        if (address == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Address.class.getSimpleName()));
-        }
-        if (!Address.isValidAddress(address)) {
+        String addressValue = address == null ? "" : address;
+        if (!Address.isValidAddress(addressValue)) {
             throw new IllegalValueException(Address.MESSAGE_CONSTRAINTS);
         }
-        final Address modelAddress = new Address(address);
+        final Address modelAddress = new Address(addressValue);
 
         final List<Hobby> modelHobbies = new ArrayList<>();
         if (hobbies == null) {
