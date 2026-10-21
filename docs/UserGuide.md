@@ -156,6 +156,18 @@ Examples:
 * `list` followed by `delete 2` deletes the 2nd person in HobbyHub.
 * `search -n Betsy` followed by `delete 1` deletes the 1st person in the search results.
 
+### Assigning a person to a session: `assign`
+
+Assigns the member at the specified index in the currently displayed member list to an existing session.
+
+Format: `assign INDEX SESSION_NAME`
+
+* This command is available while the member list is shown.
+* The index refers to the currently displayed member list, including search results.
+* Session names may contain spaces and must match an existing session name.
+
+Example: `assign 1 Weekend Chess Meetup` assigns the first displayed member to that session.
+
 ### Clearing all entries: `clear`
 
 Clears all entries from HobbyHub.
@@ -206,6 +218,7 @@ _Details coming soon ..._
 Action | Format, Examples
 --------|------------------
 **Add** | `add -n NAME -p PHONE_NUMBER -c EMAIL -a ADDRESS -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -g friend -g colleague -h Chess`
+**Assign** | `assign INDEX SESSION_NAME`<br> e.g., `assign 1 Weekend Chess Meetup`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
