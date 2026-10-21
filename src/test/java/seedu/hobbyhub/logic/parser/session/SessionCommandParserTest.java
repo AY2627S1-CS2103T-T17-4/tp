@@ -100,6 +100,40 @@ public class SessionCommandParserTest {
     }
 
     @Test
+    public void parse_editSessionWithUnsupportedNameOption_throwsParseException() {
+        assertParseFailure(new EditSessionCommandParser(), " 1 -l Community Center -n Renamed",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditSessionCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_editSessionWithUnsupportedOptionAtStart_throwsParseException() {
+        assertParseFailure(new EditSessionCommandParser(), "-n Renamed 1 -l Community Center",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditSessionCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_editSessionWithQuotedOptionText_returnsCommand() {
+        EditSessionCommand expectedCommand = new EditSessionCommand(Index.fromOneBased(1),
+                "\"Community Center -n Renamed\"", null);
+        assertParseSuccess(new EditSessionCommandParser(), " 1 -l \"Community Center -n Renamed\"", expectedCommand);
+    }
+
+    @Test
+    public void parse_editSessionWithLocationHyphens_returnsCommand() {
+        EditSessionCommand expectedCommand = new EditSessionCommand(Index.fromOneBased(1), "East - West", null);
+        assertParseSuccess(new EditSessionCommandParser(), " 1 -l East - West", expectedCommand);
+
+        EditSessionCommand hyphenatedCommand = new EditSessionCommand(Index.fromOneBased(1), "East-West", null);
+        assertParseSuccess(new EditSessionCommandParser(), " 1 -l East-West", hyphenatedCommand);
+    }
+
+    @Test
+    public void parse_editSessionWithTrailingHyphen_returnsCommand() {
+        EditSessionCommand expectedCommand = new EditSessionCommand(Index.fromOneBased(1), "Golf Club -", null);
+        assertParseSuccess(new EditSessionCommandParser(), " 1 -l Golf Club -", expectedCommand);
+    }
+
+    @Test
     public void parse_editSessionWithRepeatedField_throwsParseException() {
         assertThrows(ParseException.class, () -> new EditSessionCommandParser().parse(
                 " 1 -l Golf Club -l Another Club"));
