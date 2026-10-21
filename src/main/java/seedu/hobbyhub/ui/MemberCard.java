@@ -51,8 +51,8 @@ public class MemberCard extends UiPart<Region> {
         this.member = member;
         id.setText(displayedIndex + ". ");
         name.setText(member.getName().fullName);
-        phone.setText(member.getPhone().value);
-        address.setText(member.getAddress().value);
+        phone.setText(member.getPhone().toString());
+        address.setText(member.getAddress().toString());
         email.setText(member.getEmail().value);
         hobby.setText(String.join(", ", member.getHobbies().stream().map(Object::toString).toList()));
         member.getGroups().stream()

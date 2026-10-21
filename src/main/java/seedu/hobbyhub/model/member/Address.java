@@ -5,11 +5,13 @@ import static seedu.hobbyhub.commons.util.AppUtil.checkArgument;
 
 /**
  * Represents a Member's address in the HobbyHub.
+ * An empty value represents an optional field that has not been provided.
  * Guarantees: immutable; is valid as declared in {@link #isValidAddress(String)}
  */
 public class Address {
 
-    public static final String MESSAGE_CONSTRAINTS = "Addresses can take any values, and should not be blank";
+    public static final String MESSAGE_CONSTRAINTS =
+            "When provided, addresses can take any value but must not be blank";
 
     /*
      * The first character of the address must not be a whitespace,
@@ -22,7 +24,7 @@ public class Address {
     /**
      * Constructs an {@code Address}.
      *
-     * @param address A valid address.
+     * @param address A valid address, or an empty string for an absent value.
      */
     public Address(String address) {
         requireNonNull(address);
@@ -34,12 +36,22 @@ public class Address {
      * Returns true if a given string is a valid address.
      */
     public static boolean isValidAddress(String test) {
-        return test.matches(VALIDATION_REGEX);
+        return test.isEmpty() || test.matches(VALIDATION_REGEX);
+    }
+
+    /** Returns an absent optional address, represented by an empty value. */
+    public static Address empty() {
+        return new Address("");
+    }
+
+    /** Returns whether this optional address has not been provided. */
+    public boolean isEmpty() {
+        return value.isEmpty();
     }
 
     @Override
     public String toString() {
-        return value;
+        return isEmpty() ? "Not provided" : value;
     }
 
     @Override

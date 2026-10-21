@@ -32,9 +32,13 @@ public class MemberUtil {
     public static String getMemberDetails(Member member) {
         StringBuilder sb = new StringBuilder();
         sb.append(PREFIX_NAME + member.getName().fullName + " ");
-        sb.append(PREFIX_PHONE + member.getPhone().value + " ");
+        if (!member.getPhone().isEmpty()) {
+            sb.append(PREFIX_PHONE + member.getPhone().value + " ");
+        }
         sb.append(PREFIX_EMAIL + member.getEmail().value + " ");
-        sb.append(PREFIX_ADDRESS + member.getAddress().value + " ");
+        if (!member.getAddress().isEmpty()) {
+            sb.append(PREFIX_ADDRESS + member.getAddress().value + " ");
+        }
         member.getHobbies().forEach(hobby -> sb.append(PREFIX_HOBBY).append(" \"")
                 .append(hobby.value).append(":").append(hobby.getSkillLevel()).append("\" "));
         member.getGroups().stream().forEach(
