@@ -19,6 +19,7 @@ import seedu.hobbyhub.logic.commands.ExitCommand;
 import seedu.hobbyhub.logic.commands.HelpCommand;
 import seedu.hobbyhub.logic.commands.ListCommand;
 import seedu.hobbyhub.logic.commands.SearchCommand;
+import seedu.hobbyhub.logic.commands.UnassignCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.logic.parser.session.AddSessionCommandParser;
 import seedu.hobbyhub.logic.parser.session.DeleteSessionCommandParser;
@@ -77,6 +78,12 @@ public class HobbyHubParser {
                     throw new ParseException(AssignCommand.MESSAGE_MEMBER_LIST_REQUIRED);
                 }
                 yield new AssignCommandParser().parse(arguments);
+            }
+            case UnassignCommand.COMMAND_WORD -> {
+                if (listState != ListState.MEMBERS) {
+                    throw new ParseException(UnassignCommand.MESSAGE_MEMBER_LIST_REQUIRED);
+                }
+                yield new UnassignCommandParser().parse(arguments);
             }
             case ClearCommand.COMMAND_WORD -> new ClearCommand();
             case ListCommand.COMMAND_WORD -> new ListCommandParser().parse(arguments);
