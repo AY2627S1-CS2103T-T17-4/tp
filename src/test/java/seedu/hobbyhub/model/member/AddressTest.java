@@ -1,5 +1,6 @@
 package seedu.hobbyhub.model.member;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
@@ -15,7 +16,7 @@ public class AddressTest {
 
     @Test
     public void constructor_invalidAddress_throwsIllegalArgumentException() {
-        String invalidAddress = "";
+        String invalidAddress = " ";
         assertThrows(IllegalArgumentException.class, () -> new Address(invalidAddress));
     }
 
@@ -25,7 +26,7 @@ public class AddressTest {
         assertThrows(NullPointerException.class, () -> Address.isValidAddress(null));
 
         // invalid addresses
-        assertFalse(Address.isValidAddress("")); // empty string
+        assertTrue(Address.isValidAddress("")); // absent optional value
         assertFalse(Address.isValidAddress(" ")); // spaces only
 
         // valid addresses
@@ -53,4 +54,15 @@ public class AddressTest {
         // different values -> returns false
         assertFalse(address.equals(new Address("Other Valid Address")));
     }
+
+    @Test
+    public void emptyValue_isAbsentAndHasDisplayPlaceholder() {
+        var absent = Address.empty();
+        assertTrue(absent.isEmpty());
+        assertEquals("", absent.value);
+        assertEquals("Not provided", absent.toString());
+        assertEquals(absent, new Address(""));
+        assertEquals(absent.hashCode(), new Address("").hashCode());
+    }
+
 }

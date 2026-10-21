@@ -5,20 +5,21 @@ import static seedu.hobbyhub.commons.util.AppUtil.checkArgument;
 
 /**
  * Represents a Member's phone number in the HobbyHub.
+ * An empty value represents an optional field that has not been provided.
  * Guarantees: immutable; is valid as declared in {@link #isValidPhone(String)}
  */
 public class Phone {
 
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Phone numbers should only contain digits, and should be at least 3 digits long";
+            "When provided, phone numbers must contain only digits and be at least 3 digits long";
     public static final String VALIDATION_REGEX = "\\d{3,}";
     public final String value;
 
     /**
      * Constructs a {@code Phone}.
      *
-     * @param phone A valid phone number.
+     * @param phone A valid phone number, or an empty string for an absent value.
      */
     public Phone(String phone) {
         requireNonNull(phone);
@@ -30,12 +31,22 @@ public class Phone {
      * Returns true if a given string is a valid phone number.
      */
     public static boolean isValidPhone(String test) {
-        return test.matches(VALIDATION_REGEX);
+        return test.isEmpty() || test.matches(VALIDATION_REGEX);
+    }
+
+    /** Returns an absent optional phone, represented by an empty value. */
+    public static Phone empty() {
+        return new Phone("");
+    }
+
+    /** Returns whether this optional phone has not been provided. */
+    public boolean isEmpty() {
+        return value.isEmpty();
     }
 
     @Override
     public String toString() {
-        return value;
+        return isEmpty() ? "Not provided" : value;
     }
 
     @Override

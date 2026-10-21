@@ -1,6 +1,7 @@
 package seedu.hobbyhub.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.storage.JsonAdaptedMember.DEFAULT_HOBBY;
 import static seedu.hobbyhub.storage.JsonAdaptedMember.MISSING_FIELD_MESSAGE_FORMAT;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
@@ -67,11 +68,10 @@ public class JsonAdaptedMemberTest {
     }
 
     @Test
-    public void toModelType_nullPhone_throwsIllegalValueException() {
+    public void toModelType_nullPhone_usesAbsentValue() throws Exception {
         JsonAdaptedMember member = new JsonAdaptedMember(VALID_NAME, null, VALID_EMAIL, VALID_ADDRESS, VALID_HOBBY,
                 VALID_GROUPS);
-        String expectedMessage = String.format(MISSING_FIELD_MESSAGE_FORMAT, Phone.class.getSimpleName());
-        assertThrows(IllegalValueException.class, expectedMessage, member::toModelType);
+        assertTrue(member.toModelType().getPhone().isEmpty());
     }
 
     @Test
@@ -99,11 +99,10 @@ public class JsonAdaptedMemberTest {
     }
 
     @Test
-    public void toModelType_nullAddress_throwsIllegalValueException() {
+    public void toModelType_nullAddress_usesAbsentValue() throws Exception {
         JsonAdaptedMember member = new JsonAdaptedMember(VALID_NAME, VALID_PHONE, VALID_EMAIL, null, VALID_HOBBY,
                 VALID_GROUPS);
-        String expectedMessage = String.format(MISSING_FIELD_MESSAGE_FORMAT, Address.class.getSimpleName());
-        assertThrows(IllegalValueException.class, expectedMessage, member::toModelType);
+        assertTrue(member.toModelType().getAddress().isEmpty());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package seedu.hobbyhub.model.member;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
@@ -15,7 +16,7 @@ public class PhoneTest {
 
     @Test
     public void constructor_invalidPhone_throwsIllegalArgumentException() {
-        String invalidPhone = "";
+        String invalidPhone = " ";
         assertThrows(IllegalArgumentException.class, () -> new Phone(invalidPhone));
     }
 
@@ -25,7 +26,7 @@ public class PhoneTest {
         assertThrows(NullPointerException.class, () -> Phone.isValidPhone(null));
 
         // invalid phone numbers
-        assertFalse(Phone.isValidPhone("")); // empty string
+        assertTrue(Phone.isValidPhone("")); // absent optional value
         assertFalse(Phone.isValidPhone(" ")); // spaces only
         assertFalse(Phone.isValidPhone("91")); // less than 3 numbers
         assertFalse(Phone.isValidPhone("phone")); // non-numeric
@@ -57,4 +58,15 @@ public class PhoneTest {
         // different values -> returns false
         assertFalse(phone.equals(new Phone("995")));
     }
+
+    @Test
+    public void emptyValue_isAbsentAndHasDisplayPlaceholder() {
+        var absent = Phone.empty();
+        assertTrue(absent.isEmpty());
+        assertEquals("", absent.value);
+        assertEquals("Not provided", absent.toString());
+        assertEquals(absent, new Phone(""));
+        assertEquals(absent.hashCode(), new Phone("").hashCode());
+    }
+
 }
