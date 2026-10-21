@@ -109,7 +109,8 @@ class JsonSerializableHobbyHub {
             }
         }
         assert memberEmails.values().containsAll(resolved);
-        return new Session(session.getName(), session.getDate(), resolved);
+        return new Session(session.getName(), session.getDate(), session.getLocation(), session.isCompleted(),
+                resolved);
     }
 
 }

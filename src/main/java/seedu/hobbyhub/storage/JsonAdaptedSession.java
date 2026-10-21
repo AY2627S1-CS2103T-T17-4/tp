@@ -1,6 +1,7 @@
 package seedu.hobbyhub.storage;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,20 +22,26 @@ import seedu.hobbyhub.model.session.SessionName;
 class JsonAdaptedSession {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Session's %s field is missing!";
-    public static final String MESSAGE_INVALID_DATE = "Session dates should be in the format YYYY-MM-DD";
+    public static final String MESSAGE_INVALID_DATE_TIME = "Session date-times should use ISO-8601 format";
 
     private final String name;
     private final String date;
+    private final String location;
+    private final boolean completed;
     private final List<String> members = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedSession} with the given session details.
      */
     @JsonCreator
-    public JsonAdaptedSession(@JsonProperty("name") String name, @JsonProperty("date") String date,
+    public JsonAdaptedSession(@JsonProperty("name") String name,
+            @JsonProperty("date") String date,
+            @JsonProperty("location") String location, @JsonProperty("completed") boolean completed,
             @JsonProperty("members") List<String> members) {
         this.name = name;
         this.date = date;
+        this.location = location == null ? "" : location;
+        this.completed = completed;
         if (members != null) {
             this.members.addAll(members);
         }
@@ -46,6 +53,8 @@ class JsonAdaptedSession {
     public JsonAdaptedSession(Session source) {
         name = source.getName().fullName;
         date = source.getDate().toString();
+        location = source.getLocation();
+        completed = source.isCompleted();
         source.getMembers().stream()
                 .map(email -> email.value)
                 .sorted()
@@ -70,12 +79,7 @@ class JsonAdaptedSession {
         if (date == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "date"));
         }
-        final LocalDate modelDate;
-        try {
-            modelDate = LocalDate.parse(date);
-        } catch (DateTimeParseException e) {
-            throw new IllegalValueException(MESSAGE_INVALID_DATE);
-        }
+        final LocalDateTime modelDateTime = parseSessionDateTime(date);
 
         final Set<Email> modelMembers = new HashSet<>();
         for (String email : members) {
@@ -85,7 +89,22 @@ class JsonAdaptedSession {
             modelMembers.add(new Email(email));
         }
 
-        return new Session(modelName, modelDate, modelMembers);
+        return new Session(modelName, modelDateTime, location, completed, modelMembers);
+    }
+
+    /**
+     * Returns the parsed session date-time, treating a legacy date-only value as the start of that day.
+     */
+    private LocalDateTime parseSessionDateTime(String value) throws IllegalValueException {
+        try {
+            return LocalDateTime.parse(value);
+        } catch (DateTimeParseException e) {
+            try {
+                return LocalDate.parse(value).atStartOfDay();
+            } catch (DateTimeParseException invalidDateTime) {
+                throw new IllegalValueException(MESSAGE_INVALID_DATE_TIME);
+            }
+        }
     }
 
 }

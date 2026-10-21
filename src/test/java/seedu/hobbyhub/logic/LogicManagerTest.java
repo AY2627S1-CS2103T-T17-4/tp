@@ -2,7 +2,6 @@ package seedu.hobbyhub.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_MEMBER_DISPLAYED_INDEX;
-import static seedu.hobbyhub.logic.Messages.MESSAGE_SESSION_COMMAND_UNAVAILABLE;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
@@ -24,6 +23,7 @@ import seedu.hobbyhub.logic.commands.AddCommand;
 import seedu.hobbyhub.logic.commands.CommandResult;
 import seedu.hobbyhub.logic.commands.ListCommand;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
+import seedu.hobbyhub.logic.commands.session.AddSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.Model;
@@ -79,8 +79,11 @@ public class LogicManagerTest {
         assertEquals(ListState.SESSIONS, logic.getListState());
 
         // add now goes to the session parser
-        assertThrows(ParseException.class, String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "add"), ()
-            -> logic.execute(AddCommand.COMMAND_WORD + " -n Golf Meet -d 2026-10-24"));
+        CommandResult result = logic.execute(AddSessionCommand.COMMAND_WORD
+                + " -n Golf Meet -l Golf Club -t 2026-10-24T14:00");
+        assertEquals(String.format(AddSessionCommand.MESSAGE_SUCCESS, "Golf Meet"), result.getFeedbackToUser());
+        assertEquals(1, logic.getFilteredSessionList().size());
+        assertEquals("Golf Meet", logic.getFilteredSessionList().get(0).getName().fullName);
 
         logic.execute(ListCommand.COMMAND_WORD + " " + ListCommand.FLAG_MEMBERS);
         assertEquals(ListState.MEMBERS, logic.getListState());

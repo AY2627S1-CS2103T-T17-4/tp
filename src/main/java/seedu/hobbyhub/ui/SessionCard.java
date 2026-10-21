@@ -15,7 +15,8 @@ import seedu.hobbyhub.model.session.Session;
 public class SessionCard extends UiPart<Region> {
 
     private static final String FXML = "SessionListCard.fxml";
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("EEE, d MMM yyyy", Locale.ENGLISH);
+    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern(
+            "EEE, d MMM yyyy 'at' h:mm a", Locale.ENGLISH);
 
     public final Session session;
 
@@ -28,6 +29,10 @@ public class SessionCard extends UiPart<Region> {
     @FXML
     private Label date;
     @FXML
+    private Label locationLabel;
+    @FXML
+    private Label completed;
+    @FXML
     private Label memberCount;
 
     /**
@@ -38,7 +43,9 @@ public class SessionCard extends UiPart<Region> {
         this.session = session;
         id.setText(displayedIndex + ". ");
         name.setText(session.getName().fullName);
-        date.setText(session.getDate().format(DATE_FORMAT));
+        date.setText(session.getDate().format(DATE_TIME_FORMAT));
+        locationLabel.setText(session.getLocation());
+        completed.setText(session.isCompleted() ? "Completed" : "Not completed");
         int count = session.getMembers().size();
         memberCount.setText(count + (count == 1 ? " member" : " members"));
     }

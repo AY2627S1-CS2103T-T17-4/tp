@@ -1,6 +1,6 @@
 package seedu.hobbyhub.model.util;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,9 +46,10 @@ public class SampleDataUtil {
 
     public static Session[] getSampleSessions() {
         return new Session[] {
-            new Session(new SessionName("Weekend Chess Meetup"), LocalDate.of(2026, 10, 24),
-                getEmailSet("alexyeoh@example.com", "berniceyu@example.com")),
-            new Session(new SessionName("Sunday Hike"), LocalDate.of(2026, 10, 25),
+            new Session(new SessionName("Weekend Chess Meetup"), LocalDateTime.of(2026, 10, 24, 14, 0),
+                "Community Center", false, getEmailSet("alexyeoh@example.com", "berniceyu@example.com")),
+            new Session(new SessionName("Sunday Hike"), LocalDateTime.of(2026, 10, 25, 9, 0),
+                "MacRitchie Reservoir", false,
                 getEmailSet("charlotte@example.com", "irfan@example.com", "royb@example.com"))
         };
     }

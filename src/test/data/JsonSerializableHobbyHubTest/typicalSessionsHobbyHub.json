@@ -68,7 +68,9 @@
   "sessions": [
     {
       "name": "Weekend Chess Meetup",
-      "date": "2026-10-24",
+      "date": "2026-10-24T14:00",
+      "location": "Community Center",
+      "completed": false,
       "members": [
         "alice@example.com",
         "johnd@example.com"
@@ -76,7 +78,9 @@
     },
     {
       "name": "Sunday Cycling Trip",
-      "date": "2026-10-25",
+      "date": "2026-10-25T09:00",
+      "location": "MacRitchie Reservoir",
+      "completed": false,
       "members": [
         "heinz@example.com",
         "johnd@example.com"

@@ -60,7 +60,7 @@ public class HobbyHubTest {
 
     @Test
     public void resetData_withDuplicateSessions_throwsDuplicateSessionException() {
-        Session editedChess = new SessionBuilder(CHESS_MEETUP).withDate("2026-12-01").build();
+        Session editedChess = new SessionBuilder(CHESS_MEETUP).withDateTime("2026-12-01T14:00").build();
         HobbyHubStub newData = new HobbyHubStub(List.of(), List.of(CHESS_MEETUP, editedChess));
 
         assertThrows(DuplicateSessionException.class, () -> hobbyHub.resetData(newData));
@@ -120,7 +120,7 @@ public class HobbyHubTest {
     public void hasSession_sessionWithSameNameInHobbyHub_returnsTrue() {
         hobbyHub.addSession(CHESS_MEETUP);
         Session sameNameDifferentCase = new SessionBuilder(CHESS_MEETUP)
-                .withName(CHESS_MEETUP.getName().fullName.toLowerCase()).withDate("2026-12-01").build();
+                .withName(CHESS_MEETUP.getName().fullName.toLowerCase()).withDateTime("2026-12-01T14:00").build();
         assertTrue(hobbyHub.hasSession(sameNameDifferentCase));
     }
 

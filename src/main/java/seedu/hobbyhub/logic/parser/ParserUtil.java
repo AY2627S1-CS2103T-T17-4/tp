@@ -2,6 +2,8 @@ package seedu.hobbyhub.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,6 +22,7 @@ import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
 import seedu.hobbyhub.model.member.SkillLevel;
+import seedu.hobbyhub.model.session.SessionName;
 
 /**
  * Contains utility methods used for parsing strings in the various *Parser classes.
@@ -29,6 +32,9 @@ public class ParserUtil {
     public static final String MESSAGE_INVALID_HOBBY_FORMAT =
             "Use -h \"HOBBY:SKILL\", with one hobby name and one skill level.";
     public static final String MESSAGE_INVALID_SKILL = "Skill level must be Beginner, Intermediate, or Advanced.";
+    public static final String MESSAGE_INVALID_SESSION_LOCATION = "Session location cannot be blank.";
+    public static final String MESSAGE_INVALID_SESSION_DATE_TIME =
+            "Session date-time must use ISO-8601 format (e.g. 2026-10-24T14:00).";
 
     public static final String MESSAGE_INVALID_INDEX = "Index must be a positive integer.";
 
@@ -58,6 +64,48 @@ public class ParserUtil {
             throw new ParseException(Name.MESSAGE_CONSTRAINTS);
         }
         return new Name(trimmedName);
+    }
+
+    /**
+     * Parses a session name and returns it after trimming surrounding whitespace.
+     *
+     * @throws ParseException if the given name is invalid.
+     */
+    public static SessionName parseSessionName(String name) throws ParseException {
+        requireNonNull(name);
+        String trimmedName = name.trim();
+        if (!SessionName.isValidSessionName(trimmedName)) {
+            throw new ParseException(SessionName.MESSAGE_CONSTRAINTS);
+        }
+        return new SessionName(trimmedName);
+    }
+
+    /**
+     * Parses a session location and returns it after trimming surrounding whitespace.
+     *
+     * @throws ParseException if the location is blank.
+     */
+    public static String parseSessionLocation(String location) throws ParseException {
+        requireNonNull(location);
+        String trimmedLocation = location.trim();
+        if (trimmedLocation.isEmpty()) {
+            throw new ParseException(MESSAGE_INVALID_SESSION_LOCATION);
+        }
+        return trimmedLocation;
+    }
+
+    /**
+     * Parses an ISO-8601 date-time into a {@code LocalDateTime}.
+     *
+     * @throws ParseException if the date-time is invalid.
+     */
+    public static LocalDateTime parseSessionDateTime(String dateTime) throws ParseException {
+        requireNonNull(dateTime);
+        try {
+            return LocalDateTime.parse(dateTime.trim());
+        } catch (DateTimeParseException e) {
+            throw new ParseException(MESSAGE_INVALID_SESSION_DATE_TIME);
+        }
     }
 
     /**
