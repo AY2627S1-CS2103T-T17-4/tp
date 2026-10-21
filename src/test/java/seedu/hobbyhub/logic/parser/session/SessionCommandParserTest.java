@@ -4,18 +4,24 @@ import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_SESSION_COMMAND_UNAVAILABLE;
 import static seedu.hobbyhub.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.hobbyhub.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_SESSION_DATE_TIME;
+import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_SESSION_LOCATION;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
+
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.hobbyhub.commons.core.index.Index;
 import seedu.hobbyhub.logic.commands.session.AddSessionCommand;
+import seedu.hobbyhub.logic.commands.session.EditSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.testutil.SessionBuilder;
 
 /**
  * Tests the parsers used while the session list is showing.
  */
-public class SessionCommandParserStubsTest {
+public class SessionCommandParserTest {
 
     @Test
     public void parse_addSession_returnsCommand() {
@@ -56,9 +62,57 @@ public class SessionCommandParserStubsTest {
     }
 
     @Test
-    public void parse_editSession_throwsParseException() {
-        assertParseFailure(new EditSessionCommandParser(), " 1 -d 2026-10-25",
-                String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "edit"));
+    public void parse_editSessionWithLocation_returnsCommand() {
+        EditSessionCommand expectedCommand = new EditSessionCommand(
+                Index.fromOneBased(1), "Golf Club", null);
+        assertParseSuccess(new EditSessionCommandParser(), " 1 -l Golf Club", expectedCommand);
+    }
+
+    @Test
+    public void parse_editSessionWithDateTime_returnsCommand() {
+        EditSessionCommand expectedCommand = new EditSessionCommand(
+                Index.fromOneBased(2), null, LocalDateTime.parse("2026-10-25T14:00"));
+        assertParseSuccess(new EditSessionCommandParser(), " 2 -t 2026-10-25T14:00", expectedCommand);
+    }
+
+    @Test
+    public void parse_editSessionWithBothFields_returnsCommand() {
+        EditSessionCommand expectedCommand = new EditSessionCommand(
+                Index.fromOneBased(1), "Golf Club", LocalDateTime.parse("2026-10-25T14:00"));
+        assertParseSuccess(new EditSessionCommandParser(), " 1 -l Golf Club -t 2026-10-25T14:00", expectedCommand);
+    }
+
+    @Test
+    public void parse_editSessionWithoutIndex_throwsParseException() {
+        assertParseFailure(new EditSessionCommandParser(), " -l Golf Club",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditSessionCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_editSessionWithoutEditableFields_throwsParseException() {
+        assertParseFailure(new EditSessionCommandParser(), " 1", EditSessionCommand.MESSAGE_NOT_EDITED);
+    }
+
+    @Test
+    public void parse_editSessionWithInvalidIndex_throwsParseException() {
+        assertParseFailure(new EditSessionCommandParser(), " zero -l Golf Club",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditSessionCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_editSessionWithRepeatedField_throwsParseException() {
+        assertThrows(ParseException.class, () -> new EditSessionCommandParser().parse(
+                " 1 -l Golf Club -l Another Club"));
+    }
+
+    @Test
+    public void parse_editSessionWithBlankLocation_throwsParseException() {
+        assertParseFailure(new EditSessionCommandParser(), " 1 -l ", MESSAGE_INVALID_SESSION_LOCATION);
+    }
+
+    @Test
+    public void parse_editSessionWithInvalidDateTime_throwsParseException() {
+        assertParseFailure(new EditSessionCommandParser(), " 1 -t tomorrow", MESSAGE_INVALID_SESSION_DATE_TIME);
     }
 
     @Test
