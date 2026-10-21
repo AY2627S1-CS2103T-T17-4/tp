@@ -16,10 +16,10 @@ public class SearchCommand extends Command {
 
     public static final String COMMAND_WORD = "search";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Searches for all members whose names/hobbies "
-            + "contain the specified fragment (case-insensitive) and displays them as a list "
-            + "with index numbers.\n"
-            + "Parameters: -n NAME_FRAGMENT | -h HOBBY_FRAGMENT\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Filters members using exactly one option.\n"
+            + "Names, hobbies and groups use case-insensitive partial matching; emails match in full.\n"
+            + "Parameters: -n NAME_FRAGMENT | -h HOBBY_FRAGMENT | -g GROUP_FRAGMENT | -c EMAIL "
+            + "| -sl SKILL_LEVEL (Beginner, Intermediate, Advanced)\n"
             + "Example: " + COMMAND_WORD + " -n alice";
 
     private final Predicate<Member> predicate;

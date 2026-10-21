@@ -1,65 +1,49 @@
 package seedu.hobbyhub.logic.parser;
 
-import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_SEARCH_HOBBY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_SEARCH_NAME;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_SEARCH_SKILL;
 
 import java.util.List;
+import java.util.Locale;
 
 import seedu.hobbyhub.logic.commands.SearchCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.member.HobbyContainsKeywordsPredicate;
+import seedu.hobbyhub.model.member.MemberSearchPredicate;
+import seedu.hobbyhub.model.member.MemberSearchPredicate.Field;
 import seedu.hobbyhub.model.member.NameContainsKeywordsPredicate;
+import seedu.hobbyhub.model.member.SkillLevel;
 
 /**
- * Parses input arguments and creates a new SearchCommand object
+ * Parses a single member search criterion.
  */
 public class SearchCommandParser implements Parser<SearchCommand> {
-
-    /**
-     * Parses the given {@code String} of arguments in the context of the SearchCommand
-     * and returns a SearchCommand object for execution.
-     * @throws ParseException if the user input does not conform to the expected format
-     */
+    @Override
     public SearchCommand parse(String args) throws ParseException {
-        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(
-                args, PREFIX_SEARCH_NAME, PREFIX_SEARCH_HOBBY);
-
-        boolean hasNamePrefix = argMultimap.getValue(PREFIX_SEARCH_NAME).isPresent();
-        boolean hasHobbyPrefix = argMultimap.getValue(PREFIX_SEARCH_HOBBY).isPresent();
-
-        if (hasNamePrefix == hasHobbyPrefix || !argMultimap.getPreamble().isEmpty()) {
-            throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, SearchCommand.MESSAGE_USAGE));
+        SearchArgument argument = SearchArgument.parse(args, SearchCommand.MESSAGE_USAGE,
+                PREFIX_SEARCH_NAME, PREFIX_SEARCH_HOBBY, PREFIX_GROUP, PREFIX_EMAIL, PREFIX_SEARCH_SKILL);
+        Prefix prefix = argument.getPrefix();
+        String query = argument.getQuery();
+        if (prefix.equals(PREFIX_SEARCH_NAME)) {
+            return new SearchCommand(new NameContainsKeywordsPredicate(List.of(query)));
         }
-
-        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_SEARCH_NAME, PREFIX_SEARCH_HOBBY);
-
-        String query = hasNamePrefix
-                ? argMultimap.getValue(PREFIX_SEARCH_NAME).orElseThrow()
-                : argMultimap.getValue(PREFIX_SEARCH_HOBBY).orElseThrow();
-        query = stripOptionalQuotes(query);
-
-        if (query.isBlank()) {
-            throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, SearchCommand.MESSAGE_USAGE));
+        if (prefix.equals(PREFIX_SEARCH_HOBBY)) {
+            return new SearchCommand(new HobbyContainsKeywordsPredicate(List.of(query)));
         }
-
-        List<String> keywords = List.of(query);
-        return hasNamePrefix
-                ? new SearchCommand(new NameContainsKeywordsPredicate(keywords))
-                : new SearchCommand(new HobbyContainsKeywordsPredicate(keywords));
+        if (prefix.equals(PREFIX_GROUP)) {
+            return new SearchCommand(new MemberSearchPredicate(Field.GROUP, query));
+        }
+        if (prefix.equals(PREFIX_EMAIL)) {
+            return new SearchCommand(new MemberSearchPredicate(Field.EMAIL, ParserUtil.parseEmail(query).value));
+        }
+        try {
+            SkillLevel skill = SkillLevel.valueOf(query.toUpperCase(Locale.ROOT));
+            return new SearchCommand(new MemberSearchPredicate(Field.SKILL_LEVEL, skill.toString()));
+        } catch (IllegalArgumentException e) {
+            throw new ParseException("Skill level must be Beginner, Intermediate, or Advanced.");
+        }
     }
-
-    /** Removes one matching pair of surrounding double quotes from a query, if present. */
-    private static String stripOptionalQuotes(String query) {
-        String trimmedQuery = query.trim();
-        if (trimmedQuery.length() >= 2
-                && trimmedQuery.startsWith("\"")
-                && trimmedQuery.endsWith("\"")) {
-            return trimmedQuery.substring(1, trimmedQuery.length() - 1).trim();
-        }
-        return trimmedQuery;
-    }
-
 }

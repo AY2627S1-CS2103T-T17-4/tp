@@ -24,6 +24,7 @@ import seedu.hobbyhub.logic.commands.HelpCommand;
 import seedu.hobbyhub.logic.commands.ListCommand;
 import seedu.hobbyhub.logic.commands.SearchCommand;
 import seedu.hobbyhub.logic.commands.session.AddSessionCommand;
+import seedu.hobbyhub.logic.commands.session.SearchSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.member.HobbyContainsKeywordsPredicate;
@@ -115,8 +116,8 @@ public class HobbyHubParserTest {
             -> parser.parseCommand(EditCommand.COMMAND_WORD + " 1 -d 2026-10-25", SESSIONS));
         assertThrows(ParseException.class, String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "delete"), ()
             -> parser.parseCommand(DeleteCommand.COMMAND_WORD + " 1", SESSIONS));
-        assertThrows(ParseException.class, String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "search"), ()
-            -> parser.parseCommand(SearchCommand.COMMAND_WORD + " -n golf", SESSIONS));
+        assertTrue(parser.parseCommand(SearchCommand.COMMAND_WORD + " -n golf", SESSIONS)
+                instanceof SearchSessionCommand);
     }
 
     @Test

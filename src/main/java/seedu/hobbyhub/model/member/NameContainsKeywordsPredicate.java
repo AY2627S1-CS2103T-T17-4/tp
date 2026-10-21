@@ -1,6 +1,7 @@
 package seedu.hobbyhub.model.member;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Predicate;
 
 import seedu.hobbyhub.commons.util.ToStringBuilder;
@@ -18,10 +19,10 @@ public class NameContainsKeywordsPredicate implements Predicate<Member> {
 
     @Override
     public boolean test(Member member) {
-        String lowerCaseName = member.getName().fullName.toLowerCase();
+        String lowerCaseName = member.getName().fullName.toLowerCase(Locale.ROOT);
         return keywords.stream()
                 .filter(keyword -> !keyword.isBlank())
-                .anyMatch(keyword -> lowerCaseName.contains(keyword.toLowerCase()));
+                .anyMatch(keyword -> lowerCaseName.contains(keyword.toLowerCase(Locale.ROOT)));
     }
 
     @Override

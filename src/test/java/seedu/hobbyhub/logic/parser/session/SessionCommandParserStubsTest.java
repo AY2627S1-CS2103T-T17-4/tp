@@ -67,12 +67,6 @@ public class SessionCommandParserStubsTest {
                 String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "delete"));
     }
 
-    @Test
-    public void parse_searchSession_throwsParseException() {
-        assertParseFailure(new SearchSessionCommandParser(), " -n golf",
-                String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "search"));
-    }
-
     private static void assertInvalidSessionCommandFormat(String args) {
         assertParseFailure(new AddSessionCommandParser(), args,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddSessionCommand.MESSAGE_USAGE));

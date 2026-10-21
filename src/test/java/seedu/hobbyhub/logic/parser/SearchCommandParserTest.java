@@ -9,7 +9,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.logic.commands.SearchCommand;
+import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.HobbyContainsKeywordsPredicate;
+import seedu.hobbyhub.model.member.MemberSearchPredicate;
+import seedu.hobbyhub.model.member.MemberSearchPredicate.Field;
 import seedu.hobbyhub.model.member.NameContainsKeywordsPredicate;
 
 public class SearchCommandParserTest {
@@ -50,6 +53,38 @@ public class SearchCommandParserTest {
         assertParseFailure(parser, " stray -n Alice", expectedMessage);
         assertParseFailure(parser, " -n Alice -h Chess", expectedMessage);
         assertParseFailure(parser, " -n", expectedMessage);
+    }
+
+    @Test
+    public void parse_newFields_returnsSearchCommand() {
+        assertParseSuccess(parser, " -g \"Weekend Club\"",
+                new SearchCommand(new MemberSearchPredicate(Field.GROUP, "Weekend Club")));
+        assertParseSuccess(parser, " -c ALICE@example.com",
+                new SearchCommand(new MemberSearchPredicate(Field.EMAIL, "ALICE@example.com")));
+        for (String level : List.of("Beginner", "Intermediate", "Advanced", "advanced")) {
+            assertParseSuccess(parser, " -sl " + level,
+                    new SearchCommand(new MemberSearchPredicate(Field.SKILL_LEVEL, level)));
+        }
+    }
+
+    @Test
+    public void parse_invalidOptions_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, SearchCommand.MESSAGE_USAGE);
+        for (String args : List.of("-g", "-sl", "-c", "-n \" \"", "-x Alice", "-p 91234567",
+                "-a Street", "-l Club", "-n Alice -g Club", "-sl Advanced -h Chess",
+                "-g Club -g Other", "-n Alice -x unknown", "-name Alice", "-nAlice")) {
+            assertParseFailure(parser, args, expectedMessage);
+        }
+        assertParseFailure(parser, "-c invalid", Email.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "-sl Expert", "Skill level must be Beginner, Intermediate, or Advanced.");
+    }
+
+    @Test
+    public void parse_whitespaceAndQuotedOptions_preservesQuery() {
+        assertParseSuccess(parser, "\t-n\tAlice Lee\t",
+                new SearchCommand(new NameContainsKeywordsPredicate(List.of("Alice Lee"))));
+        assertParseSuccess(parser, "-n \"Alice -g Lee\"",
+                new SearchCommand(new NameContainsKeywordsPredicate(List.of("Alice -g Lee"))));
     }
 
 }
