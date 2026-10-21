@@ -55,7 +55,7 @@ public class ArgumentTokenizerTest {
 
     @Test
     public void tokenize_noPrefixes_allTakenAsPreamble() {
-        String argsString = "  some random string /t tag with leading and trailing spaces ";
+        String argsString = "  some random string /t group with leading and trailing spaces ";
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(argsString);
 
         // Same string expected as preamble, but leading/trailing spaces should be trimmed
@@ -145,6 +145,17 @@ public class ArgumentTokenizerTest {
 
         assertNotEquals(aaa, "aaa");
         assertNotEquals(aaa, new Prefix("aab"));
+    }
+
+
+    @Test
+    public void tokenize_quotedOptionText_isKeptWithinValue() {
+        Prefix hobby = new Prefix("-h");
+        Prefix email = new Prefix("-c");
+        ArgumentMultimap args = ArgumentTokenizer.tokenize(
+                " -h \"Chess -club:Advanced\" -h Tennis:Beginner -c alice@example.com", hobby, email);
+        assertArgumentPresent(args, hobby, "\"Chess -club:Advanced\"", "Tennis:Beginner");
+        assertArgumentPresent(args, email, "alice@example.com");
     }
 
 }

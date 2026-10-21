@@ -8,8 +8,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Member;
-import seedu.hobbyhub.model.tag.Tag;
 
 public class SampleDataUtilTest {
 
@@ -35,7 +35,7 @@ public class SampleDataUtilTest {
     }
 
     @Test
-    public void getTagSet_returnsTagsForEachName() {
-        assertEquals(Set.of(new Tag("chess"), new Tag("cycling")), SampleDataUtil.getTagSet("chess", "cycling"));
+    public void getGroupSet_returnsGroupsForEachName() {
+        assertEquals(Set.of(new Group("chess"), new Group("cycling")), SampleDataUtil.getGroupSet("chess", "cycling"));
     }
 }

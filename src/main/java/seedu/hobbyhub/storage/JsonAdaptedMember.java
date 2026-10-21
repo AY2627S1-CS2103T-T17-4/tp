@@ -11,13 +11,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import seedu.hobbyhub.commons.exceptions.IllegalValueException;
+import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
-import seedu.hobbyhub.model.tag.Tag;
 
 /**
  * Jackson-friendly version of {@link Member}.
@@ -34,14 +34,14 @@ class JsonAdaptedMember {
     @JsonProperty(access = Access.WRITE_ONLY)
     private final String hobby;
     private final List<JsonAdaptedHobby> hobbies;
-    private final List<JsonAdaptedTag> tags = new ArrayList<>();
+    private final List<JsonAdaptedGroup> groups = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedMember} with the given member details.
      */
     public JsonAdaptedMember(String name, String phone, String email, String address,
-            String hobby, List<JsonAdaptedTag> tags) {
-        this(name, phone, email, address, hobby, null, tags);
+            String hobby, List<JsonAdaptedGroup> groups) {
+        this(name, phone, email, address, hobby, null, groups, null);
     }
 
     /** Constructs a member from either the legacy hobby string or the new hobby list. */
@@ -49,15 +49,19 @@ class JsonAdaptedMember {
     public JsonAdaptedMember(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
             @JsonProperty("email") String email, @JsonProperty("address") String address,
             @JsonProperty("hobby") String hobby, @JsonProperty("hobbies") List<JsonAdaptedHobby> hobbies,
-            @JsonProperty("tags") List<JsonAdaptedTag> tags) {
+            @JsonProperty("groups") List<JsonAdaptedGroup> groups,
+            @JsonProperty("tags") List<JsonAdaptedGroup> legacyTags) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.hobby = hobby;
         this.hobbies = hobbies;
-        if (tags != null) {
-            this.tags.addAll(tags);
+        if (groups != null) {
+            this.groups.addAll(groups);
+        }
+        if (legacyTags != null) {
+            this.groups.addAll(legacyTags);
         }
     }
 
@@ -71,8 +75,8 @@ class JsonAdaptedMember {
         address = source.getAddress().value;
         hobby = null;
         hobbies = source.getHobbies().stream().map(JsonAdaptedHobby::new).toList();
-        tags.addAll(source.getTags().stream()
-                .map(JsonAdaptedTag::new)
+        groups.addAll(source.getGroups().stream()
+                .map(JsonAdaptedGroup::new)
                 .collect(Collectors.toList()));
     }
 
@@ -82,9 +86,12 @@ class JsonAdaptedMember {
      * @throws IllegalValueException if there were any data constraints violated in the adapted member.
      */
     public Member toModelType() throws IllegalValueException {
-        final List<Tag> memberTags = new ArrayList<>();
-        for (JsonAdaptedTag tag : tags) {
-            memberTags.add(tag.toModelType());
+        final List<Group> memberGroups = new ArrayList<>();
+        for (JsonAdaptedGroup group : groups) {
+            if (group == null) {
+                throw new IllegalValueException(Group.MESSAGE_CONSTRAINTS);
+            }
+            memberGroups.add(group.toModelType());
         }
 
         if (name == null) {
@@ -143,8 +150,8 @@ class JsonAdaptedMember {
             }
         }
 
-        final Set<Tag> modelTags = new HashSet<>(memberTags);
-        return new Member(modelName, modelPhone, modelEmail, modelAddress, modelHobbies, modelTags);
+        final Set<Group> modelGroups = new HashSet<>(memberGroups);
+        return new Member(modelName, modelPhone, modelEmail, modelAddress, modelHobbies, modelGroups);
     }
 
 }

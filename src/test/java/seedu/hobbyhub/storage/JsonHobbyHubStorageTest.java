@@ -58,7 +58,7 @@ public class JsonHobbyHubStorageTest {
         assertEquals("Legacy Person", hobbyHub.getMemberList().get(0).getName().fullName);
         assertEquals("legacy@example.com", hobbyHub.getMemberList().get(0).getEmail().value);
         assertEquals("Unspecified", hobbyHub.getMemberList().get(0).getHobby().value);
-        assertEquals(1, hobbyHub.getMemberList().get(0).getTags().size());
+        assertEquals(1, hobbyHub.getMemberList().get(0).getGroups().size());
     }
 
     @Test

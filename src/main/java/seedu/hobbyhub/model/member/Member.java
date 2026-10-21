@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import seedu.hobbyhub.commons.util.ToStringBuilder;
-import seedu.hobbyhub.model.tag.Tag;
+import seedu.hobbyhub.model.group.Group;
 
 /**
  * Represents a Member in the HobbyHub.
@@ -30,21 +30,21 @@ public class Member {
 
     // Data fields
     private final Address address;
-    private final Set<Tag> tags = new HashSet<>();
+    private final Set<Group> groups = new HashSet<>();
 
     /**
      * Every field must be present and not null.
      */
-    public Member(Name name, Phone phone, Email email, Address address, Hobby hobby, Set<Tag> tags) {
-        this(name, phone, email, address, List.of(hobby), tags);
+    public Member(Name name, Phone phone, Email email, Address address, Hobby hobby, Set<Group> groups) {
+        this(name, phone, email, address, List.of(hobby), groups);
     }
 
     /**
      * Constructs a member with at least one hobby and no repeated hobby names, ignoring case.
      * The hobby list is copied and its order is preserved for display.
      */
-    public Member(Name name, Phone phone, Email email, Address address, List<Hobby> hobbies, Set<Tag> tags) {
-        requireAllNonNull(name, phone, email, address, hobbies, tags);
+    public Member(Name name, Phone phone, Email email, Address address, List<Hobby> hobbies, Set<Group> groups) {
+        requireAllNonNull(name, phone, email, address, hobbies, groups);
         requireAllNonNull(hobbies);
         checkArgument(!hobbies.isEmpty(), MESSAGE_HOBBIES_REQUIRED);
         long uniqueNames = hobbies.stream()
@@ -55,7 +55,7 @@ public class Member {
         this.email = email;
         this.address = address;
         this.hobbies = List.copyOf(hobbies);
-        this.tags.addAll(tags);
+        this.groups.addAll(groups);
     }
 
     public Name getName() {
@@ -88,11 +88,11 @@ public class Member {
     }
 
     /**
-     * Returns an immutable tag set, which throws {@code UnsupportedOperationException}
+     * Returns an immutable group set, which throws {@code UnsupportedOperationException}
      * if modification is attempted.
      */
-    public Set<Tag> getTags() {
-        return Collections.unmodifiableSet(tags);
+    public Set<Group> getGroups() {
+        return Collections.unmodifiableSet(groups);
     }
 
     /**
@@ -128,13 +128,13 @@ public class Member {
                 && email.equals(otherMember.email)
                 && address.equals(otherMember.address)
                 && hobbies.equals(otherMember.hobbies)
-                && tags.equals(otherMember.tags);
+                && groups.equals(otherMember.groups);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, hobbies, tags);
+        return Objects.hash(name, phone, email, address, hobbies, groups);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class Member {
                 .add("email", email)
                 .add("address", address)
                 .add("hobbies", hobbies)
-                .add("tags", tags)
+                .add("groups", groups)
                 .toString();
     }
 

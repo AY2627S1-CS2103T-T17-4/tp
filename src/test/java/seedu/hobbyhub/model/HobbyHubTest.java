@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
-import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_GROUP_HUSBAND;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalMembers.ALICE;
 import static seedu.hobbyhub.testutil.TypicalMembers.BENSON;
@@ -69,7 +69,7 @@ public class HobbyHubTest {
     @Test
     public void resetData_withDuplicateMembers_throwsDuplicateMemberException() {
         // Two members with the same identity fields
-        Member editedAlice = new MemberBuilder(ALICE).withAddress(VALID_ADDRESS_BOB).withTags(VALID_TAG_HUSBAND)
+        Member editedAlice = new MemberBuilder(ALICE).withAddress(VALID_ADDRESS_BOB).withGroups(VALID_GROUP_HUSBAND)
                 .build();
         List<Member> newMembers = List.of(ALICE, editedAlice);
         HobbyHubStub newData = new HobbyHubStub(newMembers);
@@ -96,7 +96,7 @@ public class HobbyHubTest {
     @Test
     public void hasMember_memberWithSameIdentityFieldsInHobbyHub_returnsTrue() {
         hobbyHub.addMember(ALICE);
-        Member editedAlice = new MemberBuilder(ALICE).withAddress(VALID_ADDRESS_BOB).withTags(VALID_TAG_HUSBAND)
+        Member editedAlice = new MemberBuilder(ALICE).withAddress(VALID_ADDRESS_BOB).withGroups(VALID_GROUP_HUSBAND)
                 .build();
         assertTrue(hobbyHub.hasMember(editedAlice));
     }

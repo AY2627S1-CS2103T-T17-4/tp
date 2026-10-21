@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.DESC_BOB;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_GROUP_HUSBAND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
-import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.showMemberAtIndex;
@@ -60,10 +60,10 @@ public class EditCommandTest {
 
         MemberBuilder memberInList = new MemberBuilder(lastMember);
         Member editedMember = memberInList.withName(VALID_NAME_BOB).withPhone(VALID_PHONE_BOB)
-                .withTags(VALID_TAG_HUSBAND).build();
+                .withGroups(VALID_GROUP_HUSBAND).build();
 
         EditMemberDescriptor descriptor = new EditMemberDescriptorBuilder().withName(VALID_NAME_BOB)
-                .withPhone(VALID_PHONE_BOB).withTags(VALID_TAG_HUSBAND).build();
+                .withPhone(VALID_PHONE_BOB).withGroups(VALID_GROUP_HUSBAND).build();
         EditCommand editCommand = new EditCommand(indexLastMember, descriptor);
 
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_MEMBER_SUCCESS, Messages.format(editedMember));

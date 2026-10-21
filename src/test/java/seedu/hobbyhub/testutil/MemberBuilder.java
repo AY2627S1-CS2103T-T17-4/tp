@@ -4,13 +4,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
-import seedu.hobbyhub.model.tag.Tag;
 import seedu.hobbyhub.model.util.SampleDataUtil;
 
 /**
@@ -29,7 +29,7 @@ public class MemberBuilder {
     private Email email;
     private Address address;
     private List<Hobby> hobbies;
-    private Set<Tag> tags;
+    private Set<Group> groups;
 
     /**
      * Creates a {@code MemberBuilder} with the default details.
@@ -40,7 +40,7 @@ public class MemberBuilder {
         email = new Email(DEFAULT_EMAIL);
         address = new Address(DEFAULT_ADDRESS);
         hobbies = List.of(new Hobby(DEFAULT_HOBBY));
-        tags = new HashSet<>();
+        groups = new HashSet<>();
     }
 
     /**
@@ -52,7 +52,7 @@ public class MemberBuilder {
         email = memberToCopy.getEmail();
         address = memberToCopy.getAddress();
         hobbies = memberToCopy.getHobbies();
-        tags = new HashSet<>(memberToCopy.getTags());
+        groups = new HashSet<>(memberToCopy.getGroups());
     }
 
     /**
@@ -64,10 +64,10 @@ public class MemberBuilder {
     }
 
     /**
-     * Parses the {@code tags} into a {@code Set<Tag>} and sets it to the {@code Member} that we are building.
+     * Parses the {@code groups} into a {@code Set<Group>} and sets it to the {@code Member} that we are building.
      */
-    public MemberBuilder withTags(String ... tags) {
-        this.tags = SampleDataUtil.getTagSet(tags);
+    public MemberBuilder withGroups(String ... groups) {
+        this.groups = SampleDataUtil.getGroupSet(groups);
         return this;
     }
 
@@ -110,7 +110,7 @@ public class MemberBuilder {
     }
 
     public Member build() {
-        return new Member(name, phone, email, address, hobbies, tags);
+        return new Member(name, phone, email, address, hobbies, groups);
     }
 
 }

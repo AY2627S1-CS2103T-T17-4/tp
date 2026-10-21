@@ -2,24 +2,33 @@ package seedu.hobbyhub.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import seedu.hobbyhub.commons.core.index.Index;
 import seedu.hobbyhub.commons.util.StringUtil;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
+import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
+import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
-import seedu.hobbyhub.model.tag.Tag;
+import seedu.hobbyhub.model.member.SkillLevel;
 
 /**
  * Contains utility methods used for parsing strings in the various *Parser classes.
  */
 public class ParserUtil {
+
+    public static final String MESSAGE_INVALID_HOBBY_FORMAT =
+            "Use -h \"HOBBY:SKILL\", with one hobby name and one skill level.";
+    public static final String MESSAGE_INVALID_SKILL = "Skill level must be Beginner, Intermediate, or Advanced.";
 
     public static final String MESSAGE_INVALID_INDEX = "Index must be a positive integer.";
 
@@ -97,44 +106,83 @@ public class ParserUtil {
     }
 
     /**
-     * Parses a {@code String hobby} into a {@code Hobby}.
-     * Leading and trailing whitespaces will be trimmed.
-     *
-     * @throws ParseException if the given {@code hobby} is invalid.
+     * Parses a hobby name with an optional skill suffix, e.g. {@code "Table Tennis:Advanced"}.
+     * Balanced outer double quotes and surrounding whitespace are removed.
+     * Legacy names without a colon default to Beginner; an explicit suffix must be valid.
      */
     public static Hobby parseHobby(String hobby) throws ParseException {
         requireNonNull(hobby);
-        String trimmedHobby = hobby.trim();
-        if (!Hobby.isValidHobby(trimmedHobby)) {
+        String value = hobby.trim();
+        if (value.startsWith("\"") && value.endsWith("\"") && value.length() >= 2) {
+            value = value.substring(1, value.length() - 1).trim();
+        }
+        if (value.contains("\"")) {
+            throw new ParseException(MESSAGE_INVALID_HOBBY_FORMAT);
+        }
+        String[] parts = value.split(":", -1);
+        if (parts.length > 2) {
+            throw new ParseException(MESSAGE_INVALID_HOBBY_FORMAT);
+        }
+        String name = parts[0].trim();
+        if (!Hobby.isValidHobby(name)) {
             throw new ParseException(Hobby.MESSAGE_CONSTRAINTS);
         }
-        return new Hobby(trimmedHobby);
+        if (parts.length == 1) {
+            return new Hobby(name);
+        }
+        for (SkillLevel level : SkillLevel.values()) {
+            if (level.toString().equalsIgnoreCase(parts[1].trim())) {
+                return new Hobby(name, level);
+            }
+        }
+        throw new ParseException(MESSAGE_INVALID_SKILL);
+    }
+
+    /** Parses all hobby options in input order, rejecting repeated hobby names regardless of skill level. */
+    public static List<Hobby> parseHobbies(Collection<String> hobbies) throws ParseException {
+        requireNonNull(hobbies);
+        if (hobbies.isEmpty()) {
+            throw new ParseException(Member.MESSAGE_HOBBIES_REQUIRED);
+        }
+        List<Hobby> parsed = new ArrayList<>();
+        Set<String> names = new HashSet<>();
+        for (String value : hobbies) {
+            Hobby hobby = parseHobby(value);
+            if (!names.add(hobby.value.toLowerCase(Locale.ROOT))) {
+                throw new ParseException(Member.MESSAGE_DUPLICATE_HOBBY);
+            }
+            parsed.add(hobby);
+        }
+        return List.copyOf(parsed);
     }
 
     /**
-     * Parses a {@code String tag} into a {@code Tag}.
+     * Parses a {@code String group} into a {@code Group}.
      * Leading and trailing whitespaces will be trimmed.
      *
-     * @throws ParseException if the given {@code tag} is invalid.
+     * @throws ParseException if the given {@code group} is invalid.
      */
-    public static Tag parseTag(String tag) throws ParseException {
-        requireNonNull(tag);
-        String trimmedTag = tag.trim();
-        if (!Tag.isValidTagName(trimmedTag)) {
-            throw new ParseException(Tag.MESSAGE_CONSTRAINTS);
+    public static Group parseGroup(String group) throws ParseException {
+        requireNonNull(group);
+        String trimmedGroup = group.trim();
+        if (trimmedGroup.startsWith("\"") && trimmedGroup.endsWith("\"") && trimmedGroup.length() >= 2) {
+            trimmedGroup = trimmedGroup.substring(1, trimmedGroup.length() - 1).trim();
         }
-        return new Tag(trimmedTag);
+        if (!Group.isValidGroupName(trimmedGroup)) {
+            throw new ParseException(Group.MESSAGE_CONSTRAINTS);
+        }
+        return new Group(trimmedGroup);
     }
 
     /**
-     * Parses {@code Collection<String> tags} into a {@code Set<Tag>}.
+     * Parses {@code Collection<String> groups} into a {@code Set<Group>}.
      */
-    public static Set<Tag> parseTags(Collection<String> tags) throws ParseException {
-        requireNonNull(tags);
-        final Set<Tag> tagSet = new HashSet<>();
-        for (String tagName : tags) {
-            tagSet.add(parseTag(tagName));
+    public static Set<Group> parseGroups(Collection<String> groups) throws ParseException {
+        requireNonNull(groups);
+        final Set<Group> groupSet = new HashSet<>();
+        for (String groupName : groups) {
+            groupSet.add(parseGroup(groupName));
         }
-        return tagSet;
+        return groupSet;
     }
 }

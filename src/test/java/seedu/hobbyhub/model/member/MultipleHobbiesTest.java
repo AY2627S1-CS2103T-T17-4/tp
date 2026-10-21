@@ -36,7 +36,7 @@ public class MultipleHobbiesTest {
         Member original = new MemberBuilder().build();
         List<Hobby> hobbies = new ArrayList<>(List.of(chess, tennis));
         Member member = new Member(original.getName(), original.getPhone(), original.getEmail(),
-                original.getAddress(), hobbies, original.getTags());
+                original.getAddress(), hobbies, original.getGroups());
         hobbies.clear();
         assertEquals(List.of(chess, tennis), member.getHobbies());
         assertThrows(UnsupportedOperationException.class, () -> member.getHobbies().clear());

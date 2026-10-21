@@ -5,32 +5,31 @@ import static seedu.hobbyhub.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.ADDRESS_DESC_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.EMAIL_DESC_BOB;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.GROUP_DESC_FRIEND;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.GROUP_DESC_HUSBAND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.HOBBY_DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.HOBBY_DESC_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.INVALID_ADDRESS_DESC;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.INVALID_EMAIL_DESC;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.INVALID_GROUP_DESC;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.INVALID_HOBBY_DESC;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.INVALID_NAME_DESC;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.INVALID_PHONE_DESC;
-import static seedu.hobbyhub.logic.commands.CommandTestUtil.INVALID_TAG_DESC;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.NAME_DESC_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.PHONE_DESC_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.PREAMBLE_NON_EMPTY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.PREAMBLE_WHITESPACE;
-import static seedu.hobbyhub.logic.commands.CommandTestUtil.TAG_DESC_FRIEND;
-import static seedu.hobbyhub.logic.commands.CommandTestUtil.TAG_DESC_HUSBAND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_GROUP_FRIEND;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_GROUP_HUSBAND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_HOBBY_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
-import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
-import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
-import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.hobbyhub.logic.parser.CommandParserTestUtil.assertParseFailure;
@@ -42,13 +41,13 @@ import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.logic.Messages;
 import seedu.hobbyhub.logic.commands.AddCommand;
+import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
-import seedu.hobbyhub.model.tag.Tag;
 import seedu.hobbyhub.testutil.MemberBuilder;
 
 public class AddCommandParserTest {
@@ -58,12 +57,12 @@ public class AddCommandParserTest {
     public void parse_literalDashPrefixes_success() {
         Member expectedMember = new MemberBuilder().withName("John Doe").withPhone("98765432")
                 .withEmail("johnd@example.com").withAddress("John Street").withHobby("Chess")
-                .withTags("friends", "colleagues").build();
+                .withGroups("friends", "colleagues").build();
 
         assertParseSuccess(parser, " -n John Doe -p 98765432 -c johnd@example.com -a John Street"
-                + " -h Chess -t friends -t colleagues", new AddCommand(expectedMember));
+                + " -h Chess -g friends -g colleagues", new AddCommand(expectedMember));
         assertParseSuccess(parser, " -nJohn Doe -p98765432 -cjohnd@example.com -aJohn Street"
-                + " -hChess -tfriends -tcolleagues", new AddCommand(expectedMember));
+                + " -hChess -gfriends -gcolleagues", new AddCommand(expectedMember));
     }
 
     @Test
@@ -80,26 +79,26 @@ public class AddCommandParserTest {
 
     @Test
     public void parse_allFieldsPresent_success() {
-        Member expectedMember = new MemberBuilder(BOB).withTags(VALID_TAG_FRIEND).build();
+        Member expectedMember = new MemberBuilder(BOB).withGroups(VALID_GROUP_FRIEND).build();
 
         // whitespace only preamble
         assertParseSuccess(parser, PREAMBLE_WHITESPACE + NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
-                + ADDRESS_DESC_BOB + HOBBY_DESC_BOB + TAG_DESC_FRIEND, new AddCommand(expectedMember));
+                + ADDRESS_DESC_BOB + HOBBY_DESC_BOB + GROUP_DESC_FRIEND, new AddCommand(expectedMember));
 
 
-        // multiple tags - all accepted
-        Member expectedMemberMultipleTags = new MemberBuilder(BOB).withTags(VALID_TAG_FRIEND, VALID_TAG_HUSBAND)
+        // multiple groups - all accepted
+        Member expectedMemberMultipleGroups = new MemberBuilder(BOB).withGroups(VALID_GROUP_FRIEND, VALID_GROUP_HUSBAND)
                 .build();
         assertParseSuccess(parser,
                 NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + HOBBY_DESC_BOB
-                        + TAG_DESC_HUSBAND + TAG_DESC_FRIEND,
-                new AddCommand(expectedMemberMultipleTags));
+                        + GROUP_DESC_HUSBAND + GROUP_DESC_FRIEND,
+                new AddCommand(expectedMemberMultipleGroups));
     }
 
     @Test
-    public void parse_repeatedNonTagValue_failure() {
+    public void parse_repeatedNonGroupValue_failure() {
         String validExpectedMemberString = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
-                + ADDRESS_DESC_BOB + HOBBY_DESC_BOB + TAG_DESC_FRIEND;
+                + ADDRESS_DESC_BOB + HOBBY_DESC_BOB + GROUP_DESC_FRIEND;
 
         // multiple names
         assertParseFailure(parser, NAME_DESC_AMY + validExpectedMemberString,
@@ -117,16 +116,11 @@ public class AddCommandParserTest {
         assertParseFailure(parser, ADDRESS_DESC_AMY + validExpectedMemberString,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_ADDRESS));
 
-        // multiple hobbies
-        assertParseFailure(parser, HOBBY_DESC_AMY + validExpectedMemberString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_HOBBY));
-
         // multiple fields repeated
         assertParseFailure(parser,
                 validExpectedMemberString + PHONE_DESC_AMY + EMAIL_DESC_AMY + NAME_DESC_AMY + ADDRESS_DESC_AMY
                         + HOBBY_DESC_AMY + validExpectedMemberString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME, PREFIX_ADDRESS, PREFIX_EMAIL, PREFIX_PHONE,
-                        PREFIX_HOBBY));
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME, PREFIX_ADDRESS, PREFIX_EMAIL, PREFIX_PHONE));
 
         // invalid value followed by valid value
 
@@ -146,9 +140,8 @@ public class AddCommandParserTest {
         assertParseFailure(parser, INVALID_ADDRESS_DESC + validExpectedMemberString,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_ADDRESS));
 
-        // invalid hobby
-        assertParseFailure(parser, INVALID_HOBBY_DESC + validExpectedMemberString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_HOBBY));
+        // invalid hobby is rejected even when followed by a valid hobby
+        assertParseFailure(parser, INVALID_HOBBY_DESC + validExpectedMemberString, Hobby.MESSAGE_CONSTRAINTS);
 
         // valid value followed by invalid value
 
@@ -168,15 +161,14 @@ public class AddCommandParserTest {
         assertParseFailure(parser, validExpectedMemberString + INVALID_ADDRESS_DESC,
                 Messages.getErrorMessageForDuplicatePrefixes(PREFIX_ADDRESS));
 
-        // invalid hobby
-        assertParseFailure(parser, validExpectedMemberString + INVALID_HOBBY_DESC,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_HOBBY));
+        // invalid hobby is rejected even when preceded by a valid hobby
+        assertParseFailure(parser, validExpectedMemberString + INVALID_HOBBY_DESC, Hobby.MESSAGE_CONSTRAINTS);
     }
 
     @Test
     public void parse_optionalFieldsMissing_success() {
-        // zero tags
-        Member expectedMember = new MemberBuilder(AMY).withTags().build();
+        // zero groups
+        Member expectedMember = new MemberBuilder(AMY).withGroups().build();
         assertParseSuccess(parser, NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY
                         + HOBBY_DESC_AMY,
                 new AddCommand(expectedMember));
@@ -221,27 +213,27 @@ public class AddCommandParserTest {
     public void parse_invalidValue_failure() {
         // invalid name
         assertParseFailure(parser, INVALID_NAME_DESC + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + HOBBY_DESC_BOB + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, Name.MESSAGE_CONSTRAINTS);
+                + HOBBY_DESC_BOB + GROUP_DESC_HUSBAND + GROUP_DESC_FRIEND, Name.MESSAGE_CONSTRAINTS);
 
         // invalid phone
         assertParseFailure(parser, NAME_DESC_BOB + INVALID_PHONE_DESC + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + HOBBY_DESC_BOB + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, Phone.MESSAGE_CONSTRAINTS);
+                + HOBBY_DESC_BOB + GROUP_DESC_HUSBAND + GROUP_DESC_FRIEND, Phone.MESSAGE_CONSTRAINTS);
 
         // invalid email
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + INVALID_EMAIL_DESC + ADDRESS_DESC_BOB
-                + HOBBY_DESC_BOB + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, Email.MESSAGE_CONSTRAINTS);
+                + HOBBY_DESC_BOB + GROUP_DESC_HUSBAND + GROUP_DESC_FRIEND, Email.MESSAGE_CONSTRAINTS);
 
         // invalid address
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + INVALID_ADDRESS_DESC
-                + HOBBY_DESC_BOB + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, Address.MESSAGE_CONSTRAINTS);
+                + HOBBY_DESC_BOB + GROUP_DESC_HUSBAND + GROUP_DESC_FRIEND, Address.MESSAGE_CONSTRAINTS);
 
         // invalid hobby
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + INVALID_HOBBY_DESC + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, Hobby.MESSAGE_CONSTRAINTS);
+                + INVALID_HOBBY_DESC + GROUP_DESC_HUSBAND + GROUP_DESC_FRIEND, Hobby.MESSAGE_CONSTRAINTS);
 
-        // invalid tag
+        // invalid group
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + HOBBY_DESC_BOB + INVALID_TAG_DESC + VALID_TAG_FRIEND, Tag.MESSAGE_CONSTRAINTS);
+                + HOBBY_DESC_BOB + INVALID_GROUP_DESC + VALID_GROUP_FRIEND, Group.MESSAGE_CONSTRAINTS);
 
         // two invalid values, only first invalid value reported
         assertParseFailure(parser, INVALID_NAME_DESC + PHONE_DESC_BOB + EMAIL_DESC_BOB + INVALID_ADDRESS_DESC
@@ -250,7 +242,7 @@ public class AddCommandParserTest {
 
         // non-empty preamble
         assertParseFailure(parser, PREAMBLE_NON_EMPTY + NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
-                + ADDRESS_DESC_BOB + HOBBY_DESC_BOB + TAG_DESC_HUSBAND + TAG_DESC_FRIEND,
+                + ADDRESS_DESC_BOB + HOBBY_DESC_BOB + GROUP_DESC_HUSBAND + GROUP_DESC_FRIEND,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
     }
 }
