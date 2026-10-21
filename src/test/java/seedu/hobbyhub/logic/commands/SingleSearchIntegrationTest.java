@@ -27,13 +27,6 @@ import seedu.hobbyhub.testutil.SessionBuilder;
  */
 public class SingleSearchIntegrationTest {
     private final HobbyHubParser parser = new HobbyHubParser();
-    private final Member alice = new MemberBuilder().withName("Alice Lee").withEmail("alice@example.com")
-            .withGroups("Weekend Club")
-            .withHobbies(new Hobby("Chess", SkillLevel.BEGINNER), new Hobby("Tennis", SkillLevel.ADVANCED)).build();
-    private final Member bob = new MemberBuilder().withName("Bob Tan").withEmail("bob@example.com")
-            .withGroups("Chess").withHobbies(new Hobby("Chess", SkillLevel.INTERMEDIATE)).build();
-    private final Member carol = new MemberBuilder().withName("Carol Lee").withEmail("carol@example.com")
-            .withGroups().withHobbies(new Hobby("Painting", SkillLevel.BEGINNER)).build();
     private final Session morning = new SessionBuilder().withName("Morning Chess")
             .withDateTime("2026-10-24T00:00").withLocation("Community Center")
             .withMembers("alice@example.com").build();
@@ -42,6 +35,17 @@ public class SingleSearchIntegrationTest {
             .withMembers("alice@example.com", "bob@example.com").build();
     private final Session nextDay = new SessionBuilder().withName("Sunday Chess")
             .withDateTime("2026-10-25T00:00").withLocation("Community Center").withMembers().build();
+
+    // Expected members include the session assignments populated by the model.
+    private final Member alice = new MemberBuilder().withName("Alice Lee").withEmail("alice@example.com")
+            .withGroups("Weekend Club")
+            .withHobbies(new Hobby("Chess", SkillLevel.BEGINNER), new Hobby("Tennis", SkillLevel.ADVANCED)).build()
+            .withSessions(List.of(morning, evening));
+    private final Member bob = new MemberBuilder().withName("Bob Tan").withEmail("bob@example.com")
+            .withGroups("Chess").withHobbies(new Hobby("Chess", SkillLevel.INTERMEDIATE)).build()
+            .withSessions(List.of(evening));
+    private final Member carol = new MemberBuilder().withName("Carol Lee").withEmail("carol@example.com")
+            .withGroups().withHobbies(new Hobby("Painting", SkillLevel.BEGINNER)).build();
 
     @Test
     public void searchMembers_eachField_returnsMatchingMembersAndCount() throws Exception {
