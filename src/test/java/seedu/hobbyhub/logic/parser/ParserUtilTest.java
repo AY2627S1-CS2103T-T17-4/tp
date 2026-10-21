@@ -3,9 +3,12 @@ package seedu.hobbyhub.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_INDEX;
+import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_SESSION_DATE_TIME;
+import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_SESSION_LOCATION;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_FIRST_MEMBER;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +20,7 @@ import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
+import seedu.hobbyhub.model.session.SessionName;
 
 public class ParserUtilTest {
     private static final String INVALID_NAME = "R@chel";
@@ -149,6 +153,55 @@ public class ParserUtilTest {
     @Test
     public void parseGroup_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseGroup(null));
+    }
+
+    @Test
+    public void parseSessionName_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parseSessionName(null));
+    }
+
+    @Test
+    public void parseSessionName_invalidValue_throwsParseException() {
+        assertThrows(ParseException.class, SessionName.MESSAGE_CONSTRAINTS,
+                () -> ParserUtil.parseSessionName("-Invalid"));
+    }
+
+    @Test
+    public void parseSessionName_validValueWithWhitespace_returnsTrimmedName() throws Exception {
+        assertEquals(new SessionName("Golf Meetup"), ParserUtil.parseSessionName("  Golf Meetup  "));
+    }
+
+    @Test
+    public void parseSessionLocation_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parseSessionLocation(null));
+    }
+
+    @Test
+    public void parseSessionLocation_blankValue_throwsParseException() {
+        assertThrows(ParseException.class, MESSAGE_INVALID_SESSION_LOCATION,
+                () -> ParserUtil.parseSessionLocation(" \t "));
+    }
+
+    @Test
+    public void parseSessionLocation_validValueWithWhitespace_returnsTrimmedLocation() throws Exception {
+        assertEquals("Golf Club", ParserUtil.parseSessionLocation("  Golf Club  "));
+    }
+
+    @Test
+    public void parseSessionDateTime_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parseSessionDateTime(null));
+    }
+
+    @Test
+    public void parseSessionDateTime_invalidValue_throwsParseException() {
+        assertThrows(ParseException.class, MESSAGE_INVALID_SESSION_DATE_TIME,
+                () -> ParserUtil.parseSessionDateTime("next Saturday"));
+    }
+
+    @Test
+    public void parseSessionDateTime_validValueWithWhitespace_returnsDateTime() throws Exception {
+        assertEquals(LocalDateTime.parse("2026-10-24T14:00"),
+                ParserUtil.parseSessionDateTime(" 2026-10-24T14:00 "));
     }
 
     @Test
