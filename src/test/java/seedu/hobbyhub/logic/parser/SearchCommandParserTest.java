@@ -72,7 +72,7 @@ public class SearchCommandParserTest {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, SearchCommand.MESSAGE_USAGE);
         for (String args : List.of("-g", "-sl", "-c", "-n \" \"", "-x Alice", "-p 91234567",
                 "-a Street", "-l Club", "-n Alice -g Club", "-sl Advanced -h Chess",
-                "-g Club -g Other", "-n Alice -x unknown", "-name Alice", "-nAlice")) {
+                "-g Club -g Other", "-n Alice -x unknown", "-n -x unknown", "-name Alice", "-nAlice")) {
             assertParseFailure(parser, args, expectedMessage);
         }
         assertParseFailure(parser, "-c invalid", Email.MESSAGE_CONSTRAINTS);
@@ -85,6 +85,10 @@ public class SearchCommandParserTest {
                 new SearchCommand(new NameContainsKeywordsPredicate(List.of("Alice Lee"))));
         assertParseSuccess(parser, "-n \"Alice -g Lee\"",
                 new SearchCommand(new NameContainsKeywordsPredicate(List.of("Alice -g Lee"))));
+        assertParseSuccess(parser, "-n \"-x value\"",
+                new SearchCommand(new NameContainsKeywordsPredicate(List.of("-x value"))));
+        assertParseSuccess(parser, "-n Jean-Luc",
+                new SearchCommand(new NameContainsKeywordsPredicate(List.of("Jean-Luc"))));
     }
 
 }
