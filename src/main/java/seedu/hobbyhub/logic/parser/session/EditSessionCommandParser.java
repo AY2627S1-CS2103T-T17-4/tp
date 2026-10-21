@@ -1,19 +1,83 @@
 package seedu.hobbyhub.logic.parser.session;
 
-import static seedu.hobbyhub.logic.Messages.MESSAGE_SESSION_COMMAND_UNAVAILABLE;
+import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_DATETIME;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_LOCATION;
 
-import seedu.hobbyhub.logic.commands.Command;
+import seedu.hobbyhub.commons.core.index.Index;
+import seedu.hobbyhub.logic.commands.session.EditSessionCommand;
+import seedu.hobbyhub.logic.parser.ArgumentMultimap;
+import seedu.hobbyhub.logic.parser.ArgumentTokenizer;
 import seedu.hobbyhub.logic.parser.Parser;
+import seedu.hobbyhub.logic.parser.ParserUtil;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 
 /**
  * Parses the {@code edit} command while the session list is showing.
- * This is a placeholder until session edit is implemented: it rejects every input.
  */
-public class EditSessionCommandParser implements Parser<Command> {
+public class EditSessionCommandParser implements Parser<EditSessionCommand> {
 
     @Override
-    public Command parse(String args) throws ParseException {
-        throw new ParseException(String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "edit"));
+    public EditSessionCommand parse(String args) throws ParseException {
+        if (hasUnsupportedOption(args)) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditSessionCommand.MESSAGE_USAGE));
+        }
+
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_LOCATION, PREFIX_DATETIME);
+
+        Index index;
+        try {
+            index = ParserUtil.parseIndex(argMultimap.getPreamble());
+        } catch (ParseException exception) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditSessionCommand.MESSAGE_USAGE),
+                    exception);
+        }
+
+        if (!hasFieldsToEdit(argMultimap)) {
+            throw new ParseException(EditSessionCommand.MESSAGE_NOT_EDITED);
+        }
+
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_LOCATION, PREFIX_DATETIME);
+
+        return new EditSessionCommand(
+                index,
+                argMultimap.getValue(PREFIX_LOCATION).isPresent()
+                        ? ParserUtil.parseSessionLocation(argMultimap.getValue(PREFIX_LOCATION).orElseThrow()) : null,
+                argMultimap.getValue(PREFIX_DATETIME).isPresent()
+                        ? ParserUtil.parseSessionDateTime(argMultimap.getValue(PREFIX_DATETIME).orElseThrow()) : null);
+    }
+
+    /** Returns true if at least one editable session field is present. */
+    private static boolean hasFieldsToEdit(ArgumentMultimap argumentMultimap) {
+        return argumentMultimap.getValue(PREFIX_LOCATION).isPresent()
+                || argumentMultimap.getValue(PREFIX_DATETIME).isPresent();
+    }
+
+    /** Returns true if an unsupported short option appears outside quoted text. */
+    private static boolean hasUnsupportedOption(String args) {
+        boolean insideQuotes = false;
+        for (int i = 0; i < args.length(); i++) {
+            char currentCharacter = args.charAt(i);
+            if (currentCharacter == '"') {
+                insideQuotes = !insideQuotes;
+            } else if (!insideQuotes && isShortOptionStart(args, i)) {
+                String option = args.substring(i, i + 2);
+                if (!option.equals(PREFIX_LOCATION.getPrefix()) && !option.equals(PREFIX_DATETIME.getPrefix())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Returns true when {@code index} begins a short option token. */
+    private static boolean isShortOptionStart(String args, int index) {
+        if (args.charAt(index) != '-') {
+            return false;
+        }
+        if (index + 1 >= args.length() || !Character.isLetter(args.charAt(index + 1))) {
+            return false;
+        }
+        return index == 0 || Character.isWhitespace(args.charAt(index - 1));
     }
 }
