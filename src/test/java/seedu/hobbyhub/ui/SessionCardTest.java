@@ -24,7 +24,7 @@ public class SessionCardTest {
             assertEquals("3. ", ((Label) root.lookup("#id")).getText());
             assertEquals("Golf Meet", ((Label) root.lookup("#name")).getText());
             assertEquals("Sat, 24 Oct 2026 at 2:00 PM", ((Label) root.lookup("#date")).getText());
-            assertEquals("Community Center", ((Label) root.lookup("#location")).getText());
+            assertEquals("Community Center", ((Label) root.lookup("#locationLabel")).getText());
             assertEquals("Completed", ((Label) root.lookup("#completed")).getText());
             assertEquals("2 members", ((Label) root.lookup("#memberCount")).getText());
         });
