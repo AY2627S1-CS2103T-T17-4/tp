@@ -192,7 +192,7 @@ public class LogicManagerTest {
         // Triggers the saveHobbyHub method by executing an add command
         String addCommand = AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
                 + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + HOBBY_DESC_AMY;
-        Member expectedMember = new MemberBuilder(AMY).withTags().build();
+        Member expectedMember = new MemberBuilder(AMY).withGroups().build();
         ModelManager expectedModel = new ModelManager();
         expectedModel.addMember(expectedMember);
         assertCommandFailure(addCommand, CommandException.class, expectedMessage, expectedModel);

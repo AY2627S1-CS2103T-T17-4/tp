@@ -28,7 +28,7 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 
    * `list` : Lists all contacts.
 
-   * `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h Chess` : Adds a contact named `John Doe` to the HobbyHub.
+   * `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h "Chess:Beginner" -h "Table Tennis:Advanced"` : Adds a contact named `John Doe` to the HobbyHub.
 
    * `search -n John` : Finds members whose names contain `John`.
 
@@ -54,10 +54,10 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
   For example, in `add -n NAME`, replace `NAME` with a value such as `John Doe`.
 
 * Items in square brackets are optional.<br>
-  For example, `-n NAME [-t TAG]` can be used as `-n John Doe -t friend` or as `-n John Doe`.
+  For example, `-n NAME [-g GROUP]` can be used as `-n John Doe -g friend` or as `-n John Doe`.
 
 * Items followed by `…`​ can appear zero or more times.<br>
-  For example, `[-t TAG]…​` may be omitted, or written as `-t friend` or `-t friend -t family`.
+  For example, `[-g GROUP]…​` may be omitted, or written as `-g friend` or `-g friend -g family`.
 
 * Parameters can be in any order.<br>
   For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
@@ -81,23 +81,25 @@ Format: `help`
 
 Adds a person to HobbyHub.
 
-Format: `add -n NAME -p PHONE_NUMBER -c EMAIL -a ADDRESS -h HOBBY [-t TAG]…​`
+Format: `add -n NAME -p PHONE_NUMBER -c EMAIL -a ADDRESS -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…`
 
 * Name, phone number, email, address, and hobby are all required and must not be empty.
-* Supply each required option once. Only `-t` may be repeated to add multiple tags.
+* Supply name, phone, email and address once. Repeat `-h` for additional hobbies and `-g` for additional groups.
 * Names must contain only letters, digits, and spaces. Phone numbers must contain at least three digits and no other characters.
-* Use a valid email address, such as `johnd@example.com`. Each tag must contain only letters and digits.
+* Use a valid email address, such as `johnd@example.com`. Group names must start with a letter or digit and contain only letters, digits and spaces.
 * Hobbies must start with a letter or digit and may contain letters, digits, spaces, and `&`, `+`, `'`, `/`, or `-`.
-* Multiword names, addresses, and hobbies do not need quotes; for example, `-h Board Games`.
-* A person with the same name as an existing person cannot be added.
+* Enclose a hobby and skill pair in double quotes when it contains spaces, for example, `-h "Board Games:Advanced"`.
+* Skill labels are Beginner, Intermediate and Advanced, ignoring capitalization. Hobby names cannot repeat,
+  even with different skill levels. Legacy `-h Board Games` input remains valid and defaults to Beginner.
+* Email addresses must be unique, ignoring capitalization. Members may share a name.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of tags, including zero.
+A person can have any number of groups, including zero.
 </div>
 
 Examples:
-* `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h Chess`
-* `add -n Betsy Crowe -t friend -c betsycrowe@example.com -a Newgate Prison -p 1234567 -t criminal -h Chess`
+* `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h "Chess:Beginner" -h "Table Tennis:Advanced"`
+* `add -n Betsy Crowe -g friend -c betsycrowe@example.com -a Newgate Prison -p 1234567 -g criminal -h Chess`
 
 ### Listing all persons: `list`
 
@@ -109,17 +111,21 @@ Format: `list`
 
 Edits an existing person in HobbyHub.
 
-Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h HOBBY] [-t TAG]…​`
+Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
-* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
-* To remove all of a person's tags, enter `-t` without a tag after it.
+* Supplying `-h` replaces the entire hobby list with the supplied hobbies and skill levels.
+  Omitting `-h` preserves all hobbies. An empty `-h` is rejected; at least one hobby is required.
+* When editing groups, all of the person's existing groups are removed; adding groups is not cumulative.
+* To remove all of a person's groups, enter `-g` without a group after it.
+* Omitting `-g` preserves the member's current groups.
 
 Examples:
+* `edit 1 -h "Chess:Advanced" -h "Cycling:Intermediate"` Replaces the member's hobbies with these two entries.
 * `edit 1 -p 91234567 -c johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-* `edit 2 -n Betsy Crower -t` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+* `edit 2 -n Betsy Crower -g` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing groups.
 
 ### Searching members: `search`
 
@@ -199,11 +205,39 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add -n NAME -p PHONE_NUMBER -c EMAIL -a ADDRESS -h HOBBY [-t TAG]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -t friend -t colleague -h Chess`
+**Add** | `add -n NAME -p PHONE_NUMBER -c EMAIL -a ADDRESS -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -g friend -g colleague -h Chess`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h HOBBY] [-t TAG]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
+**Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
 **Search** | `search -n NAME_FRAGMENT` or `search -h HOBBY_FRAGMENT`<br> e.g., `search -n James` or `search -h Chess`
 **List** | `list`
 **Help** | `help`
 **Exit** | `exit`
+
+### Hobby skill levels
+
+Member profiles can store multiple hobbies, each with a Beginner, Intermediate, or Advanced skill level.
+All stored hobbies and their skill levels appear on the member card, and hobby searches match any hobby name.
+Existing data with a single hobby loads with Beginner as its skill level.
+
+Use one `-h "HOBBY:SKILL"` option for each hobby, for example:
+
+`-h "Chess:Beginner" -h "Table Tennis:Advanced"`
+
+Each option describes one hobby and its skill level. A missing name, empty or unrecognized skill suffix,
+unbalanced quotes, repeated hobby name, or extra colon causes the command to fail without modifying data.
+Names without a skill suffix remain supported and default to Beginner. Editing `-h` replaces all hobbies;
+editing other fields preserves the current hobbies and skill levels.
+
+### Member groups
+
+Groups are optional labels for organising members, independent of hobbies and skill levels.
+Use repeated `-g` options, for example `-g "Weekend Club" -g Volunteers`.
+Group names are case-sensitive; repeated identical names are stored once.
+
+Editing with `edit 1 -g "Weekend Club"` replaces all of that member's groups. Use `edit 1 -g`
+to clear their groups. These operations preserve their hobbies, skill levels and session assignments.
+
+The former `-t` option is rejected with guidance to use `-g`. Saved JSON files with legacy `tags`
+still load; those names become groups. Saving writes `groups` rather than `tags`. If a file contains
+both fields, their contents are combined without dropping either set of labels.

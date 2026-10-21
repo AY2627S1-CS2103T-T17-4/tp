@@ -3,15 +3,16 @@ package seedu.hobbyhub.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_PHONE;
-import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.hobbyhub.model.Model.PREDICATE_SHOW_ALL_MEMBERS;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -22,13 +23,13 @@ import seedu.hobbyhub.commons.util.ToStringBuilder;
 import seedu.hobbyhub.logic.Messages;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.model.Model;
+import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
-import seedu.hobbyhub.model.tag.Tag;
 
 /**
  * Edits the details of an existing member in the HobbyHub.
@@ -45,13 +46,15 @@ public class EditCommand extends Command {
             + "[" + PREFIX_PHONE + "PHONE] "
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
-            + "[" + PREFIX_TAG + "TAG]...\n"
-            + "[" + PREFIX_HOBBY + "HOBBY]...\n"
+            + "[" + PREFIX_GROUP + "GROUP]...\n"
+            + "[" + PREFIX_HOBBY + " \"HOBBY:SKILL\"]...\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";
 
     public static final String MESSAGE_EDIT_MEMBER_SUCCESS = "Edited member: %1$s";
+    public static final String MESSAGE_HOBBIES_REPLACED =
+            "Hobby list replaced. Only the supplied hobbies and skill levels were kept.";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_DUPLICATE_MEMBER = "A member with this email already exists.";
 
@@ -88,7 +91,11 @@ public class EditCommand extends Command {
 
         model.setMember(memberToEdit, editedMember);
         model.updateFilteredMemberList(PREDICATE_SHOW_ALL_MEMBERS);
-        return new CommandResult(String.format(MESSAGE_EDIT_MEMBER_SUCCESS, Messages.format(editedMember)));
+        String feedback = String.format(MESSAGE_EDIT_MEMBER_SUCCESS, Messages.format(editedMember));
+        if (!memberToEdit.getHobbies().equals(editedMember.getHobbies())) {
+            feedback += "\n" + MESSAGE_HOBBIES_REPLACED;
+        }
+        return new CommandResult(feedback);
     }
 
     @Override
@@ -123,22 +130,22 @@ public class EditCommand extends Command {
         private Phone phone;
         private Email email;
         private Address address;
-        private Set<Tag> tags;
-        private Hobby hobby;
+        private Set<Group> groups;
+        private List<Hobby> hobbies;
 
         public EditMemberDescriptor() {}
 
         /**
          * Copy constructor.
-         * A defensive copy of {@code tags} is used internally.
+         * A defensive copy of {@code groups} is used internally.
          */
         public EditMemberDescriptor(EditMemberDescriptor toCopy) {
             setName(toCopy.name);
             setPhone(toCopy.phone);
             setEmail(toCopy.email);
             setAddress(toCopy.address);
-            setTags(toCopy.tags);
-            setHobby(toCopy.hobby);
+            setGroups(toCopy.groups);
+            setHobbies(toCopy.hobbies);
         }
 
         /**
@@ -152,17 +159,17 @@ public class EditCommand extends Command {
             Phone updatedPhone = getPhone().orElse(memberToEdit.getPhone());
             Email updatedEmail = getEmail().orElse(memberToEdit.getEmail());
             Address updatedAddress = getAddress().orElse(memberToEdit.getAddress());
-            Hobby updatedHobby = getHobby().orElse(memberToEdit.getHobby());
-            Set<Tag> updatedTags = getTags().orElse(memberToEdit.getTags());
+            List<Hobby> updatedHobbies = getHobbies().orElse(memberToEdit.getHobbies());
+            Set<Group> updatedGroups = getGroups().orElse(memberToEdit.getGroups());
 
-            return new Member(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedHobby, updatedTags);
+            return new Member(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedHobbies, updatedGroups);
         }
 
         /**
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, phone, email, address, tags, hobby);
+            return CollectionUtil.isAnyNonNull(name, phone, email, address, groups, hobbies);
         }
 
         public EditMemberDescriptor setName(Name name) {
@@ -202,29 +209,54 @@ public class EditCommand extends Command {
         }
 
         /**
-         * Sets {@code tags} to this object's {@code tags}.
-         * A defensive copy of {@code tags} is used internally.
+         * Sets {@code groups} to this object's {@code groups}.
+         * A defensive copy of {@code groups} is used internally.
          */
-        public EditMemberDescriptor setTags(Set<Tag> tags) {
-            this.tags = (tags != null) ? new HashSet<>(tags) : null;
+        public EditMemberDescriptor setGroups(Set<Group> groups) {
+            this.groups = (groups != null) ? new HashSet<>(groups) : null;
             return this;
         }
 
         /**
-         * Returns an unmodifiable tag set, which throws {@code UnsupportedOperationException}
+         * Returns an unmodifiable group set, which throws {@code UnsupportedOperationException}
          * if modification is attempted.
-         * Returns {@code Optional#empty()} if {@code tags} is null.
+         * Returns {@code Optional#empty()} if {@code groups} is null.
          */
-        public Optional<Set<Tag>> getTags() {
-            return (tags != null) ? Optional.of(Collections.unmodifiableSet(tags)) : Optional.empty();
+        public Optional<Set<Group>> getGroups() {
+            return (groups != null) ? Optional.of(Collections.unmodifiableSet(groups)) : Optional.empty();
         }
 
+        /** Returns the first supplied hobby for compatibility with single-hobby callers. */
         public Optional<Hobby> getHobby() {
-            return Optional.ofNullable(hobby);
+            return getHobbies().map(List::getFirst);
         }
 
+        /** Sets one hobby, replacing all previously supplied hobbies. */
         public EditMemberDescriptor setHobby(Hobby hobby) {
-            this.hobby = hobby;
+            return setHobbies(hobby == null ? null : List.of(hobby));
+        }
+
+        /** Returns all supplied hobbies as an immutable list, or empty if this field is not edited. */
+        public Optional<List<Hobby>> getHobbies() {
+            return Optional.ofNullable(hobbies);
+        }
+
+        /** Copies the hobbies to apply. A null list leaves the field unedited. */
+        public EditMemberDescriptor setHobbies(List<Hobby> hobbies) {
+            if (hobbies != null) {
+                // Reuse the member's list invariants, without requiring a partially constructed member.
+                if (hobbies.isEmpty()) {
+                    throw new IllegalArgumentException(Member.MESSAGE_HOBBIES_REQUIRED);
+                }
+                Set<String> names = new HashSet<>();
+                for (Hobby hobby : hobbies) {
+                    requireNonNull(hobby);
+                    if (!names.add(hobby.value.trim().toLowerCase(Locale.ROOT))) {
+                        throw new IllegalArgumentException(Member.MESSAGE_DUPLICATE_HOBBY);
+                    }
+                }
+            }
+            this.hobbies = hobbies == null ? null : List.copyOf(hobbies);
             return this;
         }
 
@@ -243,8 +275,8 @@ public class EditCommand extends Command {
                     && Objects.equals(phone, otherEditMemberDescriptor.phone)
                     && Objects.equals(email, otherEditMemberDescriptor.email)
                     && Objects.equals(address, otherEditMemberDescriptor.address)
-                    && Objects.equals(tags, otherEditMemberDescriptor.tags)
-                    && Objects.equals(hobby, otherEditMemberDescriptor.hobby);
+                    && Objects.equals(groups, otherEditMemberDescriptor.groups)
+                    && Objects.equals(hobbies, otherEditMemberDescriptor.hobbies);
         }
 
         @Override
@@ -254,8 +286,8 @@ public class EditCommand extends Command {
                     .add("phone", phone)
                     .add("email", email)
                     .add("address", address)
-                    .add("tags", tags)
-                    .add("hobby", hobby)
+                    .add("groups", groups)
+                    .add("hobbies", hobbies)
                     .toString();
         }
     }

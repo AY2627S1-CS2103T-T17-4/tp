@@ -41,7 +41,7 @@ public class MemberCard extends UiPart<Region> {
     @FXML
     private Label hobby;
     @FXML
-    private FlowPane tags;
+    private FlowPane groups;
 
     /**
      * Creates a {@code MemberCard} with the given {@code Member} and index to display.
@@ -54,9 +54,9 @@ public class MemberCard extends UiPart<Region> {
         phone.setText(member.getPhone().value);
         address.setText(member.getAddress().value);
         email.setText(member.getEmail().value);
-        hobby.setText(member.getHobby().value);
-        member.getTags().stream()
-                .sorted(Comparator.comparing(tag -> tag.tagName))
-                .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
+        hobby.setText(String.join(", ", member.getHobbies().stream().map(Object::toString).toList()));
+        member.getGroups().stream()
+                .sorted(Comparator.comparing(group -> group.groupName))
+                .forEach(group -> groups.getChildren().add(new Label(group.groupName)));
     }
 }

@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_EMAIL_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_GROUP_HUSBAND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_HOBBY_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
-import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalMembers.ALICE;
 import static seedu.hobbyhub.testutil.TypicalMembers.BOB;
@@ -23,7 +23,7 @@ public class MemberTest {
     @Test
     public void asObservableList_modifyList_throwsUnsupportedOperationException() {
         Member member = new MemberBuilder().build();
-        assertThrows(UnsupportedOperationException.class, () -> member.getTags().remove(0));
+        assertThrows(UnsupportedOperationException.class, () -> member.getGroups().remove(0));
     }
 
     @Test
@@ -36,7 +36,7 @@ public class MemberTest {
 
         // same email, all other attributes different -> returns true
         Member editedAlice = new MemberBuilder(ALICE).withName(VALID_NAME_BOB).withPhone(VALID_PHONE_BOB)
-                .withAddress(VALID_ADDRESS_BOB).withTags(VALID_TAG_HUSBAND).build();
+                .withAddress(VALID_ADDRESS_BOB).withGroups(VALID_GROUP_HUSBAND).build();
         assertTrue(ALICE.isSameMember(editedAlice));
 
         // different email, all other attributes same -> returns false
@@ -90,8 +90,8 @@ public class MemberTest {
         editedAlice = new MemberBuilder(ALICE).withHobby(VALID_HOBBY_BOB).build();
         assertFalse(ALICE.equals(editedAlice));
 
-        // different tags -> returns false
-        editedAlice = new MemberBuilder(ALICE).withTags(VALID_TAG_HUSBAND).build();
+        // different groups -> returns false
+        editedAlice = new MemberBuilder(ALICE).withGroups(VALID_GROUP_HUSBAND).build();
         assertFalse(ALICE.equals(editedAlice));
     }
 
@@ -99,7 +99,7 @@ public class MemberTest {
     public void toStringMethod() {
         String expected = Member.class.getCanonicalName() + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
                 + ", email=" + ALICE.getEmail() + ", address=" + ALICE.getAddress()
-                + ", hobby=" + ALICE.getHobby() + ", tags=" + ALICE.getTags() + "}";
+                + ", hobbies=" + ALICE.getHobbies() + ", groups=" + ALICE.getGroups() + "}";
         assertEquals(expected, ALICE.toString());
     }
 }

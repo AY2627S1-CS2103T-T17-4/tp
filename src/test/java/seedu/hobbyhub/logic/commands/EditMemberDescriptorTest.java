@@ -7,10 +7,10 @@ import static seedu.hobbyhub.logic.commands.CommandTestUtil.DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.DESC_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_GROUP_HUSBAND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_HOBBY_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
-import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 
 import org.junit.jupiter.api.Test;
 
@@ -53,8 +53,8 @@ public class EditMemberDescriptorTest {
         editedAmy = new EditMemberDescriptorBuilder(DESC_AMY).withAddress(VALID_ADDRESS_BOB).build();
         assertFalse(DESC_AMY.equals(editedAmy));
 
-        // different tags -> returns false
-        editedAmy = new EditMemberDescriptorBuilder(DESC_AMY).withTags(VALID_TAG_HUSBAND).build();
+        // different groups -> returns false
+        editedAmy = new EditMemberDescriptorBuilder(DESC_AMY).withGroups(VALID_GROUP_HUSBAND).build();
         assertFalse(DESC_AMY.equals(editedAmy));
 
         // different hobby -> returns false
@@ -69,9 +69,9 @@ public class EditMemberDescriptorTest {
                 + editMemberDescriptor.getName().orElse(null) + ", phone="
                 + editMemberDescriptor.getPhone().orElse(null) + ", email="
                 + editMemberDescriptor.getEmail().orElse(null) + ", address="
-                + editMemberDescriptor.getAddress().orElse(null) + ", tags="
-                + editMemberDescriptor.getTags().orElse(null) + ", hobby="
-                + editMemberDescriptor.getHobby().orElse(null) + "}";
+                + editMemberDescriptor.getAddress().orElse(null) + ", groups="
+                + editMemberDescriptor.getGroups().orElse(null) + ", hobbies="
+                + editMemberDescriptor.getHobbies().orElse(null) + "}";
         assertEquals(expected, editMemberDescriptor.toString());
     }
 }

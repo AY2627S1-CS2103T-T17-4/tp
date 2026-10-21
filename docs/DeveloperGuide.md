@@ -280,8 +280,6 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 # HobbyHub — User Stories
 
-# HobbyHub — User Stories
-
 | Priority | ID | As a …​ | I want to …​ | So that I can…​ |
 | -------- | -- | ------- | ------------ | ---------------- |
 | `* * *` | US01 | coordinator | add a member with a name, phone number, email, address, hobby and optional tags | maintain an up-to-date member list |
@@ -293,30 +291,28 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* * *` | US07 | coordinator | exit the application cleanly | close the application without losing saved data |
 | `* *` | US08 | coordinator | view a member's complete profile | understand the member's interests and participation needs |
 | `* *` | US09 | coordinator | edit a member's information | correct outdated or inaccurate records |
-| `* *` | US10 | coordinator | record a member's hobbies, skill level, availability, and area | identify suitable participants for activities |
+| `* *` | US10 | coordinator | record a member's hobbies, skill level and availability | identify suitable participants for activities |
 | `* *` | US11 | coordinator | filter members by availability and skill level | identify members suitable for a planned activity |
 | `* *` | US12 | coordinator | combine several search criteria | narrow down a large member list efficiently |
-| `* *` | US13 | coordinator | preview the shared attributes of two members | evaluate a potential pairing before recording it |
-| `* *` | US14 | coordinator | record a match between two members | keep track of pairings that I have arranged |
-| `* *` | US15 | coordinator | view a member's current match | know which pairing may be affected by a change |
-| `* *` | US16 | coordinator | remove an existing match | correct an outdated or unsuccessful pairing |
-| `* *` | US17 | coordinator | create and assign members to hobby groups | manage group participation |
-| `* *` | US18 | coordinator | view a member's group memberships | know which activities the member is involved in |
-| `* *` | US19 | coordinator | remove a member from a specific hobby group without deleting the member | update group participation accurately |
-| `* *` | US20 | coordinator | archive inactive members and ended matches | retain historical information without cluttering active records |
-| `* *` | US21 | coordinator | import member sign-ups from a CSV file | add many local records efficiently |
-| `* *` | US22 | coordinator | export member data | create backups or reuse the data elsewhere |
-| `* *` | US23 | coordinator | view local statistics such as common hobbies and unmatched members | understand the current state of my programme |
-| `*` | US24 | coordinator | use natural-language variants for equivalent commands | remember commands more easily |
-| `*` | US25 | coordinator | enter member details one field at a time | avoid remembering every option format |
-| `*` | US26 | coordinator | access in-app help and command suggestions | learn how to use the application without external documentation |
-| `*` | US27 | coordinator | recall previously entered commands | repeat common actions quickly |
-| `*` | US28 | coordinator | undo and redo recent changes | recover from accidental edits or removals |
-| `*` | US29 | coordinator | receive confirmation before destructive actions | avoid unintended removals or data clearing |
-| `*` | US30 | coordinator | perform fuzzy and typo-tolerant searches | find members without knowing the exact spelling |
-| `*` | US31 | coordinator | store multiple hobbies and phone numbers | represent more complete member profiles |
-| `*` | US32 | coordinator | validate and standardise addresses | keep stored contact information consistent |
-| `*` | US33 | coordinator | use GUI controls for common actions | use the application comfortably without typing every command |
+| `* *` | US13 | coordinator | record a session | keep track of sessions that I have arranged |
+| `* *` | US14 | coordinator | view a member's current sessions | know which sessions may be affected by a change |
+| `* *` | US15 | coordinator | remove an existing session | correct an outdated or unsuccessful pairing |
+| `* *` | US16 | coordinator | create and assign members to hobby groups | manage group participation |
+| `* *` | US17 | coordinator | view a member's group memberships | know which activities the member is involved in |
+| `* *` | US18 | coordinator | remove a member from a specific hobby group without deleting the member | update group participation accurately |
+| `* *` | US19 | coordinator | archive ended sessions | retain historical information without cluttering active records |
+| `* *` | US20 | coordinator | import member sign-ups from a JSON file | add many local records efficiently |
+| `* *` | US21 | coordinator | export member data | create backups or reuse the data elsewhere |
+| `* *` | US22 | coordinator | view local statistics such as common hobbies and unmatched members | understand the current state of my programme |
+| `*` | US23 | coordinator | use natural-language variants for equivalent commands | remember commands more easily |
+| `*` | US24 | coordinator | enter member details one field at a time | avoid remembering every option format |
+| `*` | US25 | coordinator | access in-app help and command suggestions | learn how to use the application without external documentation |
+| `*` | US26 | coordinator | recall previously entered commands | repeat common actions quickly |
+| `*` | US27 | coordinator | undo and redo recent changes | recover from accidental edits or removals |
+| `*` | US28 | coordinator | receive confirmation before destructive actions | avoid unintended removals or data clearing |
+| `*` | US29 | coordinator | perform partial searches | find members without knowing the exact spelling |
+| `*` | US30 | coordinator | store multiple hobbies and phone numbers | represent more complete member profiles |
+| `*` | US31 | coordinator | validate and standardise email addresses | keep stored contact information consistent |
 
 ### Use cases
 

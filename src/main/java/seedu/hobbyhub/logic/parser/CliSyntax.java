@@ -11,7 +11,10 @@ public class CliSyntax {
     public static final Prefix PREFIX_EMAIL = new Prefix("-c");
     public static final Prefix PREFIX_ADDRESS = new Prefix("-a");
     public static final Prefix PREFIX_HOBBY = new Prefix("-h");
-    public static final Prefix PREFIX_TAG = new Prefix("-t");
+    public static final Prefix PREFIX_GROUP = new Prefix("-g");
+
+    /** Recognized only to reject the replaced tag option with a helpful error. */
+    public static final Prefix PREFIX_LEGACY_TAG = new Prefix("-t");
 
     /* Search-specific prefix definitions */
     public static final Prefix PREFIX_SEARCH_NAME = new Prefix("-n");

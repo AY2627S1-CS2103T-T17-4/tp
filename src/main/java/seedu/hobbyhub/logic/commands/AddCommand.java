@@ -3,10 +3,10 @@ package seedu.hobbyhub.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_PHONE;
-import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_TAG;
 
 import seedu.hobbyhub.commons.util.ToStringBuilder;
 import seedu.hobbyhub.logic.Messages;
@@ -27,16 +27,16 @@ public class AddCommand extends Command {
             + PREFIX_PHONE + " PHONE "
             + PREFIX_EMAIL + " EMAIL "
             + PREFIX_ADDRESS + " ADDRESS "
-            + PREFIX_HOBBY + " HOBBY "
-            + "[" + PREFIX_TAG + " TAG]...\n"
+            + PREFIX_HOBBY + " \"HOBBY:SKILL\" [" + PREFIX_HOBBY + " \"HOBBY:SKILL\"]... "
+            + "[" + PREFIX_GROUP + " GROUP]...\n"
             + "Example: " + COMMAND_WORD + " "
             + PREFIX_NAME + " John Doe "
             + PREFIX_PHONE + " 98765432 "
             + PREFIX_EMAIL + " johnd@example.com "
             + PREFIX_ADDRESS + " 311, Clementi Ave 2, #02-25 "
-            + PREFIX_HOBBY + " Chess "
-            + PREFIX_TAG + " friends "
-            + PREFIX_TAG + " owesMoney";
+            + PREFIX_HOBBY + " \"Chess:Beginner\" "
+            + PREFIX_GROUP + " friends "
+            + PREFIX_GROUP + " owesMoney";
 
     public static final String MESSAGE_SUCCESS = "New member added: %1$s";
     public static final String MESSAGE_DUPLICATE_MEMBER = "A member with this email already exists.";

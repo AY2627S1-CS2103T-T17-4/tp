@@ -5,15 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.DESC_BOB;
+import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_GROUP_HUSBAND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
-import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.showMemberAtIndex;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_FIRST_MEMBER;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_SECOND_MEMBER;
 import static seedu.hobbyhub.testutil.TypicalMembers.getTypicalHobbyHub;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +26,9 @@ import seedu.hobbyhub.model.HobbyHub;
 import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.ModelManager;
 import seedu.hobbyhub.model.UserPrefs;
+import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
+import seedu.hobbyhub.model.member.SkillLevel;
 import seedu.hobbyhub.testutil.EditMemberDescriptorBuilder;
 import seedu.hobbyhub.testutil.MemberBuilder;
 
@@ -56,10 +60,10 @@ public class EditCommandTest {
 
         MemberBuilder memberInList = new MemberBuilder(lastMember);
         Member editedMember = memberInList.withName(VALID_NAME_BOB).withPhone(VALID_PHONE_BOB)
-                .withTags(VALID_TAG_HUSBAND).build();
+                .withGroups(VALID_GROUP_HUSBAND).build();
 
         EditMemberDescriptor descriptor = new EditMemberDescriptorBuilder().withName(VALID_NAME_BOB)
-                .withPhone(VALID_PHONE_BOB).withTags(VALID_TAG_HUSBAND).build();
+                .withPhone(VALID_PHONE_BOB).withGroups(VALID_GROUP_HUSBAND).build();
         EditCommand editCommand = new EditCommand(indexLastMember, descriptor);
 
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_MEMBER_SUCCESS, Messages.format(editedMember));
@@ -144,6 +148,44 @@ public class EditCommandTest {
                 new EditMemberDescriptorBuilder().withName(VALID_NAME_BOB).build());
 
         assertCommandFailure(editCommand, model, Messages.MESSAGE_INVALID_MEMBER_DISPLAYED_INDEX);
+    }
+
+    @Test
+    public void execute_singleHobbyEdit_replacesListAndReportsSkillReset() throws Exception {
+        Member original = model.getFilteredMemberList().getFirst();
+        Member experienced = new MemberBuilder(original).withHobbies(new Hobby("Chess", SkillLevel.ADVANCED),
+                new Hobby("Tennis", SkillLevel.INTERMEDIATE), new Hobby("Cycling")).build();
+        model.setMember(original, experienced);
+        EditMemberDescriptor descriptor = new EditMemberDescriptor().setHobby(new Hobby("Chess"));
+
+        CommandResult result = new EditCommand(INDEX_FIRST_MEMBER, descriptor).execute(model);
+
+        Member edited = model.getFilteredMemberList().getFirst();
+        assertEquals(List.of(new Hobby("Chess")), edited.getHobbies());
+        assertEquals(String.format(EditCommand.MESSAGE_EDIT_MEMBER_SUCCESS, Messages.format(edited))
+                + "\n" + EditCommand.MESSAGE_HOBBIES_REPLACED, result.getFeedbackToUser());
+    }
+
+    @Test
+    public void execute_singleAdvancedHobbyEdit_reportsSkillReset() throws Exception {
+        Member original = model.getFilteredMemberList().getFirst();
+        Member experienced = new MemberBuilder(original).withHobbies(new Hobby("Chess", SkillLevel.ADVANCED)).build();
+        model.setMember(original, experienced);
+        var descriptor = new EditMemberDescriptor().setHobby(new Hobby("Chess"));
+
+        CommandResult result = new EditCommand(INDEX_FIRST_MEMBER, descriptor).execute(model);
+
+        assertTrue(result.getFeedbackToUser().contains(EditCommand.MESSAGE_HOBBIES_REPLACED));
+        assertEquals(SkillLevel.BEGINNER, model.getFilteredMemberList().getFirst().getHobby().getSkillLevel());
+    }
+
+    @Test
+    public void execute_unchangedHobby_doesNotReportReplacement() throws Exception {
+        Member original = model.getFilteredMemberList().getFirst();
+        var descriptor = new EditMemberDescriptor().setHobby(original.getHobby());
+        CommandResult result = new EditCommand(INDEX_FIRST_MEMBER, descriptor).execute(model);
+        assertEquals(String.format(EditCommand.MESSAGE_EDIT_MEMBER_SUCCESS, Messages.format(original)),
+                result.getFeedbackToUser());
     }
 
     @Test

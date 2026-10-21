@@ -45,10 +45,10 @@ public class Messages {
                 .append(member.getEmail())
                 .append("; Address: ")
                 .append(member.getAddress())
-                .append("; Hobby: ")
-                .append(member.getHobby())
-                .append("; Tags: ");
-        member.getTags().forEach(builder::append);
+                .append("; Hobbies: ")
+                .append(member.getHobbies().stream().map(Object::toString).collect(Collectors.joining(", ")))
+                .append("; Groups: ");
+        member.getGroups().forEach(builder::append);
         return builder.toString();
     }
 

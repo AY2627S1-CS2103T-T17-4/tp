@@ -3,8 +3,10 @@ package seedu.hobbyhub.model.member;
 import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.commons.util.AppUtil.checkArgument;
 
+import java.util.Objects;
+
 /**
- * Represents a Member's primary hobby in the HobbyHub.
+ * Represents a hobby name and the member's skill level in that hobby.
  * Guarantees: immutable; is valid as declared in {@link #isValidHobby(String)}
  */
 public class Hobby {
@@ -20,6 +22,7 @@ public class Hobby {
     public static final String VALIDATION_REGEX = "[\\p{Alnum}][\\p{Alnum} &+'/-]*";
 
     public final String value;
+    private final SkillLevel skillLevel;
 
     /**
      * Constructs a {@code Hobby}.
@@ -27,7 +30,15 @@ public class Hobby {
      * @param hobby A valid hobby.
      */
     public Hobby(String hobby) {
+        this(hobby, SkillLevel.BEGINNER);
+    }
+
+    /**
+     * Constructs a hobby with an explicit skill level.
+     */
+    public Hobby(String hobby, SkillLevel skillLevel) {
         requireNonNull(hobby);
+        this.skillLevel = requireNonNull(skillLevel);
         checkArgument(isValidHobby(hobby), MESSAGE_CONSTRAINTS);
         value = hobby;
     }
@@ -39,9 +50,13 @@ public class Hobby {
         return test.matches(VALIDATION_REGEX);
     }
 
+    public SkillLevel getSkillLevel() {
+        return skillLevel;
+    }
+
     @Override
     public String toString() {
-        return value;
+        return value + " (" + skillLevel + ")";
     }
 
     @Override
@@ -55,12 +70,12 @@ public class Hobby {
             return false;
         }
 
-        return value.equals(otherHobby.value);
+        return value.equals(otherHobby.value) && skillLevel == otherHobby.skillLevel;
     }
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        return Objects.hash(value, skillLevel);
     }
 
 }
