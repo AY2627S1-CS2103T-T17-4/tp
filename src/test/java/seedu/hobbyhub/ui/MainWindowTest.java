@@ -117,6 +117,28 @@ public class MainWindowTest {
         });
     }
 
+    @Test
+    public void executeCommand_failsAfterSwitchingList_stillShowsCurrentList() {
+        FxTestHelper.runOnFxThread(() -> {
+            Stage stage = new Stage();
+            TestLogic logic = new TestLogic();
+            logic.listState = ListState.SESSIONS;
+            MainWindow mainWindow = new MainWindow(stage, logic, Path.of("data", "addressbook.json"));
+            mainWindow.fillInnerParts();
+            Scene scene = mainWindow.getRoot().getScene();
+            StackPane listPanelPlaceholder = (StackPane) scene.lookup("#listPanelPlaceholder");
+            Label listHeading = (Label) scene.lookup("#listHeading");
+
+            // list -m switches the list, then saving fails
+            logic.listStateOnExecute = ListState.MEMBERS;
+            logic.commandException = new CommandException("Could not save data");
+            assertThrows(AssertionError.class, () -> invokeExecuteCommand(mainWindow, "list -m"));
+
+            assertEquals("Members", listHeading.getText());
+            assertEquals(List.of(mainWindow.getMemberListPanel().getRoot()), listPanelPlaceholder.getChildren());
+        });
+    }
+
     private static CommandResult invokeExecuteCommand(MainWindow mainWindow, String commandText) {
         try {
             Method method = MainWindow.class.getDeclaredMethod("executeCommand", String.class);
@@ -133,12 +155,16 @@ public class MainWindowTest {
         private final ObservableList<Session> sessions =
                 FXCollections.observableArrayList(TypicalSessions.CHESS_MEETUP);
         private ListState listState = ListState.MEMBERS;
+        private ListState listStateOnExecute;
         private CommandResult commandResult = new CommandResult("Unused");
         private CommandException commandException;
         private GuiSettings savedGuiSettings;
 
         @Override
         public CommandResult execute(String commandText) throws CommandException, ParseException {
+            if (listStateOnExecute != null) {
+                listState = listStateOnExecute;
+            }
             if (commandException != null) {
                 throw commandException;
             }

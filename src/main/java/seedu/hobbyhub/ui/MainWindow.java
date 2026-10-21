@@ -203,7 +203,6 @@ public class MainWindow extends UiPart<Stage> {
             CommandResult commandResult = logic.execute(commandText);
             logger.info("Result: " + commandResult.getFeedbackToUser());
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
-            showCurrentList();
 
             if (commandResult.isShowHelp()) {
                 handleHelp();
@@ -218,6 +217,9 @@ public class MainWindow extends UiPart<Stage> {
             logger.info("An error occurred while executing command: " + commandText);
             resultDisplay.setFeedbackToUser(e.getMessage());
             throw e;
+        } finally {
+            // A failed command (e.g. a save error) may still have switched the list, so always resync the panel.
+            showCurrentList();
         }
     }
 }
