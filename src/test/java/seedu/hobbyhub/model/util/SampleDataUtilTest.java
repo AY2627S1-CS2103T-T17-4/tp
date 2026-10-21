@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Member;
+import seedu.hobbyhub.model.session.Session;
 
 public class SampleDataUtilTest {
 
@@ -29,7 +30,12 @@ public class SampleDataUtilTest {
 
     @Test
     public void getSampleHobbyHub_containsAllSampleMembers() {
-        List<Member> sampleMembers = List.of(SampleDataUtil.getSampleMembers());
+        List<Session> sampleSessions = List.of(SampleDataUtil.getSampleSessions());
+        List<Member> sampleMembers = List.of(SampleDataUtil.getSampleMembers()).stream()
+                .map(member -> member.withSessions(sampleSessions.stream()
+                        .filter(session -> session.hasMember(member.getEmail()))
+                        .toList()))
+                .toList();
 
         assertIterableEquals(sampleMembers, SampleDataUtil.getSampleHobbyHub().getMemberList());
     }

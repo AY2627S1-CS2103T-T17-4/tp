@@ -13,10 +13,8 @@ import seedu.hobbyhub.model.member.exceptions.MemberNotFoundException;
 
 /**
  * A list of members that enforces uniqueness between its elements and does not allow nulls.
- * A member is considered unique by comparing using {@code Member#isSameMember(Member)}. As such, adding and updating of
- * members uses Member#isSameMember(Member) for equality so as to ensure that the member being added or updated is
- * unique in terms of identity in the UniqueMemberList. However, the removal of a member uses Member#equals(Object) so
- * as to ensure that the member with exactly the same fields will be removed.
+ * Members are considered identical by {@code Member#isSameMember(Member)}. Adding, updating, and removing members use
+ * this identity comparison, even when their stored session assignments have changed.
  *
  * Supports a minimal set of list operations.
  *
@@ -56,7 +54,7 @@ public class UniqueMemberList implements Iterable<Member> {
     public void setMember(Member target, Member editedMember) {
         requireAllNonNull(target, editedMember);
 
-        int index = internalList.indexOf(target);
+        int index = getIndexOf(target);
         if (index == -1) {
             throw new MemberNotFoundException();
         }
@@ -74,9 +72,11 @@ public class UniqueMemberList implements Iterable<Member> {
      */
     public void remove(Member toRemove) {
         requireNonNull(toRemove);
-        if (!internalList.remove(toRemove)) {
+        int index = getIndexOf(toRemove);
+        if (index == -1) {
             throw new MemberNotFoundException();
         }
+        internalList.remove(index);
     }
 
     public void setMembers(UniqueMemberList replacement) {
@@ -145,5 +145,15 @@ public class UniqueMemberList implements Iterable<Member> {
             }
         }
         return true;
+    }
+
+    /** Returns the index of the member with the same identity, or {@code -1} if none exists. */
+    private int getIndexOf(Member member) {
+        for (int i = 0; i < internalList.size(); i++) {
+            if (internalList.get(i).isSameMember(member)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

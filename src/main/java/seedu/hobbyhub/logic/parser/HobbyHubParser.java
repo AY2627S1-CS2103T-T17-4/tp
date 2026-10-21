@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import seedu.hobbyhub.commons.core.LogsCenter;
 import seedu.hobbyhub.logic.commands.AddCommand;
+import seedu.hobbyhub.logic.commands.AssignCommand;
 import seedu.hobbyhub.logic.commands.ClearCommand;
 import seedu.hobbyhub.logic.commands.Command;
 import seedu.hobbyhub.logic.commands.DeleteCommand;
@@ -71,6 +72,12 @@ public class HobbyHubParser {
                 parseForList(listState, new DeleteCommandParser(), new DeleteSessionCommandParser(), arguments);
             case SearchCommand.COMMAND_WORD ->
                 parseForList(listState, new SearchCommandParser(), new SearchSessionCommandParser(), arguments);
+            case AssignCommand.COMMAND_WORD -> {
+                if (listState != ListState.MEMBERS) {
+                    throw new ParseException(AssignCommand.MESSAGE_MEMBER_LIST_REQUIRED);
+                }
+                yield new AssignCommandParser().parse(arguments);
+            }
             case ClearCommand.COMMAND_WORD -> new ClearCommand();
             case ListCommand.COMMAND_WORD -> new ListCommandParser().parse(arguments);
             case ExitCommand.COMMAND_WORD -> new ExitCommand();

@@ -15,6 +15,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.logic.commands.AddCommand;
+import seedu.hobbyhub.logic.commands.AssignCommand;
 import seedu.hobbyhub.logic.commands.ClearCommand;
 import seedu.hobbyhub.logic.commands.DeleteCommand;
 import seedu.hobbyhub.logic.commands.EditCommand;
@@ -30,6 +31,7 @@ import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.member.HobbyContainsKeywordsPredicate;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.NameContainsKeywordsPredicate;
+import seedu.hobbyhub.model.session.SessionName;
 import seedu.hobbyhub.testutil.EditMemberDescriptorBuilder;
 import seedu.hobbyhub.testutil.MemberBuilder;
 import seedu.hobbyhub.testutil.MemberUtil;
@@ -62,6 +64,21 @@ public class HobbyHubParserTest {
         DeleteCommand command = (DeleteCommand) parser.parseCommand(
                 DeleteCommand.COMMAND_WORD + " " + INDEX_FIRST_MEMBER.getOneBased(), MEMBERS);
         assertEquals(new DeleteCommand(INDEX_FIRST_MEMBER), command);
+    }
+
+    @Test
+    public void parseCommand_assignInMemberList() throws Exception {
+        AssignCommand command = (AssignCommand) parser.parseCommand(
+                AssignCommand.COMMAND_WORD + " 1 Weekend Chess Meetup", MEMBERS);
+
+        assertEquals(new AssignCommand(INDEX_FIRST_MEMBER, new SessionName("Weekend Chess Meetup")), command);
+    }
+
+    @Test
+    public void parseCommand_assignInSessionList_throwsParseException() {
+        String userInput = AssignCommand.COMMAND_WORD + " 1 Weekend Chess Meetup";
+        assertThrows(ParseException.class, AssignCommand.MESSAGE_MEMBER_LIST_REQUIRED, () -> parser.parseCommand(
+                userInput, SESSIONS));
     }
 
     @Test
