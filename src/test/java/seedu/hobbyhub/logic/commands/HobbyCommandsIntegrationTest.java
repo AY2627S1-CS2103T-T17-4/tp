@@ -12,6 +12,7 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.hobbyhub.logic.parser.HobbyHubParser;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.HobbyHub;
+import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.ModelManager;
 import seedu.hobbyhub.model.UserPrefs;
@@ -30,16 +31,16 @@ public class HobbyCommandsIntegrationTest {
         var originalSessions = List.copyOf(model.getHobbyHub().getSessionList());
         HobbyHubParser parser = new HobbyHubParser();
         parser.parseCommand("add -n New Member -p 91234567 -c new@example.com -a Main Street"
-                + " -h \"Table Tennis:Intermediate\" -h Chess:Advanced").execute(model);
+                + " -h \"Table Tennis:Intermediate\" -h Chess:Advanced", ListState.MEMBERS).execute(model);
         var added = model.getHobbyHub().getMemberList().getLast();
         assertEquals(List.of(new Hobby("Table Tennis", SkillLevel.INTERMEDIATE),
                 new Hobby("Chess", SkillLevel.ADVANCED)), added.getHobbies());
 
-        parser.parseCommand("edit 1 -h Chess:Advanced -h Cycling:Intermediate").execute(model);
+        parser.parseCommand("edit 1 -h Chess:Advanced -h Cycling:Intermediate", ListState.MEMBERS).execute(model);
         var edited = model.getHobbyHub().getMemberList().getFirst();
         assertEquals(List.of(new Hobby("Chess", SkillLevel.ADVANCED),
                 new Hobby("Cycling", SkillLevel.INTERMEDIATE)), edited.getHobbies());
-        parser.parseCommand("edit 1 -p 91234567").execute(model);
+        parser.parseCommand("edit 1 -p 91234567", ListState.MEMBERS).execute(model);
         assertEquals(edited.getHobbies(), model.getHobbyHub().getMemberList().getFirst().getHobbies());
         assertEquals(originalSessions, model.getHobbyHub().getSessionList());
 
@@ -53,7 +54,7 @@ public class HobbyCommandsIntegrationTest {
         Model model = new ModelManager(TypicalSessions.getTypicalHobbyHubWithSessions(), new UserPrefs());
         HobbyHub before = new HobbyHub(model.getHobbyHub());
         assertThrows(ParseException.class, () -> new HobbyHubParser()
-                .parseCommand("edit 1 -h Chess:Advanced -h Tennis:Expert").execute(model));
+                .parseCommand("edit 1 -h Chess:Advanced -h Tennis:Expert", ListState.MEMBERS).execute(model));
         assertEquals(before, model.getHobbyHub());
     }
 }
