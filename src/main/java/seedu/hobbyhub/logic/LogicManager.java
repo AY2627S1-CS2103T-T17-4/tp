@@ -12,8 +12,10 @@ import seedu.hobbyhub.logic.commands.CommandResult;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.logic.parser.HobbyHubParser;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
+import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.member.Member;
+import seedu.hobbyhub.model.session.Session;
 import seedu.hobbyhub.storage.Storage;
 
 /**
@@ -45,7 +47,7 @@ public class LogicManager implements Logic {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
         CommandResult commandResult;
-        Command command = hobbyHubParser.parseCommand(commandText);
+        Command command = hobbyHubParser.parseCommand(commandText, model.getListState());
         commandResult = command.execute(model);
 
         try {
@@ -62,6 +64,16 @@ public class LogicManager implements Logic {
     @Override
     public ObservableList<Member> getFilteredMemberList() {
         return model.getFilteredMemberList();
+    }
+
+    @Override
+    public ObservableList<Session> getFilteredSessionList() {
+        return model.getFilteredSessionList();
+    }
+
+    @Override
+    public ListState getListState() {
+        return model.getListState();
     }
 
     @Override

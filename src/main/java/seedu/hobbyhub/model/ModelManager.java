@@ -24,6 +24,7 @@ public class ModelManager implements Model {
     private final UserPrefs userPrefs;
     private final FilteredList<Member> filteredMembers;
     private final FilteredList<Session> filteredSessions;
+    private ListState listState = ListState.MEMBERS;
 
     /**
      * Initializes a ModelManager with the given hobbyHub and userPrefs.
@@ -167,6 +168,20 @@ public class ModelManager implements Model {
         filteredSessions.setPredicate(predicate);
     }
 
+    //=========== List State =================================================================================
+
+    @Override
+    public ListState getListState() {
+        return listState;
+    }
+
+    @Override
+    public void setListState(ListState listState) {
+        requireNonNull(listState);
+        logger.fine("Switching to the " + listState + " list");
+        this.listState = listState;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -181,7 +196,8 @@ public class ModelManager implements Model {
         return hobbyHub.equals(otherModelManager.hobbyHub)
                 && userPrefs.equals(otherModelManager.userPrefs)
                 && filteredMembers.equals(otherModelManager.filteredMembers)
-                && filteredSessions.equals(otherModelManager.filteredSessions);
+                && filteredSessions.equals(otherModelManager.filteredSessions)
+                && listState == otherModelManager.listState;
     }
 
 }

@@ -17,6 +17,7 @@ import seedu.hobbyhub.logic.commands.AddCommand;
 import seedu.hobbyhub.logic.commands.EditCommand;
 import seedu.hobbyhub.logic.commands.EditCommand.EditMemberDescriptor;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
+import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.SkillLevel;
@@ -100,10 +101,11 @@ public class HobbyCommandParsingTest {
     @Test
     public void generatedCommands_preserveAllHobbiesAndSkills() throws Exception {
         Member member = new MemberBuilder().withHobbies(chess, tennis).build();
-        assertEquals(new AddCommand(member), new HobbyHubParser().parseCommand(MemberUtil.getAddCommand(member)));
+        assertEquals(new AddCommand(member),
+                new HobbyHubParser().parseCommand(MemberUtil.getAddCommand(member), ListState.MEMBERS));
         EditMemberDescriptor descriptor = new EditMemberDescriptor().setHobbies(member.getHobbies());
         assertEquals(new EditCommand(INDEX_FIRST_MEMBER, descriptor), new HobbyHubParser().parseCommand(
-                "edit 1 " + MemberUtil.getEditMemberDescriptorDetails(descriptor)));
+                "edit 1 " + MemberUtil.getEditMemberDescriptorDetails(descriptor), ListState.MEMBERS));
     }
 
     @Test

@@ -111,4 +111,15 @@ public interface Model {
      * Returns the sessions that the given member is assigned to.
      */
     List<Session> getSessionsOf(Member member);
+
+    /**
+     * Returns the list currently shown to the user.
+     */
+    ListState getListState();
+
+    /**
+     * Sets the list shown to the user.
+     * @throws NullPointerException if {@code listState} is null.
+     */
+    void setListState(ListState listState);
 }

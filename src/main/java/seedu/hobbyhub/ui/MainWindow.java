@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCombination;
@@ -17,6 +18,7 @@ import seedu.hobbyhub.logic.Logic;
 import seedu.hobbyhub.logic.commands.CommandResult;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
+import seedu.hobbyhub.model.ListState;
 
 /**
  * The Main Window. Provides the basic application layout containing
@@ -34,6 +36,7 @@ public class MainWindow extends UiPart<Stage> {
 
     // Independent Ui parts residing in this Ui container
     private MemberListPanel memberListPanel;
+    private SessionListPanel sessionListPanel;
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
 
@@ -44,7 +47,10 @@ public class MainWindow extends UiPart<Stage> {
     private MenuItem helpMenuItem;
 
     @FXML
-    private StackPane memberListPanelPlaceholder;
+    private Label listHeading;
+
+    @FXML
+    private StackPane listPanelPlaceholder;
 
     @FXML
     private StackPane resultDisplayPlaceholder;
@@ -115,7 +121,8 @@ public class MainWindow extends UiPart<Stage> {
      */
     void fillInnerParts() {
         memberListPanel = new MemberListPanel(logic.getFilteredMemberList());
-        memberListPanelPlaceholder.getChildren().add(memberListPanel.getRoot());
+        sessionListPanel = new SessionListPanel(logic.getFilteredSessionList());
+        showCurrentList();
 
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
@@ -125,6 +132,17 @@ public class MainWindow extends UiPart<Stage> {
 
         CommandBox commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
+    }
+
+    /**
+     * Shows the member list or the session list, whichever {@code logic} says is current.
+     */
+    private void showCurrentList() {
+        boolean isMemberList = logic.getListState() == ListState.MEMBERS;
+        listHeading.setText(isMemberList ? "Members" : "Sessions");
+        listPanelPlaceholder.getChildren().setAll(isMemberList
+                ? memberListPanel.getRoot()
+                : sessionListPanel.getRoot());
     }
 
     /**
@@ -171,6 +189,10 @@ public class MainWindow extends UiPart<Stage> {
         return memberListPanel;
     }
 
+    public SessionListPanel getSessionListPanel() {
+        return sessionListPanel;
+    }
+
     /**
      * Executes the command and returns the result.
      *
@@ -195,6 +217,9 @@ public class MainWindow extends UiPart<Stage> {
             logger.info("An error occurred while executing command: " + commandText);
             resultDisplay.setFeedbackToUser(e.getMessage());
             throw e;
+        } finally {
+            // A failed command (e.g. a save error) may still have switched the list, so always resync the panel.
+            showCurrentList();
         }
     }
 }

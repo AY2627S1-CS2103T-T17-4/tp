@@ -165,6 +165,22 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void getListState_default_isMembers() {
+        assertEquals(ListState.MEMBERS, modelManager.getListState());
+    }
+
+    @Test
+    public void setListState_validState_setsState() {
+        modelManager.setListState(ListState.SESSIONS);
+        assertEquals(ListState.SESSIONS, modelManager.getListState());
+    }
+
+    @Test
+    public void setListState_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> modelManager.setListState(null));
+    }
+
+    @Test
     public void equals() {
         HobbyHub hobbyHub = new HobbyHubBuilder().withMember(ALICE).withMember(BENSON).build();
         HobbyHub differentHobbyHub = new HobbyHub();
@@ -204,6 +220,11 @@ public class ModelManagerTest {
         ModelManager modelManagerWithSession = new ModelManager(hobbyHubWithSession, userPrefs);
         modelManagerWithSession.updateFilteredSessionList(session -> false);
         assertFalse(modelManagerWithSession.equals(new ModelManager(hobbyHubWithSession, userPrefs)));
+
+        // different list state -> returns false
+        ModelManager modelManagerShowingSessions = new ModelManager(hobbyHub, userPrefs);
+        modelManagerShowingSessions.setListState(ListState.SESSIONS);
+        assertFalse(modelManager.equals(modelManagerShowingSessions));
 
         // different userPrefs -> returns false
         UserPrefs differentUserPrefs = new UserPrefs();
