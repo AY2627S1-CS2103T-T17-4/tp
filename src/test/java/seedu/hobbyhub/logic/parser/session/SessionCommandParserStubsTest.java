@@ -15,7 +15,7 @@ import seedu.hobbyhub.testutil.SessionBuilder;
 public class SessionCommandParserStubsTest {
 
     @Test
-    public void parse_addSession_validFields_returnsCommand() {
+    public void parse_addSession_returnsCommand() {
         AddSessionCommand expectedCommand = new AddSessionCommand(new SessionBuilder()
                 .withName("Golf Meet")
                 .withDateTime("2026-10-24T14:00")

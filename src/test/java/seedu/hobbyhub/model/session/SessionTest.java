@@ -34,8 +34,8 @@ public class SessionTest {
 
         Set<Email> membersWithNull = new HashSet<>();
         membersWithNull.add(null);
-        assertThrows(NullPointerException.class,
-                () -> new Session(name, dateTime, location, false, membersWithNull));
+        assertThrows(NullPointerException.class, () -> new Session(name, dateTime, location, false,
+                membersWithNull));
     }
 
     @Test
