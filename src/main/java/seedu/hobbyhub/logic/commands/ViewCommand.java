@@ -45,7 +45,7 @@ public class ViewCommand extends Command {
         return new CommandResult(formatMember(lastShownList.get(targetIndex.getZeroBased())));
     }
 
-    /** 
+    /**
      * Format string on additional details when viewing {@code member} details
      *
      * @param m A particular member
