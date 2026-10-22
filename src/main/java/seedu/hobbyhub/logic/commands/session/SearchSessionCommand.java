@@ -15,10 +15,12 @@ import seedu.hobbyhub.model.session.Session;
  * Filters the session list without changing stored sessions or the active list.
  */
 public class SearchSessionCommand extends Command {
-    public static final String MESSAGE_USAGE = "search: Filters sessions using exactly one option.\n"
+    public static final String MESSAGE_USAGE = "search: Filters sessions using one or more options. "
+            + "All conditions must match.\n"
             + "Names and locations use case-insensitive partial matching; participant emails match in full.\n"
-            + "Parameters: -n NAME_FRAGMENT | -l LOCATION_FRAGMENT | -t YYYY-MM-DD "
-            + "| -done true/false | -c PARTICIPANT_EMAIL\n"
+            + "Parameters: [-n NAME_FRAGMENT] [-l LOCATION_FRAGMENT] [-t YYYY-MM-DD] "
+            + "[-done true/false] [-c PARTICIPANT_EMAIL]\n"
+            + "At least one option is required; each option can appear only once.\n"
             + "Example: search -t 2026-10-24";
 
     private final Predicate<Session> predicate;

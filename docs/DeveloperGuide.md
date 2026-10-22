@@ -154,7 +154,7 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 This section describes some noteworthy details on how certain features are implemented.
 
-### Single-criterion member and session search
+### Member and session search with combined criteria
 
 The model stores the active view in `ListState.MEMBERS` or `ListState.SESSIONS`.
 `list -m` and `list -s` switch this state and show all records of the selected type;
@@ -162,8 +162,10 @@ plain `list` resets the current list's filter without switching views.
 `LogicManager` passes the active state to `HobbyHubParser`, which routes `search` to
 `SearchCommandParser` or `SearchSessionCommandParser`.
 
-Both parsers use `SearchArgument` to require exactly one supported option with a non-empty query.
-This also rejects repeated options, additional options and unknown options outside quoted text.
+Both parsers use `SearchArgument` to require one or more distinct supported options with non-empty queries.
+The parser separates options outside double quotes and returns them in prefix order.
+This also rejects repeated options and unknown options outside quoted text, while preserving quoted option-like text.
+Canonical prefix order gives equivalent combinations a consistent predicate representation regardless of input order.
 Email queries are validated by `ParserUtil.parseEmail`, skill levels against `SkillLevel`,
 and dates against the `YYYY-MM-DD` format and `LocalDate` calendar validation.
 Completion queries accept only `true` or `false`, ignoring case.
@@ -171,7 +173,9 @@ Completion queries accept only `true` or `false`, ignoring case.
 Member search supports name (`-n`), hobby name (`-h`), group (`-g`), email (`-c`), and skill level (`-sl`).
 Name, hobby and group searches use case-insensitive substring matching.
 Hobby matching examines every hobby name, independently of groups.
-Skill matching examines every hobby and succeeds if any hobby has the requested level.
+Skill matching without a hobby criterion succeeds if any hobby has the requested level.
+When hobby and skill are both supplied, `HobbyAndSkillPredicate` requires one hobby to satisfy both criteria.
+Thus Chess:Beginner and Tennis:Advanced cannot satisfy a Chess + Advanced search.
 Email matching compares the complete address, ignoring case.
 
 Session search supports name (`-n`), location (`-l`), date (`-t`), completion status (`-done`),
@@ -179,13 +183,17 @@ and participant email (`-c`). Name and location use case-insensitive substring m
 Date matching compares the session's local calendar date, ignoring its time.
 Participant matching compares the complete email against the session's assigned emails, ignoring case.
 
+Each criterion is converted to a validated predicate. A single predicate is used directly;
+multiple predicates are combined in an immutable `AllMatchPredicate`, which requires every condition to match.
+Hobby and skill form one paired predicate when both are present. All remaining fields are independent conditions.
 `SearchCommand` and `SearchSessionCommand` replace the predicate of the corresponding model filtered list.
 The UI observes that list and displays matching records using its existing cards.
 The command returns a result count, including zero for an empty result list.
 Search preserves stored data, the active state, and the other list's filter.
 Each new search examines all records of its type rather than only the previous search results.
 
-Combined criteria (US12) are planned for a later change and are currently rejected.
+Combined criteria implement US12 for members and support the corresponding session search workflow.
+Invalid combinations are rejected before execution, preserving both the previous filter and stored data.
 Availability search (part of US11) awaits availability model support; phone and address are outside search scope.
 
 ### \[Proposed\] Undo/redo feature
@@ -500,7 +508,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
   
-**Use case: UC04 - Search members by one criterion**
+**Use case: UC04 - Search members by one or more criteria**
 
 **Preconditions**
 
@@ -509,17 +517,17 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **MSS**
 
 1. Coordinator initiates a member search.
-2. Coordinator supplies exactly one name fragment, hobby fragment, group fragment, complete email, or skill level.
+2. Coordinator supplies one or more distinct name, hobby, group, email, or skill-level options.
 3. HobbyHub validates the search term.
-4. HobbyHub identifies members matching the selected field, ignoring letter case. Names, hobbies and groups
-   use substring matching; emails match in full; skill levels match any of the member's hobbies.
+4. HobbyHub identifies members matching all supplied criteria, ignoring letter case. Names, hobbies and groups
+   use substring matching; emails match in full. When hobby and skill are combined, both must match one hobby.
 5. HobbyHub returns the matching member records to the coordinator.
 
    Use case ends.
 
 **Guarantees**
 
-* HobbyHub displays all members matching the selected criterion, with a result count.
+* HobbyHub displays all members matching every supplied criterion, with a result count.
 * Each search replaces the previous member filter.
 * No member data is changed.
 
@@ -530,9 +538,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   * 1a1. HobbyHub reports that the request format is invalid.
   * 1a2. HobbyHub does not perform a search or modify any member records.
 
-* 1b. The coordinator supplies more than one criterion, including a repeated option.
+* 1b. The coordinator repeats an option.
 
-  * 1b1. HobbyHub reports that only one search criterion can be given.
+  * 1b1. HobbyHub reports the invalid format; each option can be supplied only once.
   * 1b2. HobbyHub does not perform a search. Use case ends.
 
     Use case ends.
@@ -645,7 +653,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case ends.
 
-**Use case: UC07 - Search sessions by one criterion**
+**Use case: UC07 - Search sessions by one or more criteria**
 
 **Preconditions**
 
@@ -653,10 +661,10 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1. Coordinator requests a search with exactly one session name fragment, location fragment, date,
-   completion status, or participant email.
-2. HobbyHub validates the option and its non-empty query.
-3. HobbyHub searches all sessions using the selected criterion.
+1. Coordinator requests a search with one or more distinct session name, location, date,
+   completion status, or participant email options.
+2. HobbyHub validates every option and its non-empty query.
+3. HobbyHub searches all sessions, requiring every supplied criterion to match the same session.
 4. HobbyHub displays matching session cards and the number of sessions listed.
 
    Use case ends.
@@ -670,7 +678,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Extensions**
 
-* 2a. An option is missing, repeated, unsupported, or combined with another option, or its value is invalid.
+* 2a. No criteria are supplied, an option is repeated or unsupported, or its value is missing or invalid.
   * 2a1. HobbyHub reports the format or value error and leaves the existing results unchanged.
 * 3a. No sessions match.
   * 3a1. HobbyHub displays an empty session list and reports zero sessions listed.
