@@ -54,7 +54,12 @@ public class ViewSessionCommand extends Command {
         return new CommandResult(formatSession(lastShownList.get(targetIndex.getZeroBased())));
     }
 
-    /** Formats string of all details on {@code s} */
+    /** 
+     * Format string on additional details when viewing {@code session} details
+     *
+     * @param m A particular session
+     * @return A string of the details of the session, inclusive of it's participants.
+     */
     public static String formatSession(Session s) {
         String members = s.getMembers().isEmpty()
             ? "none"
