@@ -2,6 +2,7 @@ package seedu.hobbyhub.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.hobbyhub.logic.Messages.MESSAGE_SESSION_LIST_REQUIRED;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 
 import java.util.logging.Logger;
@@ -20,10 +21,12 @@ import seedu.hobbyhub.logic.commands.HelpCommand;
 import seedu.hobbyhub.logic.commands.ListCommand;
 import seedu.hobbyhub.logic.commands.SearchCommand;
 import seedu.hobbyhub.logic.commands.UnassignCommand;
+import seedu.hobbyhub.logic.commands.session.MarkSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.logic.parser.session.AddSessionCommandParser;
 import seedu.hobbyhub.logic.parser.session.DeleteSessionCommandParser;
 import seedu.hobbyhub.logic.parser.session.EditSessionCommandParser;
+import seedu.hobbyhub.logic.parser.session.MarkSessionCommandParser;
 import seedu.hobbyhub.logic.parser.session.SearchSessionCommandParser;
 import seedu.hobbyhub.model.ListState;
 
@@ -79,6 +82,10 @@ public class HobbyHubParser {
                 }
                 yield new AssignCommandParser().parse(arguments);
             }
+            case MarkSessionCommand.COMMAND_WORD ->
+                parseForSessionList(listState, commandWord, new MarkSessionCommandParser(true), arguments);
+            case MarkSessionCommand.UNMARK_COMMAND_WORD ->
+                parseForSessionList(listState, commandWord, new MarkSessionCommandParser(false), arguments);
             case UnassignCommand.COMMAND_WORD -> {
                 if (listState != ListState.MEMBERS) {
                     throw new ParseException(UnassignCommand.MESSAGE_MEMBER_LIST_REQUIRED);
@@ -104,6 +111,19 @@ public class HobbyHubParser {
             Parser<? extends Command> sessionParser, String arguments) throws ParseException {
         Parser<? extends Command> parser = listState == ListState.MEMBERS ? memberParser : sessionParser;
         return parser.parse(arguments);
+    }
+
+    /**
+     * Parses {@code arguments} with {@code sessionParser} if the session list is showing.
+     *
+     * @throws ParseException if the member list is showing, or if {@code sessionParser} rejects the arguments
+     */
+    private static Command parseForSessionList(ListState listState, String commandWord,
+            Parser<? extends Command> sessionParser, String arguments) throws ParseException {
+        if (listState != ListState.SESSIONS) {
+            throw new ParseException(String.format(MESSAGE_SESSION_LIST_REQUIRED, commandWord));
+        }
+        return sessionParser.parse(arguments);
     }
 
 }
