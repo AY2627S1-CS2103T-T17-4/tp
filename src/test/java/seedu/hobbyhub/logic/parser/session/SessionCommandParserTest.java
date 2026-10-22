@@ -164,7 +164,6 @@ public class SessionCommandParserTest {
         assertParseFailure(new DeleteSessionCommandParser(), " 1 extra", expectedMessage);
     }
 
-    @Test
     private static void assertInvalidSessionCommandFormat(String args) {
         assertParseFailure(new AddSessionCommandParser(), args,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddSessionCommand.MESSAGE_USAGE));
