@@ -19,6 +19,7 @@ import seedu.hobbyhub.logic.commands.ExitCommand;
 import seedu.hobbyhub.logic.commands.HelpCommand;
 import seedu.hobbyhub.logic.commands.ListCommand;
 import seedu.hobbyhub.logic.commands.SearchCommand;
+import seedu.hobbyhub.logic.commands.UnassignCommand;
 import seedu.hobbyhub.logic.commands.ViewCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.logic.parser.session.AddSessionCommandParser;
