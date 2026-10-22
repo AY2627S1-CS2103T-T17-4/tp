@@ -37,6 +37,17 @@ public class MarkSessionCommandTest {
     }
 
     @Test
+    public void execute_memberList_throwsCommandException() {
+        ModelManager model = createModelWith(CHESS_MEETUP);
+        model.setListState(ListState.MEMBERS);
+
+        assertThrows(CommandException.class, String.format(Messages.MESSAGE_SESSION_LIST_REQUIRED, "mark"), () ->
+                new MarkSessionCommand(FIRST, true).execute(model));
+        assertThrows(CommandException.class, String.format(Messages.MESSAGE_SESSION_LIST_REQUIRED, "unmark"), () ->
+                new MarkSessionCommand(FIRST, false).execute(model));
+    }
+
+    @Test
     public void execute_mark_marksSessionAsCompleted() throws Exception {
         ModelManager model = createModelWith(CHESS_MEETUP);
 

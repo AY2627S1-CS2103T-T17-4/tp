@@ -52,7 +52,10 @@ public class MarkSessionCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        assert model.getListState() == ListState.SESSIONS : "mark and unmark are only parsed on the session list";
+        if (model.getListState() != ListState.SESSIONS) {
+            throw new CommandException(String.format(Messages.MESSAGE_SESSION_LIST_REQUIRED,
+                    isCompleted ? COMMAND_WORD : UNMARK_COMMAND_WORD));
+        }
 
         List<Session> lastShownList = model.getFilteredSessionList();
         if (index.getZeroBased() >= lastShownList.size()) {
