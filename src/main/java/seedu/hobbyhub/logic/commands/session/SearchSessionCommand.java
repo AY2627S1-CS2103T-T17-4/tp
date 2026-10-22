@@ -23,6 +23,11 @@ public class SearchSessionCommand extends Command {
 
     private final Predicate<Session> predicate;
 
+    /**
+     * Creates a command that filters sessions using the given predicate.
+     *
+     * @param predicate Non-null predicate that determines which sessions appear in the filtered list.
+     */
     public SearchSessionCommand(Predicate<Session> predicate) {
         this.predicate = requireNonNull(predicate);
     }
