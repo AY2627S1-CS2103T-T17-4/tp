@@ -3,12 +3,12 @@ package seedu.hobbyhub.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.hobbyhub.logic.Messages.MESSAGE_SESSION_COMMAND_UNAVAILABLE;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.hobbyhub.model.ListState.MEMBERS;
 import static seedu.hobbyhub.model.ListState.SESSIONS;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_FIRST_MEMBER;
+import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_SECOND_MEMBER;
 
 import java.util.List;
 
@@ -24,7 +24,9 @@ import seedu.hobbyhub.logic.commands.ExitCommand;
 import seedu.hobbyhub.logic.commands.HelpCommand;
 import seedu.hobbyhub.logic.commands.ListCommand;
 import seedu.hobbyhub.logic.commands.SearchCommand;
+import seedu.hobbyhub.logic.commands.UnassignCommand;
 import seedu.hobbyhub.logic.commands.session.AddSessionCommand;
+import seedu.hobbyhub.logic.commands.session.DeleteSessionCommand;
 import seedu.hobbyhub.logic.commands.session.EditSessionCommand;
 import seedu.hobbyhub.logic.commands.session.SearchSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
@@ -83,6 +85,22 @@ public class HobbyHubParserTest {
     }
 
     @Test
+    public void parseCommand_unassignInMemberList() throws Exception {
+        UnassignCommand command = (UnassignCommand) parser.parseCommand(
+                UnassignCommand.COMMAND_WORD + " 2 Weekend Chess Meetup", MEMBERS);
+
+        assertEquals(new UnassignCommand(INDEX_SECOND_MEMBER,
+                new SessionName("Weekend Chess Meetup")), command);
+    }
+
+    @Test
+    public void parseCommand_unassignInSessionList_throwsParseException() {
+        String userInput = UnassignCommand.COMMAND_WORD + " 2 Weekend Chess Meetup";
+        assertThrows(ParseException.class, UnassignCommand.MESSAGE_MEMBER_LIST_REQUIRED, () -> parser.parseCommand(
+                userInput, SESSIONS));
+    }
+
+    @Test
     public void parseCommand_edit() throws Exception {
         Member member = new MemberBuilder().build();
         EditMemberDescriptor descriptor = new EditMemberDescriptorBuilder(member).build();
@@ -132,8 +150,8 @@ public class HobbyHubParserTest {
                 + " -n Golf Meet -l Golf Club -t 2026-10-24T14:00", SESSIONS) instanceof AddSessionCommand);
         assertTrue(parser.parseCommand(EditCommand.COMMAND_WORD + " 1 -l Golf Club", SESSIONS)
                 instanceof EditSessionCommand);
-        assertThrows(ParseException.class, String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "delete"), ()
-            -> parser.parseCommand(DeleteCommand.COMMAND_WORD + " 1", SESSIONS));
+        assertEquals(new DeleteSessionCommand(INDEX_FIRST_MEMBER),
+                parser.parseCommand(DeleteCommand.COMMAND_WORD + " 1", SESSIONS));
         assertTrue(parser.parseCommand(SearchCommand.COMMAND_WORD + " -n golf", SESSIONS)
                 instanceof SearchSessionCommand);
     }

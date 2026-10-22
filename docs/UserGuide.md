@@ -211,6 +211,18 @@ Text fragments can contain spaces. One surrounding pair of double quotes is opti
 `search -n "Weekend Chess"` and `search -n Weekend Chess` are equivalent.
 Quote text containing a word starting with `-` so it is treated as text rather than another option.
 
+### Deleting a session: `delete`
+
+Deletes the session at the specified index from the currently displayed session list.
+
+Format: `delete INDEX`
+
+* This command is available while the session list is shown (`list -s`).
+* The index refers to the currently displayed session list and must be a positive integer.
+* Deleting a session also removes it from the sessions listed on every member assigned to it.
+
+Example: `list -s` followed by `delete 1` deletes the first displayed session.
+
 ### Deleting a person: `delete`
 
 Deletes the specified person from HobbyHub.
@@ -289,7 +301,7 @@ Action | Format, Examples
 **Add** | `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -g friend -g colleague -h Chess`
 **Assign** | `assign INDEX SESSION_NAME`<br> e.g., `assign 1 Weekend Chess Meetup`
 **Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Delete** | `delete INDEX`<br> e.g., `delete 3` (member list) or `delete 1` (session list)
 **Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
 **Search members** | `search [-n NAME] [-h HOBBY] [-g GROUP] [-c EMAIL] [-sl SKILL_LEVEL]` (at least one option; AND matching)
 **Search sessions** | `search [-n NAME] [-l LOCATION] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]` (at least one option; AND matching)
