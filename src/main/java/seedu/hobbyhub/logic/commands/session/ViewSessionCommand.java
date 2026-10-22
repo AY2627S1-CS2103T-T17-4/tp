@@ -57,7 +57,7 @@ public class ViewSessionCommand extends Command {
     /**
      * Format string on additional details when viewing {@code session} details
      *
-     * @param m A particular session
+     * @param s A particular session
      * @return A string of the details of the session, inclusive of it's participants.
      */
     public static String formatSession(Session s) {
