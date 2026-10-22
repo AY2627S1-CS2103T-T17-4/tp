@@ -277,6 +277,21 @@ Format: `assign INDEX SESSION_NAME`
 
 Example: `assign 1 Weekend Chess Meetup` assigns the first displayed member to that session.
 
+### Marking a session as completed: `mark` / `unmark`
+
+Marks the session at the specified index as completed, or as not completed.
+
+Format: `mark INDEX` or `unmark INDEX`
+
+* These commands are only available while the session list is shown. Use `list -s` to switch to it.
+* The index refers to the index number shown in the displayed session list. The index **must be a positive integer** 1, 2, 3, …​
+* Marking a session that is already completed, or unmarking one that is not, shows an error and changes nothing.
+* The session's name, date-time, location and assigned members are kept.
+
+Examples:
+* `list -s` followed by `mark 1` marks the 1st session as completed.
+* `unmark 1` marks it as not completed again.
+
 ### Clearing all entries: `clear`
 
 Clears all entries from HobbyHub.
@@ -335,6 +350,7 @@ Action | Format, Examples
 **Search sessions** | `search [-n NAME] [-l LOCATION] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]` (at least one option; AND matching)
 **List** | `list [-m \| -s]` switches lists with a flag, or shows all entries in the current list without one
 **View** | `view INDEX`<br> e.g., `view 3`
+**Mark / Unmark** (session list) | `mark INDEX` or `unmark INDEX`<br> e.g., `mark 1`
 **Help** | `help`
 **Exit** | `exit`
 

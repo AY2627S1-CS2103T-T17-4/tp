@@ -3,6 +3,7 @@ package seedu.hobbyhub.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.hobbyhub.logic.Messages.MESSAGE_SESSION_LIST_REQUIRED;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.hobbyhub.model.ListState.MEMBERS;
 import static seedu.hobbyhub.model.ListState.SESSIONS;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.hobbyhub.commons.core.index.Index;
 import seedu.hobbyhub.logic.commands.AddCommand;
 import seedu.hobbyhub.logic.commands.AssignCommand;
 import seedu.hobbyhub.logic.commands.ClearCommand;
@@ -29,6 +31,7 @@ import seedu.hobbyhub.logic.commands.ViewCommand;
 import seedu.hobbyhub.logic.commands.session.AddSessionCommand;
 import seedu.hobbyhub.logic.commands.session.DeleteSessionCommand;
 import seedu.hobbyhub.logic.commands.session.EditSessionCommand;
+import seedu.hobbyhub.logic.commands.session.MarkSessionCommand;
 import seedu.hobbyhub.logic.commands.session.SearchSessionCommand;
 import seedu.hobbyhub.logic.commands.session.ViewSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
@@ -84,6 +87,22 @@ public class HobbyHubParserTest {
         String userInput = AssignCommand.COMMAND_WORD + " 1 Weekend Chess Meetup";
         assertThrows(ParseException.class, AssignCommand.MESSAGE_MEMBER_LIST_REQUIRED, () -> parser.parseCommand(
                 userInput, SESSIONS));
+    }
+
+    @Test
+    public void parseCommand_markAndUnmarkInSessionList() throws Exception {
+        assertEquals(new MarkSessionCommand(Index.fromOneBased(1), true),
+                parser.parseCommand(MarkSessionCommand.COMMAND_WORD + " 1", SESSIONS));
+        assertEquals(new MarkSessionCommand(Index.fromOneBased(1), false),
+                parser.parseCommand(MarkSessionCommand.UNMARK_COMMAND_WORD + " 1", SESSIONS));
+    }
+
+    @Test
+    public void parseCommand_markAndUnmarkInMemberList_throwsParseException() {
+        assertThrows(ParseException.class, String.format(MESSAGE_SESSION_LIST_REQUIRED, "mark"), () ->
+                parser.parseCommand(MarkSessionCommand.COMMAND_WORD + " 1", MEMBERS));
+        assertThrows(ParseException.class, String.format(MESSAGE_SESSION_LIST_REQUIRED, "unmark"), () ->
+                parser.parseCommand(MarkSessionCommand.UNMARK_COMMAND_WORD + " 1", MEMBERS));
     }
 
     @Test
