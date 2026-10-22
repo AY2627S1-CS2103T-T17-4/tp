@@ -3,7 +3,6 @@ package seedu.hobbyhub.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.hobbyhub.logic.Messages.MESSAGE_SESSION_COMMAND_UNAVAILABLE;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.hobbyhub.model.ListState.MEMBERS;
 import static seedu.hobbyhub.model.ListState.SESSIONS;
@@ -29,6 +28,7 @@ import seedu.hobbyhub.logic.commands.UnassignCommand;
 import seedu.hobbyhub.logic.commands.session.AddSessionCommand;
 import seedu.hobbyhub.logic.commands.session.DeleteSessionCommand;
 import seedu.hobbyhub.logic.commands.session.EditSessionCommand;
+import seedu.hobbyhub.logic.commands.session.SearchSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.member.HobbyContainsKeywordsPredicate;
@@ -152,8 +152,8 @@ public class HobbyHubParserTest {
                 instanceof EditSessionCommand);
         assertEquals(new DeleteSessionCommand(INDEX_FIRST_MEMBER),
                 parser.parseCommand(DeleteCommand.COMMAND_WORD + " 1", SESSIONS));
-        assertThrows(ParseException.class, String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "search"), ()
-            -> parser.parseCommand(SearchCommand.COMMAND_WORD + " -n golf", SESSIONS));
+        assertTrue(parser.parseCommand(SearchCommand.COMMAND_WORD + " -n golf", SESSIONS)
+                instanceof SearchSessionCommand);
     }
 
     @Test

@@ -1,7 +1,6 @@
 package seedu.hobbyhub.logic.parser.session;
 
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.hobbyhub.logic.Messages.MESSAGE_SESSION_COMMAND_UNAVAILABLE;
 import static seedu.hobbyhub.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.hobbyhub.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_SESSION_DATE_TIME;
@@ -162,12 +161,6 @@ public class SessionCommandParserTest {
         assertParseFailure(new DeleteSessionCommandParser(), "", expectedMessage);
         assertParseFailure(new DeleteSessionCommandParser(), " zero", expectedMessage);
         assertParseFailure(new DeleteSessionCommandParser(), " 1 extra", expectedMessage);
-    }
-
-    @Test
-    public void parse_searchSession_throwsParseException() {
-        assertParseFailure(new SearchSessionCommandParser(), " -n golf",
-                String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "search"));
     }
 
     private static void assertInvalidSessionCommandFormat(String args) {
