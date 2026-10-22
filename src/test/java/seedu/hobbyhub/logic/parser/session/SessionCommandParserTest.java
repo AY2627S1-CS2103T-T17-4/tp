@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.commons.core.index.Index;
 import seedu.hobbyhub.logic.commands.session.AddSessionCommand;
+import seedu.hobbyhub.logic.commands.session.DeleteSessionCommand;
 import seedu.hobbyhub.logic.commands.session.EditSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.testutil.SessionBuilder;
@@ -150,9 +151,17 @@ public class SessionCommandParserTest {
     }
 
     @Test
-    public void parse_deleteSession_throwsParseException() {
-        assertParseFailure(new DeleteSessionCommandParser(), " 1",
-                String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "delete"));
+    public void parse_deleteSession_returnsCommand() {
+        assertParseSuccess(new DeleteSessionCommandParser(), " 1", new DeleteSessionCommand(Index.fromOneBased(1)));
+    }
+
+    @Test
+    public void parse_deleteSessionWithoutValidIndex_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteSessionCommand.MESSAGE_USAGE);
+
+        assertParseFailure(new DeleteSessionCommandParser(), "", expectedMessage);
+        assertParseFailure(new DeleteSessionCommandParser(), " zero", expectedMessage);
+        assertParseFailure(new DeleteSessionCommandParser(), " 1 extra", expectedMessage);
     }
 
     @Test
