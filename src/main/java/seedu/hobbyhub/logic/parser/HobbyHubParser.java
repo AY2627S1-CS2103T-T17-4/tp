@@ -80,6 +80,12 @@ public class HobbyHubParser {
                 }
                 yield new AssignCommandParser().parse(arguments);
             }
+            case UnassignCommand.COMMAND_WORD -> {
+                if (listState != ListState.MEMBERS) {
+                    throw new ParseException(UnassignCommand.MESSAGE_MEMBER_LIST_REQUIRED);
+                }
+                yield new UnassignCommandParser().parse(arguments);
+            }
             case ClearCommand.COMMAND_WORD -> new ClearCommand();
             case ListCommand.COMMAND_WORD -> new ListCommandParser().parse(arguments);
             case ExitCommand.COMMAND_WORD -> new ExitCommand();

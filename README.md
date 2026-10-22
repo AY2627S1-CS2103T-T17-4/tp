@@ -56,6 +56,7 @@ The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy 
 | Search members by name | `search -n NAME` | `search -n John` |
 | Search members by hobby | `search -h HOBBY` | `search -h Chess` |
 | Delete member | `delete INDEX` | `delete 2` |
+| Unassign member from a session | `unassign INDEX SESSION_NAME` (member list only) | `unassign 2 Weekend Chess Meetup` |
 | Exit program | `exit` | `exit` |
 
 Notes:

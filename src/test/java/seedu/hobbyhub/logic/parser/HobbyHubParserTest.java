@@ -9,6 +9,7 @@ import static seedu.hobbyhub.model.ListState.MEMBERS;
 import static seedu.hobbyhub.model.ListState.SESSIONS;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_FIRST_MEMBER;
+import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_SECOND_MEMBER;
 
 import java.util.List;
 
@@ -80,6 +81,22 @@ public class HobbyHubParserTest {
     public void parseCommand_assignInSessionList_throwsParseException() {
         String userInput = AssignCommand.COMMAND_WORD + " 1 Weekend Chess Meetup";
         assertThrows(ParseException.class, AssignCommand.MESSAGE_MEMBER_LIST_REQUIRED, () -> parser.parseCommand(
+                userInput, SESSIONS));
+    }
+
+    @Test
+    public void parseCommand_unassignInMemberList() throws Exception {
+        UnassignCommand command = (UnassignCommand) parser.parseCommand(
+                UnassignCommand.COMMAND_WORD + " 2 Weekend Chess Meetup", MEMBERS);
+
+        assertEquals(new UnassignCommand(INDEX_SECOND_MEMBER,
+                new SessionName("Weekend Chess Meetup")), command);
+    }
+
+    @Test
+    public void parseCommand_unassignInSessionList_throwsParseException() {
+        String userInput = UnassignCommand.COMMAND_WORD + " 2 Weekend Chess Meetup";
+        assertThrows(ParseException.class, UnassignCommand.MESSAGE_MEMBER_LIST_REQUIRED, () -> parser.parseCommand(
                 userInput, SESSIONS));
     }
 
