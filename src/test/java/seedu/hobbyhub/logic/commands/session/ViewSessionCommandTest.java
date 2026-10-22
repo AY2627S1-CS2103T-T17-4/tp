@@ -20,6 +20,8 @@ import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.ModelManager;
 import seedu.hobbyhub.model.UserPrefs;
+import seedu.hobbyhub.model.session.Session;
+import seedu.hobbyhub.testutil.SessionBuilder;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for {@code ViewSessionCommand}.
@@ -112,5 +114,22 @@ public class ViewSessionCommandTest {
         Index targetIndex = Index.fromOneBased(1);
         String expected = ViewSessionCommand.class.getCanonicalName() + "{targetIndex=" + targetIndex + "}";
         assertEquals(expected, new ViewSessionCommand(targetIndex).toString());
+    }
+
+    @Test
+    public void formatSession_noMembers_showsNone() {
+        Session session = new SessionBuilder().withName("Empty Session")
+            .withDateTime("2026-11-01T10:00").withLocation("Park").withMembers().build();
+
+        String details = ViewSessionCommand.formatSession(session);
+        assertTrue(details.contains("Members (0): none"));
+    }
+
+    @Test
+    public void formatSession_completed_showsYes() {
+        Session completed = new Session(CHESS_MEETUP.getName(), CHESS_MEETUP.getDate(),
+                CHESS_MEETUP.getLocation(), true, CHESS_MEETUP.getMembers());
+
+        assertTrue(ViewSessionCommand.formatSession(completed).contains("Completed: yes"));
     }
 }

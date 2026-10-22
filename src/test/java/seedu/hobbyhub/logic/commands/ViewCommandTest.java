@@ -8,7 +8,13 @@ import static seedu.hobbyhub.logic.commands.CommandTestUtil.assertCommandSuccess
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.showMemberAtIndex;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_FIRST_MEMBER;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_SECOND_MEMBER;
+import static seedu.hobbyhub.testutil.TypicalMembers.ALICE;
+import static seedu.hobbyhub.testutil.TypicalMembers.CARL;
 import static seedu.hobbyhub.testutil.TypicalMembers.getTypicalHobbyHub;
+import static seedu.hobbyhub.testutil.TypicalSessions.CHESS_MEETUP;
+import static seedu.hobbyhub.testutil.TypicalSessions.CYCLING_TRIP;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -66,6 +72,29 @@ public class ViewCommandTest {
 
         assertCommandFailure(new ViewCommand(outOfBoundIndex), model,
                 Messages.MESSAGE_INVALID_MEMBER_DISPLAYED_INDEX);
+    }
+
+    @Test
+    public void formatMember_noGroupsNoSessions_showsNone() {
+        // precondition: CARL has no groups and no sessions
+        assertTrue(CARL.getGroups().isEmpty());
+        assertTrue(CARL.getSessions().isEmpty());
+
+        String details = ViewCommand.formatMember(CARL);
+        assertTrue(details.contains("Groups: none"));
+        assertTrue(details.contains("Sessions: none"));
+    }
+
+    @Test
+    public void formatMember_withGroupsAndSessions_listsThem() {
+        Member member = ALICE.withSessions(List.of(CHESS_MEETUP, CYCLING_TRIP));
+
+        String details = ViewCommand.formatMember(member);
+        assertTrue(details.contains("Groups: [friends]"));
+        assertTrue(details.contains(CHESS_MEETUP.getName() + " (" + CHESS_MEETUP.getDate()
+                    + " @ " + CHESS_MEETUP.getLocation() + ")"));
+        // multiple sessions joined with "; "
+        assertTrue(details.contains("; " + CYCLING_TRIP.getName()));
     }
 
     @Test
