@@ -54,7 +54,7 @@ public class ViewSessionCommand extends Command {
         return new CommandResult(formatSession(lastShownList.get(targetIndex.getZeroBased())));
     }
 
-    /** 
+    /**
      * Format string on additional details when viewing {@code session} details
      *
      * @param m A particular session
