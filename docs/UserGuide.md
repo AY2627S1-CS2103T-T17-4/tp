@@ -36,6 +36,8 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
+   * `view 3` : Shows the phone, address and email of the 3rd contact shown on the current list.
+
    * `clear` : Deletes all contacts.
 
    * `exit` : Exits the app.
@@ -237,6 +239,32 @@ Examples:
 * `list` followed by `delete 2` deletes the 2nd person in HobbyHub.
 * `search -n Betsy` followed by `delete 1` deletes the 1st person in the search results.
 
+### Viewing a session: `view`
+
+Views the session at the specified index from the currently displayed session list.
+
+Format: `view INDEX`
+
+* This command is available while the session list is shown (`list -s`).
+* The index refers to the currently displayed session list and must be a positive integer.
+* Viewing a session also shows all members assigned to the session.
+
+Example: `list -s` followed by `view 1` deletes the first displayed session.
+
+### Viewing a person: `view`
+
+Viewing the additional details specified person from HobbyHub (Phone, address and email).
+
+Format: `view INDEX`
+
+* Views the details of the person at the specified `INDEX`.
+* The index refers to the index number shown in the displayed person list.
+* The index **must be a positive integer** 1, 2, 3, …​
+
+Examples:
+* `list -m` followed by `view 2` deletes the 2nd person in HobbyHub.
+
+
 ### Assigning a person to a session: `assign`
 
 Assigns the member at the specified index in the currently displayed member list to an existing session.
@@ -321,6 +349,7 @@ Action | Format, Examples
 **Search members** | `search [-n NAME] [-h HOBBY] [-g GROUP] [-c EMAIL] [-sl SKILL_LEVEL]` (at least one option; AND matching)
 **Search sessions** | `search [-n NAME] [-l LOCATION] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]` (at least one option; AND matching)
 **List** | `list [-m \| -s]` switches lists with a flag, or shows all entries in the current list without one
+**View** | `view INDEX`<br> e.g., `view 3`
 **Mark / Unmark** (session list) | `mark INDEX` or `unmark INDEX`<br> e.g., `mark 1`
 **Help** | `help`
 **Exit** | `exit`

@@ -21,6 +21,7 @@ import seedu.hobbyhub.logic.commands.HelpCommand;
 import seedu.hobbyhub.logic.commands.ListCommand;
 import seedu.hobbyhub.logic.commands.SearchCommand;
 import seedu.hobbyhub.logic.commands.UnassignCommand;
+import seedu.hobbyhub.logic.commands.ViewCommand;
 import seedu.hobbyhub.logic.commands.session.MarkSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.logic.parser.session.AddSessionCommandParser;
@@ -28,6 +29,7 @@ import seedu.hobbyhub.logic.parser.session.DeleteSessionCommandParser;
 import seedu.hobbyhub.logic.parser.session.EditSessionCommandParser;
 import seedu.hobbyhub.logic.parser.session.MarkSessionCommandParser;
 import seedu.hobbyhub.logic.parser.session.SearchSessionCommandParser;
+import seedu.hobbyhub.logic.parser.session.ViewSessionCommandParser;
 import seedu.hobbyhub.model.ListState;
 
 /**
@@ -96,6 +98,8 @@ public class HobbyHubParser {
             case ListCommand.COMMAND_WORD -> new ListCommandParser().parse(arguments);
             case ExitCommand.COMMAND_WORD -> new ExitCommand();
             case HelpCommand.COMMAND_WORD -> new HelpCommand();
+            case ViewCommand.COMMAND_WORD ->
+                parseForList(listState, new ViewCommandParser(), new ViewSessionCommandParser(), arguments);
             default -> {
                 logger.finer("This user input caused a ParseException: " + userInput);
                 throw new ParseException(MESSAGE_UNKNOWN_COMMAND);

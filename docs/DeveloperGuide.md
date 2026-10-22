@@ -507,8 +507,50 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 6a2. HobbyHub preserves the previously persisted member data.
 
       Use case ends.
-  
-**Use case: UC04 - Search members by one or more criteria**
+
+**Use case: UC04 - View a member**
+
+**Preconditions**
+
+* HobbyHub is running.
+* The member to be viewed is shown in the displayed member list.
+
+**MSS**
+
+1. Coordinator requests to list members, or searches for members (UC05).
+2. HobbyHub shows the displayed member list, each member with an index number.
+3. Coordinator requests to view the member at a specific index in the displayed list.
+4. HobbyHub validates the index.
+5. HobbyHub displays the member's additional details.
+
+   Use case ends.
+
+**Guarantees**
+
+* Every member records remain unchanged.
+* Member details are accurately displayed.
+
+**Extensions**
+
+* 2a. The displayed member list is empty.
+
+  Use case ends.
+
+* 3a. The coordinator does not provide an index.
+
+    * 3a1. HobbyHub reports the correct command format.
+    * 3a2. HobbyHub does not delete or modify any member record.
+
+      Use case ends.
+
+* 4a. The index is not a positive integer, or is larger than the number of members displayed.
+
+    * 4a1. HobbyHub reports that the index is invalid.
+    * 4a2. HobbyHub does not delete or modify any member record.
+
+      Use case ends.
+
+**Use case: UC05 - Search members by name or hobby**
 
 **Preconditions**
 
@@ -571,7 +613,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case ends.
 
-**Use case: UC05 - Persist and restore member data**
+**Use case: UC06 - Persist and restore member data**
 
 **Preconditions**
 
@@ -618,7 +660,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case ends.
 
-**Use case: UC06 - Exit the program**
+**Use case: UC07 - Exit the program**
 
 **Preconditions**
 

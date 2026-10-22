@@ -69,7 +69,7 @@ public class EditSessionCommand extends Command {
         return new CommandResult(String.format(MESSAGE_SUCCESS, editedSession.getName()));
     }
 
-    /** Creates a session with supplied values and all other details copied from the original. */
+    /* Creates a session with supplied values and all other details copied from the original. */
     private Session createEditedSession(Session sessionToEdit) {
         return new Session(
                 sessionToEdit.getName(),

@@ -33,12 +33,6 @@ public class MemberCard extends UiPart<Region> {
     @FXML
     private Label id;
     @FXML
-    private Label phone;
-    @FXML
-    private Label address;
-    @FXML
-    private Label email;
-    @FXML
     private Label hobby;
     @FXML
     private FlowPane groups;
@@ -51,9 +45,6 @@ public class MemberCard extends UiPart<Region> {
         this.member = member;
         id.setText(displayedIndex + ". ");
         name.setText(member.getName().fullName);
-        phone.setText(member.getPhone().toString());
-        address.setText(member.getAddress().toString());
-        email.setText(member.getEmail().value);
         hobby.setText(String.join(", ", member.getHobbies().stream().map(Object::toString).toList()));
         member.getGroups().stream()
                 .sorted(Comparator.comparing(group -> group.groupName))

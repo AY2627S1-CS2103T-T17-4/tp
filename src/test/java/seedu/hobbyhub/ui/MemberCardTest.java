@@ -28,9 +28,6 @@ public class MemberCardTest {
             assertEquals(member, card.member);
             assertEquals("2. ", ((Label) root.lookup("#id")).getText());
             assertEquals("Alex", ((Label) root.lookup("#name")).getText());
-            assertEquals("91234567", ((Label) root.lookup("#phone")).getText());
-            assertEquals("North Street", ((Label) root.lookup("#address")).getText());
-            assertEquals("alex@example.com", ((Label) root.lookup("#email")).getText());
             assertEquals("Chess (Beginner)", ((Label) root.lookup("#hobby")).getText());
 
             FlowPane groups = (FlowPane) root.lookup("#groups");

@@ -27,11 +27,13 @@ import seedu.hobbyhub.logic.commands.HelpCommand;
 import seedu.hobbyhub.logic.commands.ListCommand;
 import seedu.hobbyhub.logic.commands.SearchCommand;
 import seedu.hobbyhub.logic.commands.UnassignCommand;
+import seedu.hobbyhub.logic.commands.ViewCommand;
 import seedu.hobbyhub.logic.commands.session.AddSessionCommand;
 import seedu.hobbyhub.logic.commands.session.DeleteSessionCommand;
 import seedu.hobbyhub.logic.commands.session.EditSessionCommand;
 import seedu.hobbyhub.logic.commands.session.MarkSessionCommand;
 import seedu.hobbyhub.logic.commands.session.SearchSessionCommand;
+import seedu.hobbyhub.logic.commands.session.ViewSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.member.HobbyContainsKeywordsPredicate;
@@ -204,5 +206,13 @@ public class HobbyHubParserTest {
     @Test
     public void parseCommand_oldFindCommandWord_throwsParseException() {
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("find Alice", MEMBERS));
+    }
+
+    @Test
+    public void parseCommand_view_usesListState() throws Exception {
+        assertEquals(new ViewCommand(INDEX_FIRST_MEMBER),
+                parser.parseCommand(ViewCommand.COMMAND_WORD + " 1", MEMBERS));
+        assertEquals(new ViewSessionCommand(INDEX_FIRST_MEMBER),
+                parser.parseCommand(ViewCommand.COMMAND_WORD + " 1", SESSIONS));
     }
 }
