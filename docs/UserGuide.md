@@ -64,7 +64,7 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 * Parameters can be in any order.<br>
   For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
+* Extraneous parameters for commands that take no parameters, such as `help`, `exit`, and `clear`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
@@ -105,11 +105,16 @@ Examples:
 * `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h "Chess:Beginner" -h "Table Tennis:Advanced"`
 * `add -n Betsy Crowe -g friend -c betsycrowe@example.com -a Newgate Prison -p 1234567 -g criminal -h Chess`
 
-### Listing all persons: `list`
+### Listing members or sessions: `list`
 
-Shows a list of all persons in HobbyHub.
+Shows all records in the current list, clearing its search filter.
 
-Format: `list`
+Format: `list [-m | -s]`
+
+* `list -m` switches to members and shows all members.
+* `list -s` switches to sessions and shows all sessions.
+* `list` keeps the active view and shows all its entries.
+* Other flags or additional arguments are rejected.
 
 ### Editing a person: `edit`
 
@@ -132,20 +137,93 @@ Examples:
 * `edit 1 -p 91234567 -c johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
 * `edit 2 -n Betsy Crower -g` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing groups.
 
-### Searching members: `search`
+### Searching members and sessions: `search`
 
-Finds members whose names or hobbies contain the specified fragment.
+Search filters the currently displayed list. Use `list -m` to switch to members or `list -s` to switch to sessions,
+then enter a search command. You only need to switch when changing which type of records you want to search.
 
-Format: `search -n NAME_FRAGMENT` or `search -h HOBBY_FRAGMENT`
+Use one or more distinct options per search, in any order. Every supplied condition must match (AND).
+Single-option searches continue to work. Repeated options, unsupported options, and empty queries are rejected.
+Invalid input leaves the previous search results unchanged.
+Each search replaces the previous filter and searches all records of the current type.
+Plain `list` shows all records in the current list again. Searching does not change stored data.
+Results use the normal member or session cards, with a message showing how many records matched.
+No matches produce an empty list and a count of zero.
 
-* The search is case-insensitive and supports partial matching; for example, `search -n hans` matches `Hans` and `Johannes`.
-* Use exactly one search option: `-n` searches names and `-h` searches hobbies.
-* The fragment may contain spaces, such as `search -n Alice Lee` or `search -h Board Games`.
-* Search terms that do not match any member return an empty result list.
+#### Member search options
 
-Examples:
-* `search -n John` finds members whose names contain `John`.
-* `search -h chess` finds members whose hobbies contain `chess`.
+Format: `search [-n NAME_FRAGMENT] [-h HOBBY_FRAGMENT] [-g GROUP_FRAGMENT] [-c EMAIL] [-sl SKILL_LEVEL]`
+
+At least one option is required.
+
+| Field | Format | Matching rule |
+| --- | --- | --- |
+| Name | `search -n NAME_FRAGMENT` | Case-insensitive substring |
+| Hobby name | `search -h HOBBY_FRAGMENT` | Case-insensitive substring in any hobby name |
+| Group | `search -g GROUP_FRAGMENT` | Case-insensitive substring in any group name |
+| Email | `search -c EMAIL` | Complete, valid email address, ignoring case |
+| Skill level | `search -sl SKILL_LEVEL` | Any hobby at Beginner, Intermediate, or Advanced, ignoring case |
+
+Hobbies and groups are searched independently. Without `-h`, a skill-level search matches any hobby at that level.
+When `-h` and `-sl` are combined, the same hobby must match both the name fragment and skill level.
+For example, a member with Chess:Beginner and Tennis:Advanced does not match `search -h Chess -sl Advanced`.
+Phone, address, and availability are not searchable.
+
+Examples after `list -m`:
+
+* `search -n John` finds members whose names contain `John`, including `Johannes`.
+* `search -h chess` finds members with any hobby name containing `chess`.
+* `search -g Weekend Club` finds members with a group name containing `Weekend Club`.
+* `search -c alice@example.com` finds the member with that email address.
+* `search -sl Advanced` finds members with at least one Advanced hobby.
+* `search -h Chess -sl Beginner` finds members whose Chess hobby is Beginner.
+* `search -n Alice -g Weekend` finds members whose name contains `Alice` and whose group name contains `Weekend`.
+* `search -n Alice -h Tennis -g Weekend -c alice@example.com -sl Advanced` requires all five conditions to match.
+
+#### Session search options
+
+Format: `search [-n NAME_FRAGMENT] [-l LOCATION_FRAGMENT] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]`
+
+At least one option is required. All conditions must match the same session.
+
+| Field | Format | Matching rule |
+| --- | --- | --- |
+| Name | `search -n NAME_FRAGMENT` | Case-insensitive substring |
+| Location | `search -l LOCATION_FRAGMENT` | Case-insensitive substring |
+| Date | `search -t YYYY-MM-DD` | Exact calendar date, regardless of time |
+| Completion status | `search -done true` or `search -done false` | Completed or incomplete respectively, ignoring case |
+| Participant email | `search -c EMAIL` | Contains a participant with that complete email, ignoring case |
+
+Dates must be valid calendar dates with a four-digit year, two-digit month, and two-digit day.
+For example, `2026-02-29` is rejected. Date ranges and exact times are not supported by search.
+Participant email searches can return several sessions, and sessions without participants do not match them.
+
+Examples after `list -s`:
+
+* `search -n chess` finds sessions whose names contain `chess`.
+* `search -l community` finds sessions whose locations contain `community`.
+* `search -t 2026-10-24` finds every session on 24 October 2026.
+* `search -done false` finds incomplete sessions.
+* `search -c alice@example.com` finds every session that Alice participates in.
+* `search -l Community -t 2026-10-24` finds sessions at locations containing `Community` on that date.
+* `search -c alice@example.com -done false` finds incomplete sessions that Alice participates in.
+* `search -n Chess -l Community -t 2026-10-24 -done false -c alice@example.com` requires all five conditions to match.
+
+Text fragments can contain spaces. One surrounding pair of double quotes is optional:
+`search -n "Weekend Chess"` and `search -n Weekend Chess` are equivalent.
+Quote text containing a word starting with `-` so it is treated as text rather than another option.
+
+### Deleting a session: `delete`
+
+Deletes the session at the specified index from the currently displayed session list.
+
+Format: `delete INDEX`
+
+* This command is available while the session list is shown (`list -s`).
+* The index refers to the currently displayed session list and must be a positive integer.
+* Deleting a session also removes it from the sessions listed on every member assigned to it.
+
+Example: `list -s` followed by `delete 1` deletes the first displayed session.
 
 ### Deleting a person: `delete`
 
@@ -160,6 +238,18 @@ Format: `delete INDEX`
 Examples:
 * `list` followed by `delete 2` deletes the 2nd person in HobbyHub.
 * `search -n Betsy` followed by `delete 1` deletes the 1st person in the search results.
+
+### Viewing a session: `view`
+
+Views the session at the specified index from the currently displayed session list.
+
+Format: `view INDEX`
+
+* This command is available while the session list is shown (`list -s`).
+* The index refers to the currently displayed session list and must be a positive integer.
+* Viewing a session also shows all members assigned to the session.
+
+Example: `list -s` followed by `view 1` deletes the first displayed session.
 
 ### Viewing a person: `view`
 
@@ -239,11 +329,12 @@ Action | Format, Examples
 **Add** | `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -g friend -g colleague -h Chess`
 **Assign** | `assign INDEX SESSION_NAME`<br> e.g., `assign 1 Weekend Chess Meetup`
 **Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Delete** | `delete INDEX`<br> e.g., `delete 3` (member list) or `delete 1` (session list)
 **Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
-**Search** | `search -n NAME_FRAGMENT` or `search -h HOBBY_FRAGMENT`<br> e.g., `search -n James` or `search -h Chess`
+**Search members** | `search [-n NAME] [-h HOBBY] [-g GROUP] [-c EMAIL] [-sl SKILL_LEVEL]` (at least one option; AND matching)
+**Search sessions** | `search [-n NAME] [-l LOCATION] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]` (at least one option; AND matching)
+**List** | `list [-m \| -s]` switches lists with a flag, or shows all entries in the current list without one
 **View** | `view INDEX`<br> e.g., `view 3`
-**List** | `list`
 **Help** | `help`
 **Exit** | `exit`
 
