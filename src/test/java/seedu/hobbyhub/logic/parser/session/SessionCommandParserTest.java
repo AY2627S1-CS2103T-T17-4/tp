@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import seedu.hobbyhub.commons.core.index.Index;
 import seedu.hobbyhub.logic.commands.session.AddSessionCommand;
 import seedu.hobbyhub.logic.commands.session.EditSessionCommand;
+import seedu.hobbyhub.logic.commands.session.ViewSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.testutil.SessionBuilder;
 
@@ -161,8 +162,23 @@ public class SessionCommandParserTest {
                 String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "search"));
     }
 
+    @Test
     private static void assertInvalidSessionCommandFormat(String args) {
         assertParseFailure(new AddSessionCommandParser(), args,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddSessionCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_viewSession_returnsCommand() {
+        assertParseSuccess(new ViewSessionCommandParser(), " 1", new ViewSessionCommand(Index.fromOneBased(1)));
+    }
+
+    @Test
+    public void parse_viewSessionInvalidIndex_throwsParseException() {
+        String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewSessionCommand.MESSAGE_USAGE);
+        assertParseFailure(new ViewSessionCommandParser(), "", expected);
+        assertParseFailure(new ViewSessionCommandParser(), " a", expected);
+        assertParseFailure(new ViewSessionCommandParser(), " 0", expected);
+        assertParseFailure(new ViewSessionCommandParser(), " -1", expected);
     }
 }
