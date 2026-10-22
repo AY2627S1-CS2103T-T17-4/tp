@@ -17,6 +17,7 @@ public class Messages {
     public static final String MESSAGE_INVALID_MEMBER_DISPLAYED_INDEX = "The member index provided is invalid.";
     public static final String MESSAGE_INVALID_SESSION_DISPLAYED_INDEX = "The session index provided is invalid.";
     public static final String MESSAGE_MEMBERS_LISTED_OVERVIEW = "%1$d member(s) listed!";
+    public static final String MESSAGE_SESSIONS_LISTED_OVERVIEW = "%1$d session(s) listed!";
     public static final String MESSAGE_SESSION_LIST_REQUIRED =
             "The %1$s command is only available while the session list is shown. Use list -s to switch to it.";
     public static final String MESSAGE_SESSION_COMMAND_UNAVAILABLE =

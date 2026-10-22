@@ -3,7 +3,6 @@ package seedu.hobbyhub.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.hobbyhub.logic.Messages.MESSAGE_SESSION_COMMAND_UNAVAILABLE;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_SESSION_LIST_REQUIRED;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.hobbyhub.model.ListState.MEMBERS;
