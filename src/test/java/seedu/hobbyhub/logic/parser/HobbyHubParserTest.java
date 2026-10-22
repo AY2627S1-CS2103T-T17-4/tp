@@ -27,6 +27,7 @@ import seedu.hobbyhub.logic.commands.ListCommand;
 import seedu.hobbyhub.logic.commands.SearchCommand;
 import seedu.hobbyhub.logic.commands.UnassignCommand;
 import seedu.hobbyhub.logic.commands.session.AddSessionCommand;
+import seedu.hobbyhub.logic.commands.session.DeleteSessionCommand;
 import seedu.hobbyhub.logic.commands.session.EditSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.ListState;
@@ -149,8 +150,8 @@ public class HobbyHubParserTest {
                 + " -n Golf Meet -l Golf Club -t 2026-10-24T14:00", SESSIONS) instanceof AddSessionCommand);
         assertTrue(parser.parseCommand(EditCommand.COMMAND_WORD + " 1 -l Golf Club", SESSIONS)
                 instanceof EditSessionCommand);
-        assertThrows(ParseException.class, String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "delete"), ()
-            -> parser.parseCommand(DeleteCommand.COMMAND_WORD + " 1", SESSIONS));
+        assertEquals(new DeleteSessionCommand(INDEX_FIRST_MEMBER),
+                parser.parseCommand(DeleteCommand.COMMAND_WORD + " 1", SESSIONS));
         assertThrows(ParseException.class, String.format(MESSAGE_SESSION_COMMAND_UNAVAILABLE, "search"), ()
             -> parser.parseCommand(SearchCommand.COMMAND_WORD + " -n golf", SESSIONS));
     }

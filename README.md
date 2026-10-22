@@ -55,7 +55,7 @@ The MVP uses exact, lowercase command words and Bash-style short options. Fuzzy 
 | List all members | `list` | `list` |
 | Search members by name | `search -n NAME` | `search -n John` |
 | Search members by hobby | `search -h HOBBY` | `search -h Chess` |
-| Delete member | `delete INDEX` | `delete 2` |
+| Delete member or session | `delete INDEX` | Member list: `delete 2`; session list: `list -s`, then `delete 1` |
 | Unassign member from a session | `unassign INDEX SESSION_NAME` (member list only) | `unassign 2 Weekend Chess Meetup` |
 | Exit program | `exit` | `exit` |
 
@@ -63,7 +63,7 @@ Notes:
 - Command words and option flags (`-n`, `-c`, `-h`, `-p`, `-a`, `-t`) are lowercase and case-sensitive.
 - Data is saved automatically after every successful data-changing command, and reloaded on startup.
 - Search command takes exactly one of -n or -h.
-- INDEX refers to the number shown in the current list; after search, it refers to the filtered list.
+- INDEX refers to the number shown in the current list; after search, it refers to the filtered list. In the session list, `delete` removes the session and clears it from assigned members' session records.
 
 ## Authors
 
