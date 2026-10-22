@@ -36,6 +36,8 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
+   * `view 3` : Shows the phone, address and email of the 3rd contact shown on the current list.
+
    * `clear` : Deletes all contacts.
 
    * `exit` : Exits the app.
@@ -159,6 +161,20 @@ Examples:
 * `list` followed by `delete 2` deletes the 2nd person in HobbyHub.
 * `search -n Betsy` followed by `delete 1` deletes the 1st person in the search results.
 
+### Viewing a person: `view`
+
+Viewing the additional details specified person from HobbyHub (Phone, address and email).
+
+Format: `view INDEX`
+
+* Views the details of the person at the specified `INDEX`.
+* The index refers to the index number shown in the displayed person list.
+* The index **must be a positive integer** 1, 2, 3, …​
+
+Examples:
+* `list -m` followed by `view 2` deletes the 2nd person in HobbyHub.
+
+
 ### Assigning a person to a session: `assign`
 
 Assigns the member at the specified index in the currently displayed member list to an existing session.
@@ -226,6 +242,7 @@ Action | Format, Examples
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
 **Search** | `search -n NAME_FRAGMENT` or `search -h HOBBY_FRAGMENT`<br> e.g., `search -n James` or `search -h Chess`
+**View** | `view INDEX`<br> e.g., `view 3`
 **List** | `list`
 **Help** | `help`
 **Exit** | `exit`
