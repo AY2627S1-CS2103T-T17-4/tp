@@ -45,7 +45,12 @@ public class ViewCommand extends Command {
         return new CommandResult(formatMember(lastShownList.get(targetIndex.getZeroBased())));
     }
 
-    /** Format string on additional details when viewing {@code m} details */
+    /** 
+     * Format string on additional details when viewing {@code member} details
+     *
+     * @param m A particular member
+     * @return A string of the details of the member
+     */
     public static String formatMember(Member m) {
         String hobbies = m.getHobbies().stream()
                 .map(Object::toString)
