@@ -29,9 +29,11 @@ Refer to the guide [_Setting up and getting started_](SettingUp.md).
 
 ### Architecture
 
-<img src="images/ArchitectureDiagram.png" width="280" />
+<img src="images/ArchitectureDiagram.png" width="320" />
 
-The ***Architecture Diagram*** given above explains the high-level design of the App.
+The ***Architecture Diagram*** above explains the high-level design of HobbyHub. Component names describe
+responsibilities rather than specific implementations, so the diagram remains accurate when implementation details
+change.
 
 The following provides a quick overview of the main components and their interactions.
 
@@ -43,10 +45,10 @@ The following provides a quick overview of the main components and their interac
 
 The bulk of the app's work is done by the following four components:
 
-* [**`UI`**](#ui-component): The UI of the App.
-* [**`Logic`**](#logic-component): The command executor.
-* [**`Model`**](#model-component): Holds the data of the App in memory.
-* [**`Storage`**](#storage-component): Reads data from, and writes data to, the hard disk.
+* [**`UI`**](#ui-component): Accepts commands and presents members, hobbies, groups, and sessions to the user.
+* [**`Logic`**](#logic-component): Parses and executes commands.
+* [**`Model`**](#model-component): Holds HobbyHub's members, hobbies, groups, sessions, and user preferences in memory.
+* [**`Storage`**](#storage-component): Loads and saves HobbyHub data and user preferences as local JSON files.
 
 [**`Commons`**](#common-classes) represents a collection of classes used by multiple other components.
 
