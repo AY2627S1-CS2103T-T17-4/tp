@@ -1,6 +1,8 @@
-| layout | page |
-| :---   | :--- |
-| title | Developer Guide |
+---
+layout: page
+title: Developer Guide
+---
+
 * Table of Contents
 {:toc}
 
