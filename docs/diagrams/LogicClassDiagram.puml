@@ -3,45 +3,62 @@
 skinparam arrowThickness 1.1
 skinparam arrowColor LOGIC_COLOR_T4
 skinparam classBackgroundColor LOGIC_COLOR
+skinparam ArrowFontStyle plain
+skinparam linetype polyline
 
 package Logic as LogicPackage {
+    interface Logic <<interface>>
+    class LogicManager
+    abstract class Command
+    class CommandResult
 
-package "Parser Classes" as ParserClasses{
-}
-Class XYZCommand
-Class CommandResult
-Class "{abstract}\nCommand" as Command
+    package "Parser classes (search shown)" {
+        class HobbyHubParser
+        interface "Parser<T>" as Parser <<interface>>
+        class SearchCommandParser
+        class SearchSessionCommandParser
+    }
 
-
-Class "<<interface>>\nLogic" as Logic
-Class LogicManager
-}
-
-package Model {
-Class HiddenModel #FFFFFF
-}
-
-package Storage {
+    class SearchCommand
+    class SearchSessionCommand
 }
 
-Class HiddenOutside #FFFFFF
-HiddenOutside ..> Logic
+package Model as ModelPackage {
+    interface Model <<interface>> MODEL_COLOR
+    enum ListState <<enumeration>> MODEL_COLOR
+}
 
-LogicManager .right.|> Logic
-LogicManager -right->"1" ParserClasses
-ParserClasses ..> XYZCommand : <<create>>
+package Storage as StoragePackage {
+    interface Storage <<interface>> STORAGE_COLOR
+}
 
-XYZCommand -up-|> Command
-LogicManager .left.> Command : <<call>>
+LogicManager .up.|> Logic
+LogicManager --> "1" HobbyHubParser
+LogicManager --> "1" Model
+LogicManager --> "1" Storage
+LogicManager ..> Command : executes
+Logic ..> CommandResult : returns
 
-LogicManager --> Model
-LogicManager --> Storage
-Storage --[hidden] Model
-Command .[hidden]up.> Storage
-Command .right.> Model
-note right of XYZCommand: XYZCommand = AddCommand, \nSearchCommand, etc
+HobbyHubParser ..> ListState : uses
+HobbyHubParser ..> SearchCommandParser : <<create>>
+HobbyHubParser ..> SearchSessionCommandParser : <<create>>
+SearchCommandParser .up.|> Parser : <SearchCommand>
+SearchSessionCommandParser .up.|> Parser : <SearchSessionCommand>
+SearchCommandParser ..> SearchCommand : <<create>>
+SearchSessionCommandParser ..> SearchSessionCommand : <<create>>
 
-Logic ..> CommandResult
-LogicManager .down.> CommandResult
-Command .up.> CommandResult : <<create>>
+SearchCommand -up-|> Command
+SearchSessionCommand -up-|> Command
+SearchCommand ..> Model : updates member filter
+SearchSessionCommand ..> Model : updates session filter
+SearchCommand ..> CommandResult : <<create>>
+SearchSessionCommand ..> CommandResult : <<create>>
+
+note bottom of HobbyHubParser
+  For search, both parsers are created.
+  ListState selects which parser is used:
+  MEMBERS: SearchCommandParser
+  SESSIONS: SearchSessionCommandParser
+  Other commands and parsers are omitted.
+end note
 @enduml
