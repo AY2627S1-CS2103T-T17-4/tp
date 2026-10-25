@@ -1,36 +1,62 @@
 @startuml
 !include style.puml
+left to right direction
+skinparam linetype ortho
+skinparam nodesep 45
+skinparam ranksep 60
 skinparam arrowThickness 1.1
 skinparam arrowColor STORAGE_COLOR
 skinparam classBackgroundColor STORAGE_COLOR
 
 package Storage as StoragePackage {
+    interface Storage
+    class StorageManager
 
-Class "<<interface>>\nStorage" as Storage
-Class StorageManager
+    package "JSON file access" #F4F6F6 {
+        class JsonHobbyHubStorage
+        class JsonUserPrefsStorage
+    }
 
-package "UserPrefs Storage" #F4F6F6{
-Class JsonUserPrefsStorage
+    package "HobbyHub JSON adapters" #F4F6F6 {
+        class JsonSerializableHobbyHub
+        class JsonAdaptedMember
+        class JsonAdaptedSession
+        class JsonAdaptedHobby
+        class JsonAdaptedGroup
+    }
 }
 
-package "AddressBook Storage" #F4F6F6{
-Class JsonAddressBookStorage
-Class JsonSerializableAddressBook
-Class JsonAdaptedPerson
-Class JsonAdaptedTag
+package Model {
+    interface ReadOnlyHobbyHub
+    interface ReadOnlyUserPrefs
+    class HobbyHub
+    class UserPrefs
+    class Member
+    class Session
+    class Hobby
+    class Group
 }
-
-}
-
-Class HiddenOutside #FFFFFF
-HiddenOutside ..> Storage
 
 StorageManager .up.|> Storage
-StorageManager -down-> "1" JsonUserPrefsStorage
-StorageManager -down-> "1" JsonAddressBookStorage
+StorageManager -[down]-> "1" JsonHobbyHubStorage
+StorageManager -[down]-> "1" JsonUserPrefsStorage
 
-JsonAddressBookStorage ..> JsonSerializableAddressBook
-JsonSerializableAddressBook --> "*" JsonAdaptedPerson
-JsonAdaptedPerson --> "*" JsonAdaptedTag
+JsonHobbyHubStorage -[dashed,down]-> JsonSerializableHobbyHub : reads / writes
+JsonSerializableHobbyHub -[down]-> "*" JsonAdaptedMember
+JsonSerializableHobbyHub -[down]-> "*" JsonAdaptedSession
+JsonAdaptedMember -[down]-> "*" JsonAdaptedHobby
+JsonAdaptedMember -[down]-> "*" JsonAdaptedGroup
+
+JsonSerializableHobbyHub -[dashed,right]-> ReadOnlyHobbyHub
+JsonSerializableHobbyHub -[dashed,right]-> HobbyHub
+JsonAdaptedMember -[dashed,right]-> Member
+JsonAdaptedSession -[dashed,right]-> Session
+JsonAdaptedHobby -[dashed,right]-> Hobby
+JsonAdaptedGroup -[dashed,right]-> Group
+JsonUserPrefsStorage -[dashed,right]-> ReadOnlyUserPrefs
+JsonUserPrefsStorage -[dashed,right]-> UserPrefs
+
+' Preserve a visible gap between these otherwise independent model types.
+HobbyHub -[hidden]down- Session
 
 @enduml

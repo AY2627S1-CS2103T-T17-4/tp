@@ -134,14 +134,14 @@ The `Model` component,
 
 ### Storage component
 
-**API** : [`Storage.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/storage/Storage.java)
+**API** : [`Storage.java`](../src/main/java/seedu/hobbyhub/storage/Storage.java)
 
-<img src="images/StorageClassDiagram.png" width="550" />
+<img src="images/StorageClassDiagram.png" width="750" />
 
 The `Storage` component,
-* can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
-* is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
-* depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
+* reads and writes the HobbyHub data and user preferences as JSON files. `StorageManager` implements the `Storage` API and delegates each data type to its own file-access class: `JsonHobbyHubStorage` and `JsonUserPrefsStorage`.
+* converts HobbyHub data between model objects and JSON-friendly objects. `JsonSerializableHobbyHub` holds adapted members and sessions; each adapted member in turn contains adapted hobbies and groups. On loading, these adapters validate and reconstruct the model objects.
+* depends on model types such as `ReadOnlyHobbyHub`, `Member`, `Session`, and `UserPrefs` because it persists and restores the application's data.
 
 ### Common classes
 
