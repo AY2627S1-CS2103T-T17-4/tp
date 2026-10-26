@@ -5,12 +5,20 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 /** Structured profile content for a successful view command. */
-public record ViewDetails(String title, String subtitle, List<Field> fields) {
+public record ViewDetails(String title, String subtitle, List<Field> fields, RecordType recordType, String recordId) {
 
     public ViewDetails {
         requireNonNull(title);
         requireNonNull(subtitle);
         fields = List.copyOf(requireNonNull(fields));
+        requireNonNull(recordType);
+        requireNonNull(recordId);
+    }
+
+    /** Identifies the kind of record represented by these details. */
+    public enum RecordType {
+        MEMBER,
+        SESSION
     }
 
     /** A labeled value displayed in the details panel. */

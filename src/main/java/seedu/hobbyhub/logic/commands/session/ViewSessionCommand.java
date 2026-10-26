@@ -56,7 +56,8 @@ public class ViewSessionCommand extends Command {
         return new CommandResult(formatSession(session), createViewDetails(session));
     }
 
-    private static ViewDetails createViewDetails(Session session) {
+    /** Creates structured UI details for the supplied session. */
+    public static ViewDetails createViewDetails(Session session) {
         String members = session.getMembers().isEmpty()
                 ? "None"
                 : session.getMembers().stream()
@@ -68,7 +69,8 @@ public class ViewSessionCommand extends Command {
                 new ViewDetails.Field("Date", session.getDate().toString()),
                 new ViewDetails.Field("Location", session.getLocation()),
                 new ViewDetails.Field("Status", session.isCompleted() ? "Completed" : "Upcoming"),
-                new ViewDetails.Field("Members · " + session.getMembers().size(), members)));
+                new ViewDetails.Field("Members · " + session.getMembers().size(), members)),
+                ViewDetails.RecordType.SESSION, session.getName().fullName);
     }
 
     /**

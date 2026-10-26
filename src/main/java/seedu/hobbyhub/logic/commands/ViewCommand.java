@@ -46,7 +46,8 @@ public class ViewCommand extends Command {
         return new CommandResult(formatMember(member), createViewDetails(member));
     }
 
-    private static ViewDetails createViewDetails(Member member) {
+    /** Creates structured UI details for the supplied member. */
+    public static ViewDetails createViewDetails(Member member) {
         String hobbies = member.getHobbies().stream()
                 .map(Object::toString)
                 .collect(Collectors.joining(", "));
@@ -66,7 +67,8 @@ public class ViewCommand extends Command {
                 new ViewDetails.Field("Address", member.getAddress().toString()),
                 new ViewDetails.Field("Hobbies", hobbies),
                 new ViewDetails.Field("Groups", groups),
-                new ViewDetails.Field("Sessions", sessions)));
+                new ViewDetails.Field("Sessions", sessions)), ViewDetails.RecordType.MEMBER,
+                member.getEmail().value);
     }
 
     /**
