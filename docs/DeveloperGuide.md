@@ -90,9 +90,11 @@ The `UI` component,
 
 **API** : [`Logic.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/logic/Logic.java)
 
-Here's a (partial) class diagram of the `Logic` component:
+Here's a partial class diagram of the `Logic` component, showing member and session search as concrete examples. Other commands, parsers, and search predicate classes are omitted for clarity:
 
-<img src="images/LogicClassDiagram.png" width="550"/>
+<img src="images/LogicClassDiagram.png" width="1000"/>
+
+`LogicManager` holds a `HobbyHubParser`, a `Model`, and a `Storage`. For `search`, `HobbyHubParser` creates both `SearchCommandParser` and `SearchSessionCommandParser`, then uses the active `ListState` to select which parser handles the arguments. The selected parser creates a `SearchCommand` for members or a `SearchSessionCommand` for sessions. Both commands extend `Command`, update the corresponding model list's filter, and create a `CommandResult` containing the number of matches. `LogicManager` executes the command, saves the HobbyHub data through `Storage`, and returns the result.
 
 The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete 1")` API call as an example.
 
@@ -103,7 +105,7 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 
 How the `Logic` component works:
 
-1. When `Logic` is called upon to execute a command, the command is passed to an `AddressBookParser` object, which in turn creates a parser that matches the command (e.g., `DeleteCommandParser`) and uses it to parse the command.
+1. When `Logic` is called upon to execute a command, `LogicManager` passes the command text and the model's active `ListState` to `HobbyHubParser`. For commands that act on the current list, it creates member and session parsers, then selects the appropriate parser to parse the arguments.
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
 1. The command can communicate with the `Model` when it is executed (e.g. to delete a person).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
@@ -114,7 +116,7 @@ Here are the other classes in `Logic` (omitted from the class diagram above) tha
 <img src="images/ParserClasses.png" width="600"/>
 
 How the parsing works:
-* When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `AddressBookParser` returns that object as a `Command` object.
+* When called upon to parse a user command, the `HobbyHubParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses supporting parsing classes to parse the arguments and create an `XYZCommand` object (e.g., `AddCommand`). `HobbyHubParser` returns that object as a `Command` object. For search, the member and session parsers share `SearchArgument` to validate options and extract queries, then construct the search predicates.
 * All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
 
 ### Model component
