@@ -1,0 +1,178 @@
+/* Clean, light workspace inspired by the supplied HobbyHub mockup. */
+.root {
+    -fx-background-color: #f3f6fa;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 13px;
+}
+
+.section-panel {
+    -fx-background-color: #f3f6fa;
+}
+
+.section-heading {
+    -fx-font-family: "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #697b91;
+}
+
+.count-label, .details-subtitle {
+    -fx-text-fill: #72839a;
+    -fx-font-size: 12px;
+}
+
+#commandTextField {
+    -fx-background-color: white;
+    -fx-background-radius: 7px;
+    -fx-border-color: #cbd7e6;
+    -fx-border-radius: 7px;
+    -fx-border-width: 1px;
+    -fx-padding: 12px 14px;
+    -fx-font-family: "Cascadia Code", Consolas, monospace;
+    -fx-font-size: 15px;
+    -fx-text-fill: #17283d;
+    -fx-prompt-text-fill: #97a5b7;
+}
+
+#commandTextField:focused {
+    -fx-border-color: #3b65a1;
+    -fx-border-width: 2px;
+}
+
+#commandTextField.error {
+    -fx-border-color: #cb5b53;
+}
+
+#resultDisplay {
+    -fx-background-color: transparent;
+    -fx-background-radius: 7px;
+    -fx-border-color: #d7e0eb;
+    -fx-border-radius: 7px;
+    -fx-border-width: 1px;
+    -fx-font-family: "Cascadia Code", Consolas, monospace;
+    -fx-font-size: 13px;
+    -fx-text-fill: #283a51;
+}
+
+#resultDisplay .content {
+    -fx-background-color: #fbfcfe;
+    -fx-background-radius: 7px;
+}
+
+.content-area {
+    -fx-background-color: #f3f6fa;
+}
+
+.list-view {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: #d7e0eb;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+}
+
+.list-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #e8edf3 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.list-cell:filled:selected {
+    -fx-background-color: #f0f5fc;
+}
+
+.list-cell:filled:selected #cardPane {
+    -fx-border-color: #5b7fb2;
+}
+
+.list-cell .label {
+    -fx-text-fill: #26384f;
+}
+
+.cell_big_label {
+    -fx-font-family: "Segoe UI Semibold", "Segoe UI", sans-serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #17283d;
+}
+
+.cell_small_label {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 12px;
+    -fx-text-fill: #63758d;
+}
+
+#groups .label {
+    -fx-text-fill: #365b91;
+    -fx-background-color: #edf3fb;
+    -fx-background-radius: 10px;
+    -fx-padding: 3px 8px;
+    -fx-font-size: 11px;
+}
+
+.details-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-color: #d7e0eb;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+}
+
+.details-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.details-title {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #17283d;
+}
+
+.detail-field {
+    -fx-padding: 0 0 10px 0;
+    -fx-border-color: transparent transparent #edf1f6 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.detail-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #788ba2;
+}
+
+.detail-value {
+    -fx-font-size: 13px;
+    -fx-text-fill: #293c54;
+}
+
+.menu-bar {
+    -fx-background-color: #eaf0f7;
+    -fx-border-color: transparent transparent #d7e0eb transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.menu-bar .label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #304762;
+}
+
+.status-bar {
+    -fx-background-color: #eaf0f7;
+}
+
+.status-bar .label {
+    -fx-text-fill: #6c7e94;
+    -fx-font-family: "Cascadia Code", Consolas, monospace;
+    -fx-font-size: 11px;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #c5d0de;
+    -fx-background-radius: 6px;
+}

@@ -11,6 +11,7 @@ import seedu.hobbyhub.logic.Messages;
 import seedu.hobbyhub.logic.commands.Command;
 import seedu.hobbyhub.logic.commands.CommandResult;
 import seedu.hobbyhub.logic.commands.ViewCommand;
+import seedu.hobbyhub.logic.commands.ViewDetails;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.Model;
@@ -51,7 +52,23 @@ public class ViewSessionCommand extends Command {
             throw new CommandException(Messages.MESSAGE_INVALID_SESSION_DISPLAYED_INDEX);
         }
 
-        return new CommandResult(formatSession(lastShownList.get(targetIndex.getZeroBased())));
+        Session session = lastShownList.get(targetIndex.getZeroBased());
+        return new CommandResult(formatSession(session), createViewDetails(session));
+    }
+
+    private static ViewDetails createViewDetails(Session session) {
+        String members = session.getMembers().isEmpty()
+                ? "None"
+                : session.getMembers().stream()
+                        .map(email -> email.value)
+                        .sorted(String.CASE_INSENSITIVE_ORDER)
+                        .collect(Collectors.joining("\n"));
+
+        return new ViewDetails(session.getName().fullName, "Session details", List.of(
+                new ViewDetails.Field("Date", session.getDate().toString()),
+                new ViewDetails.Field("Location", session.getLocation()),
+                new ViewDetails.Field("Status", session.isCompleted() ? "Completed" : "Upcoming"),
+                new ViewDetails.Field("Members · " + session.getMembers().size(), members)));
     }
 
     /**

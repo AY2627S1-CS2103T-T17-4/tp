@@ -3,6 +3,7 @@ package seedu.hobbyhub.ui;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -19,6 +20,8 @@ import seedu.hobbyhub.logic.commands.CommandResult;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.ListState;
+import seedu.hobbyhub.model.member.Member;
+import seedu.hobbyhub.model.session.Session;
 
 /**
  * The Main Window. Provides the basic application layout containing
@@ -38,7 +41,9 @@ public class MainWindow extends UiPart<Stage> {
     private MemberListPanel memberListPanel;
     private SessionListPanel sessionListPanel;
     private ResultDisplay resultDisplay;
+    private ViewDetailsPanel viewDetailsPanel;
     private HelpWindow helpWindow;
+    private ListState lastShownListState;
 
     @FXML
     private StackPane commandBoxPlaceholder;
@@ -50,7 +55,13 @@ public class MainWindow extends UiPart<Stage> {
     private Label listHeading;
 
     @FXML
+    private Label listCount;
+
+    @FXML
     private StackPane listPanelPlaceholder;
+
+    @FXML
+    private StackPane detailsPanelPlaceholder;
 
     @FXML
     private StackPane resultDisplayPlaceholder;
@@ -122,6 +133,10 @@ public class MainWindow extends UiPart<Stage> {
     void fillInnerParts() {
         memberListPanel = new MemberListPanel(logic.getFilteredMemberList());
         sessionListPanel = new SessionListPanel(logic.getFilteredSessionList());
+        viewDetailsPanel = new ViewDetailsPanel();
+        detailsPanelPlaceholder.getChildren().add(viewDetailsPanel.getRoot());
+        logic.getFilteredMemberList().addListener((ListChangeListener<Member>) change -> viewDetailsPanel.clear());
+        logic.getFilteredSessionList().addListener((ListChangeListener<Session>) change -> viewDetailsPanel.clear());
         showCurrentList();
 
         resultDisplay = new ResultDisplay();
@@ -138,8 +153,16 @@ public class MainWindow extends UiPart<Stage> {
      * Shows the member list or the session list, whichever {@code logic} says is current.
      */
     private void showCurrentList() {
-        boolean isMemberList = logic.getListState() == ListState.MEMBERS;
-        listHeading.setText(isMemberList ? "Members" : "Sessions");
+        ListState currentListState = logic.getListState();
+        if (lastShownListState != null && lastShownListState != currentListState) {
+            viewDetailsPanel.clear();
+        }
+        lastShownListState = currentListState;
+        boolean isMemberList = currentListState == ListState.MEMBERS;
+        listHeading.setText(isMemberList ? "MEMBERS" : "SESSIONS");
+        listCount.setText(isMemberList
+                ? logic.getFilteredMemberList().size() + " shown"
+                : logic.getFilteredSessionList().size() + " shown");
         listPanelPlaceholder.getChildren().setAll(isMemberList
                 ? memberListPanel.getRoot()
                 : sessionListPanel.getRoot());
@@ -203,6 +226,7 @@ public class MainWindow extends UiPart<Stage> {
             CommandResult commandResult = logic.execute(commandText);
             logger.info("Result: " + commandResult.getFeedbackToUser());
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
+            commandResult.getViewDetails().ifPresent(viewDetailsPanel::showDetails);
 
             if (commandResult.isShowHelp()) {
                 handleHelp();

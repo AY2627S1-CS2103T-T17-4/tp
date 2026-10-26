@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1" styleClass="details-scroll">
+  <content>
+    <VBox styleClass="details-card" spacing="12">
+      <padding>
+        <Insets top="18" right="18" bottom="18" left="18" />
+      </padding>
+      <Label text="DETAILS" styleClass="section-heading" />
+      <Label fx:id="title" text="Nothing selected" styleClass="details-title" wrapText="true" />
+      <Label fx:id="subtitle" text="Use view INDEX to inspect a record." styleClass="details-subtitle" wrapText="true" />
+      <VBox fx:id="fields" spacing="14" />
+    </VBox>
+  </content>
+</ScrollPane>
