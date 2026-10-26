@@ -39,7 +39,9 @@ public class ViewCommandTest {
 
         Model expectedModel = new ModelManager(model.getHobbyHub(), new UserPrefs());
 
-        assertCommandSuccess(viewCommand, model, ViewCommand.formatMember(member), expectedModel);
+        CommandResult expectedResult = new CommandResult(ViewCommand.formatMember(member),
+                ViewCommand.createViewDetails(member));
+        assertCommandSuccess(viewCommand, model, expectedResult, expectedModel);
     }
 
     @Test
@@ -59,7 +61,9 @@ public class ViewCommandTest {
         Model expectedModel = new ModelManager(model.getHobbyHub(), new UserPrefs());
         showMemberAtIndex(expectedModel, INDEX_SECOND_MEMBER);
 
-        assertCommandSuccess(viewCommand, model, ViewCommand.formatMember(member), expectedModel);
+        CommandResult expectedResult = new CommandResult(ViewCommand.formatMember(member),
+                ViewCommand.createViewDetails(member));
+        assertCommandSuccess(viewCommand, model, expectedResult, expectedModel);
     }
 
     @Test

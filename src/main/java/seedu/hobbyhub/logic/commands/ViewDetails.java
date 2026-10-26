@@ -7,6 +7,7 @@ import java.util.List;
 /** Structured profile content for a successful view command. */
 public record ViewDetails(String title, String subtitle, List<Field> fields, RecordType recordType, String recordId) {
 
+    /** Creates a details record after validating and copying its values. */
     public ViewDetails {
         requireNonNull(title);
         requireNonNull(subtitle);
@@ -23,6 +24,7 @@ public record ViewDetails(String title, String subtitle, List<Field> fields, Rec
 
     /** A labeled value displayed in the details panel. */
     public record Field(String label, String value) {
+        /** Creates a labeled field after validating its values. */
         public Field {
             requireNonNull(label);
             requireNonNull(value);

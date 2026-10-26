@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.commons.core.index.Index;
 import seedu.hobbyhub.logic.Messages;
+import seedu.hobbyhub.logic.commands.CommandResult;
 import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.ModelManager;
@@ -43,7 +44,9 @@ public class ViewSessionCommandTest {
         Model expectedModel = new ModelManager(model.getHobbyHub(), new UserPrefs());
         expectedModel.setListState(ListState.SESSIONS);
 
-        assertCommandSuccess(command, model, ViewSessionCommand.formatSession(CHESS_MEETUP), expectedModel);
+        CommandResult expectedResult = new CommandResult(ViewSessionCommand.formatSession(CHESS_MEETUP),
+                ViewSessionCommand.createViewDetails(CHESS_MEETUP));
+        assertCommandSuccess(command, model, expectedResult, expectedModel);
     }
 
     @Test
@@ -63,7 +66,9 @@ public class ViewSessionCommandTest {
         expectedModel.setListState(ListState.SESSIONS);
         expectedModel.updateFilteredSessionList(session -> session.equals(CYCLING_TRIP));
 
-        assertCommandSuccess(command, model, ViewSessionCommand.formatSession(CYCLING_TRIP), expectedModel);
+        CommandResult expectedResult = new CommandResult(ViewSessionCommand.formatSession(CYCLING_TRIP),
+                ViewSessionCommand.createViewDetails(CYCLING_TRIP));
+        assertCommandSuccess(command, model, expectedResult, expectedModel);
     }
 
     @Test
