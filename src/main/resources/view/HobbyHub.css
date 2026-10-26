@@ -1,89 +1,89 @@
-/* Clean, light workspace inspired by the supplied HobbyHub mockup. */
+/* Dark charcoal surfaces with orange accents. */
 .root {
-    -fx-background-color: #f3f6fa;
+    -fx-background-color: #101113;
     -fx-font-family: "Segoe UI", Arial, sans-serif;
     -fx-font-size: 13px;
 }
 
 .section-panel {
-    -fx-background-color: #f3f6fa;
+    -fx-background-color: #101113;
 }
 
 .section-heading {
     -fx-font-family: "Segoe UI Semibold", "Segoe UI", sans-serif;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-text-fill: #697b91;
+    -fx-text-fill: #a3a7ad;
 }
 
 .count-label, .details-subtitle {
-    -fx-text-fill: #72839a;
+    -fx-text-fill: #a3a7ad;
     -fx-font-size: 12px;
 }
 
 #commandTextField {
-    -fx-background-color: white;
+    -fx-background-color: #1a1c1f;
     -fx-background-radius: 7px;
-    -fx-border-color: #cbd7e6;
+    -fx-border-color: #3a3d42;
     -fx-border-radius: 7px;
     -fx-border-width: 1px;
     -fx-padding: 12px 14px;
     -fx-font-family: "Cascadia Code", Consolas, monospace;
     -fx-font-size: 15px;
-    -fx-text-fill: #17283d;
-    -fx-prompt-text-fill: #97a5b7;
+    -fx-text-fill: #f2f3f5;
+    -fx-prompt-text-fill: #858a92;
 }
 
 #commandTextField:focused {
-    -fx-border-color: #3b65a1;
+    -fx-border-color: #ff9900;
     -fx-border-width: 2px;
 }
 
 #commandTextField.error {
-    -fx-border-color: #cb5b53;
+    -fx-border-color: #e06452;
 }
 
 #resultDisplay {
     -fx-background-color: transparent;
     -fx-background-radius: 7px;
-    -fx-border-color: #d7e0eb;
+    -fx-border-color: #34373c;
     -fx-border-radius: 7px;
     -fx-border-width: 1px;
     -fx-font-family: "Cascadia Code", Consolas, monospace;
     -fx-font-size: 13px;
-    -fx-text-fill: #283a51;
+    -fx-text-fill: #e6e7e9;
 }
 
 #resultDisplay .content {
-    -fx-background-color: #fbfcfe;
+    -fx-background-color: #191b1e;
     -fx-background-radius: 7px;
 }
 
 .content-area {
-    -fx-background-color: #f3f6fa;
+    -fx-background-color: #101113;
 }
 
 .list-view {
-    -fx-background-color: white;
+    -fx-background-color: #191b1e;
     -fx-background-radius: 8px;
-    -fx-border-color: #d7e0eb;
+    -fx-border-color: #34373c;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
 }
 
 .list-cell {
-    -fx-background-color: white;
-    -fx-border-color: transparent transparent #e8edf3 transparent;
+    -fx-background-color: #1d1f22;
+    -fx-border-color: transparent transparent #303338 transparent;
     -fx-border-width: 0 0 1px 0;
 }
 
 .list-cell:filled:even, .list-cell:filled:odd {
-    -fx-background-color: white;
-    -fx-background: white;
+    -fx-background-color: #1d1f22;
+    -fx-background: #1d1f22;
 }
 
 .list-cell:filled:selected {
-    -fx-background-color: #f0f5fc;
+    -fx-background-color: #382711;
 }
 
 .list-cell:empty {
@@ -94,37 +94,37 @@
 }
 
 .list-cell:filled:selected #cardPane {
-    -fx-border-color: #5b7fb2;
+    -fx-border-color: #ff9900;
 }
 
 .list-cell .label {
-    -fx-text-fill: #26384f;
+    -fx-text-fill: #e6e7e9;
 }
 
 .cell_big_label {
     -fx-font-family: "Segoe UI Semibold", "Segoe UI", sans-serif;
     -fx-font-size: 15px;
-    -fx-text-fill: #17283d;
+    -fx-text-fill: #f5f5f6;
 }
 
 .cell_small_label {
     -fx-font-family: "Segoe UI", sans-serif;
     -fx-font-size: 12px;
-    -fx-text-fill: #63758d;
+    -fx-text-fill: #a4a8af;
 }
 
 #groups .label {
-    -fx-text-fill: #365b91;
-    -fx-background-color: #edf3fb;
+    -fx-text-fill: #ffc36d;
+    -fx-background-color: #382711;
     -fx-background-radius: 10px;
     -fx-padding: 3px 8px;
     -fx-font-size: 11px;
 }
 
 .details-card {
-    -fx-background-color: white;
+    -fx-background-color: #191b1e;
     -fx-background-radius: 8px;
-    -fx-border-color: #d7e0eb;
+    -fx-border-color: #34373c;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
 }
@@ -139,43 +139,96 @@
 .details-title {
     -fx-font-size: 21px;
     -fx-font-weight: bold;
-    -fx-text-fill: #17283d;
+    -fx-text-fill: #f5f5f6;
 }
 
 .detail-field {
     -fx-padding: 0 0 10px 0;
-    -fx-border-color: transparent transparent #edf1f6 transparent;
+    -fx-border-color: transparent transparent #303338 transparent;
     -fx-border-width: 0 0 1px 0;
 }
 
 .detail-label {
     -fx-font-size: 10px;
     -fx-font-weight: bold;
-    -fx-text-fill: #788ba2;
+    -fx-text-fill: #a3a7ad;
 }
 
 .detail-value {
     -fx-font-size: 13px;
-    -fx-text-fill: #293c54;
+    -fx-text-fill: #e3e4e6;
 }
 
 .menu-bar {
-    -fx-background-color: #eaf0f7;
-    -fx-border-color: transparent transparent #d7e0eb transparent;
+    -fx-background-color: #191b1e;
+    -fx-border-color: transparent transparent #303338 transparent;
     -fx-border-width: 0 0 1px 0;
 }
 
 .menu-bar .label {
     -fx-font-size: 13px;
-    -fx-text-fill: #304762;
+    -fx-text-fill: #e3e4e6;
+}
+
+.menu:showing, .menu:focused, .menu:hover {
+    -fx-background-color: #292b2f;
+}
+
+.menu:showing .label, .menu:focused .label, .menu:hover .label {
+    -fx-text-fill: #ffad33;
+}
+
+.context-menu {
+    -fx-background-color: #191b1e;
+    -fx-background-radius: 6px;
+    -fx-border-color: #3a3d42;
+    -fx-border-radius: 6px;
+    -fx-padding: 5px;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 7px 14px;
+}
+
+.menu-item .label {
+    -fx-text-fill: #e3e4e6;
+}
+
+.menu-item:focused {
+    -fx-background-color: #382711;
+}
+
+.menu-item:focused .label {
+    -fx-text-fill: #ffad33;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #191b1e;
+    -fx-border-color: #3a3d42;
+}
+
+.combo-box-popup .list-cell:filled {
+    -fx-background-color: #191b1e;
+    -fx-text-fill: #e3e4e6;
+}
+
+.combo-box-popup .list-cell:filled:hover,
+.combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: #382711;
+}
+
+.combo-box-popup .list-cell:filled:hover .label,
+.combo-box-popup .list-cell:filled:selected .label {
+    -fx-text-fill: #ffad33;
 }
 
 .status-bar {
-    -fx-background-color: #eaf0f7;
+    -fx-background-color: #191b1e;
 }
 
 .status-bar .label {
-    -fx-text-fill: #6c7e94;
+    -fx-text-fill: #989da5;
     -fx-font-family: "Cascadia Code", Consolas, monospace;
     -fx-font-size: 11px;
 }
@@ -185,6 +238,34 @@
 }
 
 .scroll-bar .thumb {
-    -fx-background-color: #c5d0de;
+    -fx-background-color: #4a4e54;
     -fx-background-radius: 6px;
+}
+
+.session-details {
+    -fx-hgap: 7px;
+    -fx-vgap: 5px;
+    -fx-padding: 5px 0 0 0;
+}
+
+.session-tag {
+    -fx-background-color: #292b2f;
+    -fx-background-radius: 10px;
+    -fx-padding: 3px 9px;
+    -fx-font-size: 11px;
+    -fx-text-fill: #d8dade;
+}
+
+.session-date, .session-status-open {
+    -fx-background-color: #382711;
+    -fx-text-fill: #ffc36d;
+}
+
+.session-status-complete {
+    -fx-background-color: #26362b;
+    -fx-text-fill: #a6ddb3;
+}
+
+.stack-pane {
+    -fx-background-color: transparent;
 }
