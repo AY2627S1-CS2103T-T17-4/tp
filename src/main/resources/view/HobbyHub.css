@@ -77,8 +77,20 @@
     -fx-border-width: 0 0 1px 0;
 }
 
+.list-cell:filled:even, .list-cell:filled:odd {
+    -fx-background-color: white;
+    -fx-background: white;
+}
+
 .list-cell:filled:selected {
     -fx-background-color: #f0f5fc;
+}
+
+.list-cell:empty {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
 
 .list-cell:filled:selected #cardPane {
