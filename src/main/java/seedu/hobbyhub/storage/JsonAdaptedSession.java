@@ -23,6 +23,7 @@ class JsonAdaptedSession {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Session's %s field is missing!";
     public static final String MESSAGE_INVALID_DATE_TIME = "Session date-times should use ISO-8601 format";
+    public static final String MESSAGE_INVALID_LOCATION = "Session location cannot be blank.";
 
     private final String name;
     private final String date;
@@ -40,7 +41,7 @@ class JsonAdaptedSession {
             @JsonProperty("members") List<String> members) {
         this.name = name;
         this.date = date;
-        this.location = location == null ? "" : location;
+        this.location = location;
         this.completed = completed;
         if (members != null) {
             this.members.addAll(members);
@@ -80,6 +81,13 @@ class JsonAdaptedSession {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "date"));
         }
         final LocalDateTime modelDateTime = parseSessionDateTime(date);
+
+        if (location == null) {
+            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "location"));
+        }
+        if (location.trim().isEmpty()) {
+            throw new IllegalValueException(MESSAGE_INVALID_LOCATION);
+        }
 
         final Set<Email> modelMembers = new HashSet<>();
         for (String email : members) {

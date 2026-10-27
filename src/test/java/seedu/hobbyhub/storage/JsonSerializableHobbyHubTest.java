@@ -86,7 +86,7 @@ public class JsonSerializableHobbyHubTest {
         JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(SESSION_WITH_UNKNOWN_MEMBER_FILE,
                 JsonSerializableHobbyHub.class).get();
         HobbyHub expectedHobbyHub = new HobbyHubBuilder().withMember(ALICE).withMember(BENSON)
-                .withSession(new SessionBuilder(CHESS_MEETUP).withDateTime("2026-10-24T00:00").withLocation("")
+                .withSession(new SessionBuilder(CHESS_MEETUP).withDateTime("2026-10-24T00:00")
                         .withMembers(ALICE.getEmail().value).build())
                 .build();
         assertEquals(expectedHobbyHub, dataFromFile.toModelType());
@@ -97,7 +97,7 @@ public class JsonSerializableHobbyHubTest {
         JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(SESSION_WITH_MIXED_CASE_EMAIL_FILE,
                 JsonSerializableHobbyHub.class).get();
         HobbyHub expectedHobbyHub = new HobbyHubBuilder().withMember(ALICE).withMember(BENSON)
-                .withSession(new SessionBuilder(CHESS_MEETUP).withDateTime("2026-10-24T00:00").withLocation("")
+                .withSession(new SessionBuilder(CHESS_MEETUP).withDateTime("2026-10-24T00:00")
                         .build()).build();
         assertEquals(expectedHobbyHub, dataFromFile.toModelType());
     }
