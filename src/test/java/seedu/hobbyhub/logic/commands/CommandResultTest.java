@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 
 public class CommandResultTest {
@@ -50,6 +53,19 @@ public class CommandResultTest {
 
         // different exit value -> returns different hashcode
         assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", false, true).hashCode());
+    }
+
+    @Test
+    public void viewDetails_isReturnedAndIncludedInEquality() {
+        ViewDetails details = new ViewDetails("Alex Yeoh", "alex@example.com",
+                List.of(new ViewDetails.Field("Phone", "12345678")),
+                ViewDetails.RecordType.MEMBER, "alex@example.com");
+        CommandResult result = new CommandResult("feedback", details);
+
+        assertEquals(Optional.of(details), result.getViewDetails());
+        assertEquals(result, new CommandResult("feedback", details));
+        assertNotEquals(result, new CommandResult("feedback"));
+        assertNotEquals(result.hashCode(), new CommandResult("feedback").hashCode());
     }
 
     @Test
