@@ -88,10 +88,14 @@ Format: `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-
 * Name, email and at least one hobby are required. Phone number and address are optional.
 * Omit `-p` or `-a` when those details are unknown. If supplied during add, each must have a valid, non-empty value.
 * Supply name and email once, and phone/address at most once if included. Repeat `-h` for additional hobbies and `-g` for additional groups.
-* Names must contain only letters, digits, and spaces. Phone numbers must contain at least three digits and no other characters.
-* Use a valid email address, such as `johnd@example.com`. Group names must start with a letter or digit and contain only letters, digits and spaces.
-* Hobbies must start with a letter or digit and may contain letters, digits, spaces, and `&`, `+`, `'`, `/`, or `-`.
+* Names and group names must start with a Unicode letter or digit. They may also contain Unicode letters and digits,
+  combining marks, spaces, apostrophes, hyphens, periods, ampersands, and plus signs.
+* Phone numbers must contain at least three digits and may have one leading `+`. Do not include spaces or other formatting.
+* Use a valid email address, such as `johnd@example.com`. Hobby names must start with a letter or digit and may contain
+  letters, digits, spaces, and `&`, `+`, `'`, `/`, or `-`.
 * Enclose a hobby and skill pair in double quotes when it contains spaces, for example, `-h "Board Games:Advanced"`.
+* Each `-h` option requires a non-empty hobby value. Unknown add options are rejected. Quote hobby text containing an
+  option-like token, such as `-h "Chess -x"`, to keep it as part of the hobby value.
 * Skill labels are Beginner, Intermediate and Advanced, ignoring capitalization. Hobby names cannot repeat,
   even with different skill levels. Legacy `-h Board Games` input remains valid and defaults to Beginner.
 * Email addresses must be unique, ignoring capitalization. Members may share a name.
