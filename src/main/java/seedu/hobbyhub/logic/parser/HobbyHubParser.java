@@ -94,7 +94,13 @@ public class HobbyHubParser {
                 }
                 yield new UnassignCommandParser().parse(arguments);
             }
-            case ClearCommand.COMMAND_WORD -> new ClearCommand();
+            case ClearCommand.COMMAND_WORD -> {
+                if (!arguments.trim().isEmpty()) {
+                    throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                            ClearCommand.MESSAGE_USAGE));
+                }
+                yield new ClearCommand();
+            }
             case ListCommand.COMMAND_WORD -> new ListCommandParser().parse(arguments);
             case ExitCommand.COMMAND_WORD -> new ExitCommand();
             case HelpCommand.COMMAND_WORD -> new HelpCommand();

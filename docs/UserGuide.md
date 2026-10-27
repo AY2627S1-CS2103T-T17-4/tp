@@ -64,7 +64,8 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 * Parameters can be in any order.<br>
   For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `exit`, and `clear`, are ignored.<br>
+* Extraneous parameters for `help` and `exit` are ignored. The `clear` command rejects extraneous parameters
+  to prevent accidental deletion.<br>
   For example, `help 123` is interpreted as `help`.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
