@@ -200,4 +200,22 @@ public class JsonHobbyHubStorageTest {
     public void saveHobbyHub_nullFilePath_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> saveHobbyHub(new HobbyHub(), null));
     }
+
+    @Test
+    public void readHobbyHub_backupFails_stillLoadsRemainingData() throws Exception {
+        Path copy = testFolder.resolve("invalidAndValidMemberHobbyHub.json");
+        Files.copy(TEST_DATA_FOLDER.resolve("invalidAndValidMemberHobbyHub.json"), copy);
+        Path unwritableBackup = testFolder.resolve("missingFolder").resolve("backup.bak");
+        JsonHobbyHubStorage storage = new JsonHobbyHubStorage(copy) {
+            @Override
+            Path getBackupPath(Path filePath) {
+                return unwritableBackup;
+            }
+        };
+
+        ReadOnlyHobbyHub hobbyHub = storage.readHobbyHub().get();
+
+        assertEquals(1, hobbyHub.getMemberList().size());
+        assertEquals(0, countBackups());
+    }
 }
