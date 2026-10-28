@@ -3,6 +3,7 @@ package seedu.hobbyhub.ui;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -16,9 +17,14 @@ import seedu.hobbyhub.commons.core.GuiSettings;
 import seedu.hobbyhub.commons.core.LogsCenter;
 import seedu.hobbyhub.logic.Logic;
 import seedu.hobbyhub.logic.commands.CommandResult;
+import seedu.hobbyhub.logic.commands.ViewCommand;
+import seedu.hobbyhub.logic.commands.ViewDetails;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
+import seedu.hobbyhub.logic.commands.session.ViewSessionCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.ListState;
+import seedu.hobbyhub.model.member.Member;
+import seedu.hobbyhub.model.session.Session;
 
 /**
  * The Main Window. Provides the basic application layout containing
@@ -38,7 +44,11 @@ public class MainWindow extends UiPart<Stage> {
     private MemberListPanel memberListPanel;
     private SessionListPanel sessionListPanel;
     private ResultDisplay resultDisplay;
+    private ViewDetailsPanel viewDetailsPanel;
     private HelpWindow helpWindow;
+    private ViewDetails viewedDetails;
+    private Member viewedMember;
+    private Session viewedSession;
 
     @FXML
     private StackPane commandBoxPlaceholder;
@@ -50,7 +60,13 @@ public class MainWindow extends UiPart<Stage> {
     private Label listHeading;
 
     @FXML
+    private Label listCount;
+
+    @FXML
     private StackPane listPanelPlaceholder;
+
+    @FXML
+    private StackPane detailsPanelPlaceholder;
 
     @FXML
     private StackPane resultDisplayPlaceholder;
@@ -122,6 +138,10 @@ public class MainWindow extends UiPart<Stage> {
     void fillInnerParts() {
         memberListPanel = new MemberListPanel(logic.getFilteredMemberList());
         sessionListPanel = new SessionListPanel(logic.getFilteredSessionList());
+        viewDetailsPanel = new ViewDetailsPanel();
+        detailsPanelPlaceholder.getChildren().add(viewDetailsPanel.getRoot());
+        logic.getMemberList().addListener((ListChangeListener<Member>) this::handleMemberListChanged);
+        logic.getSessionList().addListener((ListChangeListener<Session>) this::handleSessionListChanged);
         showCurrentList();
 
         resultDisplay = new ResultDisplay();
@@ -138,8 +158,12 @@ public class MainWindow extends UiPart<Stage> {
      * Shows the member list or the session list, whichever {@code logic} says is current.
      */
     private void showCurrentList() {
-        boolean isMemberList = logic.getListState() == ListState.MEMBERS;
-        listHeading.setText(isMemberList ? "Members" : "Sessions");
+        ListState currentListState = logic.getListState();
+        boolean isMemberList = currentListState == ListState.MEMBERS;
+        listHeading.setText(isMemberList ? "MEMBERS" : "SESSIONS");
+        listCount.setText(isMemberList
+                ? logic.getFilteredMemberList().size() + " shown"
+                : logic.getFilteredSessionList().size() + " shown");
         listPanelPlaceholder.getChildren().setAll(isMemberList
                 ? memberListPanel.getRoot()
                 : sessionListPanel.getRoot());
@@ -203,6 +227,7 @@ public class MainWindow extends UiPart<Stage> {
             CommandResult commandResult = logic.execute(commandText);
             logger.info("Result: " + commandResult.getFeedbackToUser());
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
+            commandResult.getViewDetails().ifPresent(this::showViewedDetails);
 
             if (commandResult.isShowHelp()) {
                 handleHelp();
@@ -221,5 +246,95 @@ public class MainWindow extends UiPart<Stage> {
             // A failed command (e.g. a save error) may still have switched the list, so always resync the panel.
             showCurrentList();
         }
+    }
+
+    /** Keeps the viewed member profile synchronized with replacements in the full member list. */
+    private void handleMemberListChanged(ListChangeListener.Change<? extends Member> change) {
+        if (viewedDetails == null || viewedDetails.recordType() != ViewDetails.RecordType.MEMBER) {
+            return;
+        }
+
+        Member updatedMember = findViewedMember();
+        if (updatedMember == null) {
+            updatedMember = findReplacementMember(change);
+        }
+        if (updatedMember != null) {
+            viewedMember = updatedMember;
+            viewedDetails = ViewCommand.createViewDetails(updatedMember);
+            viewDetailsPanel.showDetails(viewedDetails);
+        }
+    }
+
+    /** Keeps the viewed session profile synchronized with replacements in the full session list. */
+    private void handleSessionListChanged(ListChangeListener.Change<? extends Session> change) {
+        if (viewedDetails == null || viewedDetails.recordType() != ViewDetails.RecordType.SESSION) {
+            return;
+        }
+
+        Session updatedSession = findViewedSession();
+        if (updatedSession == null) {
+            updatedSession = findReplacementSession(change);
+        }
+        if (updatedSession != null) {
+            viewedSession = updatedSession;
+            viewedDetails = ViewSessionCommand.createViewDetails(updatedSession);
+            viewDetailsPanel.showDetails(viewedDetails);
+        }
+    }
+
+    /** Stores the viewed record and displays its latest details. */
+    private void showViewedDetails(ViewDetails details) {
+        viewedDetails = details;
+        viewedMember = details.recordType() == ViewDetails.RecordType.MEMBER ? findViewedMember() : null;
+        viewedSession = details.recordType() == ViewDetails.RecordType.SESSION ? findViewedSession() : null;
+        viewDetailsPanel.showDetails(details);
+    }
+
+    /** Finds the current version of the viewed member, even when the active filter hides it. */
+    private Member findViewedMember() {
+        if (viewedDetails == null || viewedDetails.recordType() != ViewDetails.RecordType.MEMBER) {
+            return null;
+        }
+        return logic.getMemberList().stream()
+                .filter(member -> member.getEmail().value.equalsIgnoreCase(viewedDetails.recordId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /** Finds the current version of the viewed session, even when the active filter hides it. */
+    private Session findViewedSession() {
+        if (viewedDetails == null || viewedDetails.recordType() != ViewDetails.RecordType.SESSION) {
+            return null;
+        }
+        return logic.getSessionList().stream()
+                .filter(session -> session.getName().fullName.equalsIgnoreCase(viewedDetails.recordId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /** Follows a viewed member when an edit changes its email identity. */
+    private Member findReplacementMember(ListChangeListener.Change<? extends Member> change) {
+        while (change.next()) {
+            for (int index = 0; index < change.getRemoved().size(); index++) {
+                if (change.getRemoved().get(index) == viewedMember && !change.getAddedSubList().isEmpty()) {
+                    int replacementIndex = Math.min(index, change.getAddedSubList().size() - 1);
+                    return change.getAddedSubList().get(replacementIndex);
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Follows a viewed session when its list entry is replaced. */
+    private Session findReplacementSession(ListChangeListener.Change<? extends Session> change) {
+        while (change.next()) {
+            for (int index = 0; index < change.getRemoved().size(); index++) {
+                if (change.getRemoved().get(index) == viewedSession && !change.getAddedSubList().isEmpty()) {
+                    int replacementIndex = Math.min(index, change.getAddedSubList().size() - 1);
+                    return change.getAddedSubList().get(replacementIndex);
+                }
+            }
+        }
+        return null;
     }
 }

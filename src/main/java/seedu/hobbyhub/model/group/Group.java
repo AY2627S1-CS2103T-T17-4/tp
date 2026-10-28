@@ -9,9 +9,9 @@ import static seedu.hobbyhub.commons.util.AppUtil.checkArgument;
  */
 public class Group {
 
-    public static final String MESSAGE_CONSTRAINTS = "Group names must start with a letter or digit "
-            + "and contain only letters, digits and spaces";
-    public static final String VALIDATION_REGEX = "[\\p{Alnum}][\\p{Alnum} ]*";
+    public static final String MESSAGE_CONSTRAINTS = "Group names must start with a letter or digit and contain "
+            + "only letters, digits, combining marks, spaces, apostrophes, hyphens, periods, ampersands, or plus signs";
+    public static final String VALIDATION_REGEX = "[\\p{L}\\p{N}][\\p{L}\\p{N}\\p{M} '&+.’-]*";
 
     public final String groupName;
 

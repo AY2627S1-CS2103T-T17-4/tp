@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -13,7 +14,7 @@
     <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10" prefWidth="150" />
     </columnConstraints>
-    <VBox alignment="CENTER_LEFT" minHeight="70" GridPane.columnIndex="0">
+    <VBox alignment="CENTER_LEFT" minHeight="96" GridPane.columnIndex="0" spacing="2">
       <padding>
         <Insets top="5" right="5" bottom="5" left="15" />
       </padding>
@@ -26,10 +27,7 @@
         </Label>
         <Label fx:id="name" text="\$name" styleClass="cell_big_label" />
       </HBox>
-      <Label fx:id="date" styleClass="cell_small_label" text="\$date" />
-      <Label fx:id="locationLabel" styleClass="cell_small_label" text="\$location" />
-      <Label fx:id="completed" styleClass="cell_small_label" text="\$completed" />
-      <Label fx:id="memberCount" styleClass="cell_small_label" text="\$memberCount" />
+      <FlowPane fx:id="sessionDetails" styleClass="session-details" />
     </VBox>
   </GridPane>
 </HBox>

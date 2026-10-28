@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import seedu.hobbyhub.model.session.Session;
@@ -27,13 +28,7 @@ public class SessionCard extends UiPart<Region> {
     @FXML
     private Label name;
     @FXML
-    private Label date;
-    @FXML
-    private Label locationLabel;
-    @FXML
-    private Label completed;
-    @FXML
-    private Label memberCount;
+    private FlowPane sessionDetails;
 
     /**
      * Creates a {@code SessionCard} with the given {@code Session} and index to display.
@@ -43,10 +38,19 @@ public class SessionCard extends UiPart<Region> {
         this.session = session;
         id.setText(displayedIndex + ". ");
         name.setText(session.getName().fullName);
-        date.setText(session.getDate().format(DATE_TIME_FORMAT));
-        locationLabel.setText(session.getLocation());
-        completed.setText(session.isCompleted() ? "Completed" : "Not completed");
+        addDetail(session.getDate().format(DATE_TIME_FORMAT), "session-date");
+        addDetail(session.getLocation(), "session-location");
+        addDetail(session.isCompleted() ? "Completed" : "Not completed", session.isCompleted()
+                ? "session-status-complete" : "session-status-open");
         int count = session.getMembers().size();
-        memberCount.setText(count + (count == 1 ? " member" : " members"));
+        addDetail(count + (count == 1 ? " member" : " members"), "session-member-count");
+    }
+
+    private void addDetail(String value, String styleClass) {
+        Label detail = new Label(value);
+        detail.setWrapText(true);
+        detail.setMaxWidth(360);
+        detail.getStyleClass().addAll("session-tag", styleClass);
+        sessionDetails.getChildren().add(detail);
     }
 }

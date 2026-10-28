@@ -3,6 +3,7 @@ package seedu.hobbyhub.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import seedu.hobbyhub.commons.util.ToStringBuilder;
 
@@ -19,13 +20,26 @@ public class CommandResult {
     /** The application should exit. */
     private final boolean exit;
 
+    /** Structured details shown in the UI when a view command succeeds. */
+    private final ViewDetails viewDetails;
+
     /**
      * Constructs a {@code CommandResult} with the specified fields.
      */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit) {
+        this(feedbackToUser, showHelp, exit, null);
+    }
+
+    /** Constructs a result that also carries structured details for the UI. */
+    public CommandResult(String feedbackToUser, ViewDetails viewDetails) {
+        this(feedbackToUser, false, false, requireNonNull(viewDetails));
+    }
+
+    private CommandResult(String feedbackToUser, boolean showHelp, boolean exit, ViewDetails viewDetails) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
+        this.viewDetails = viewDetails;
     }
 
     /**
@@ -48,6 +62,10 @@ public class CommandResult {
         return exit;
     }
 
+    public Optional<ViewDetails> getViewDetails() {
+        return Optional.ofNullable(viewDetails);
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -61,12 +79,13 @@ public class CommandResult {
 
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && showHelp == otherCommandResult.showHelp
-                && exit == otherCommandResult.exit;
+                && exit == otherCommandResult.exit
+                && Objects.equals(viewDetails, otherCommandResult.viewDetails);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, showHelp, exit);
+        return Objects.hash(feedbackToUser, showHelp, exit, viewDetails);
     }
 
     @Override

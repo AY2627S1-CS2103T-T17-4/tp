@@ -21,7 +21,7 @@ public class AddSessionCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a session to the HobbyHub.\n"
             + "Parameters: " + PREFIX_NAME + " SESSION_NAME "
             + PREFIX_LOCATION + " LOCATION "
-            + PREFIX_DATETIME + " DATETIME (ISO-8601, e.g. 2026-10-24T14:00)\n"
+            + PREFIX_DATETIME + " DATETIME (e.g. 2026-10-24 14:00 or 2026-10-24T14:00)\n"
             + "Example: " + COMMAND_WORD + " " + PREFIX_NAME + " Weekend Chess Meetup "
             + PREFIX_LOCATION + " Community Center " + PREFIX_DATETIME + " 2026-10-24T14:00";
 

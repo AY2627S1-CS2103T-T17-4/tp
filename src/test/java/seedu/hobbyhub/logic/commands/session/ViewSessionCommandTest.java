@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.commons.core.index.Index;
 import seedu.hobbyhub.logic.Messages;
+import seedu.hobbyhub.logic.commands.CommandResult;
+import seedu.hobbyhub.logic.commands.ViewDetails;
 import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.ModelManager;
@@ -43,7 +45,9 @@ public class ViewSessionCommandTest {
         Model expectedModel = new ModelManager(model.getHobbyHub(), new UserPrefs());
         expectedModel.setListState(ListState.SESSIONS);
 
-        assertCommandSuccess(command, model, ViewSessionCommand.formatSession(CHESS_MEETUP), expectedModel);
+        CommandResult expectedResult = new CommandResult(ViewSessionCommand.formatSession(CHESS_MEETUP),
+                ViewSessionCommand.createViewDetails(CHESS_MEETUP));
+        assertCommandSuccess(command, model, expectedResult, expectedModel);
     }
 
     @Test
@@ -63,7 +67,9 @@ public class ViewSessionCommandTest {
         expectedModel.setListState(ListState.SESSIONS);
         expectedModel.updateFilteredSessionList(session -> session.equals(CYCLING_TRIP));
 
-        assertCommandSuccess(command, model, ViewSessionCommand.formatSession(CYCLING_TRIP), expectedModel);
+        CommandResult expectedResult = new CommandResult(ViewSessionCommand.formatSession(CYCLING_TRIP),
+                ViewSessionCommand.createViewDetails(CYCLING_TRIP));
+        assertCommandSuccess(command, model, expectedResult, expectedModel);
     }
 
     @Test
@@ -131,5 +137,27 @@ public class ViewSessionCommandTest {
                 CHESS_MEETUP.getLocation(), true, CHESS_MEETUP.getMembers());
 
         assertTrue(ViewSessionCommand.formatSession(completed).contains("Completed: yes"));
+    }
+
+    @Test
+    public void createViewDetails_sessionWithoutMembers_showsNone() {
+        Session session = new SessionBuilder().withName("Empty Session")
+                .withDateTime("2026-11-01T10:00").withLocation("Park").withMembers().build();
+
+        ViewDetails details = ViewSessionCommand.createViewDetails(session);
+
+        assertEquals(ViewDetails.RecordType.SESSION, details.recordType());
+        assertEquals(session.getName().fullName, details.recordId());
+        assertEquals("None", details.fields().get(3).value());
+    }
+
+    @Test
+    public void createViewDetails_completedSession_showsCompletedStatus() {
+        Session completed = new Session(CHESS_MEETUP.getName(), CHESS_MEETUP.getDate(),
+                CHESS_MEETUP.getLocation(), true, CHESS_MEETUP.getMembers());
+
+        ViewDetails details = ViewSessionCommand.createViewDetails(completed);
+
+        assertEquals("Completed", details.fields().get(2).value());
     }
 }

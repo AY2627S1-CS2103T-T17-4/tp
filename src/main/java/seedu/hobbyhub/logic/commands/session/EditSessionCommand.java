@@ -27,7 +27,7 @@ public class EditSessionCommand extends Command {
             + "displayed session list. At least one field must be supplied.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + "[" + PREFIX_LOCATION + " LOCATION] "
-            + "[" + PREFIX_DATETIME + " DATETIME (ISO-8601, e.g. 2026-10-24T14:00)]\n"
+            + "[" + PREFIX_DATETIME + " DATETIME (e.g. 2026-10-24 14:00 or 2026-10-24T14:00)]\n"
             + "Example: " + COMMAND_WORD + " 1 " + PREFIX_LOCATION + " Community Center "
             + PREFIX_DATETIME + " 2026-10-24T14:00";
 

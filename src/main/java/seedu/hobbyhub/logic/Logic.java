@@ -25,8 +25,18 @@ public interface Logic {
     /** Returns an unmodifiable view of the filtered list of members */
     ObservableList<Member> getFilteredMemberList();
 
+    /** Returns an unmodifiable view of all members, including those excluded by the current filter. */
+    default ObservableList<Member> getMemberList() {
+        return getFilteredMemberList();
+    }
+
     /** Returns an unmodifiable view of the filtered list of sessions */
     ObservableList<Session> getFilteredSessionList();
+
+    /** Returns an unmodifiable view of all sessions, including those excluded by the current filter. */
+    default ObservableList<Session> getSessionList() {
+        return getFilteredSessionList();
+    }
 
     /** Returns the list currently shown to the user */
     ListState getListState();
