@@ -183,12 +183,16 @@ public class ParserUtilTest {
 
     @Test
     public void parseSessionLocation_blankValue_throwsParseException() {
-        assertThrows(ParseException.class, () -> ParserUtil.parseSessionLocation(" \t "));
+        for (String location : List.of("", " \t ", "\u2003", "\u2002\u2003\u3000", " \u2003 \t")) {
+            assertThrows(ParseException.class, ParserUtil.MESSAGE_INVALID_SESSION_LOCATION, ()
+                -> ParserUtil.parseSessionLocation(location));
+        }
     }
 
     @Test
     public void parseSessionLocation_validValueWithWhitespace_returnsTrimmedLocation() throws Exception {
         assertEquals("Golf Club", ParserUtil.parseSessionLocation("  Golf Club  "));
+        assertEquals("Golf\u2003Club", ParserUtil.parseSessionLocation("  Golf\u2003Club  "));
     }
 
     @Test

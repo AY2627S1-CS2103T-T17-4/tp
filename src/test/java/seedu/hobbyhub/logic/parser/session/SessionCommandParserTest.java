@@ -165,6 +165,16 @@ public class SessionCommandParserTest {
     }
 
     @Test
+    public void parse_addOrEditSessionWithUnicodeBlankLocation_throwsParseException() {
+        for (String location : new String[] {"\u2003", "\u2002\u2003\u3000", " \u2003 "}) {
+            assertParseFailure(new AddSessionCommandParser(),
+                    " -n Golf Meet -l " + location + " -t 2026-11-01T10:00", MESSAGE_INVALID_SESSION_LOCATION);
+            assertParseFailure(new EditSessionCommandParser(),
+                    " 1 -l " + location, MESSAGE_INVALID_SESSION_LOCATION);
+        }
+    }
+
+    @Test
     public void parse_editSessionWithInvalidDateTime_throwsParseException() {
         assertParseFailure(new EditSessionCommandParser(), " 1 -t tomorrow", MESSAGE_INVALID_SESSION_DATE_TIME);
     }
