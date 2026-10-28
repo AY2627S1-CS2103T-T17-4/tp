@@ -121,11 +121,20 @@ public class JsonHobbyHubStorage {
     }
 
     /**
-     * Saves a timestamped copy of the file at {@code filePath} next to it, so that discarded entries remain
-     * recoverable after the next save overwrites the file. Failure to back up is logged and otherwise ignored.
+     * Returns the path where a backup of the file at {@code filePath} is saved, which is a timestamped file
+     * next to it.
      */
-    private static void backUp(Path filePath) {
-        Path backupPath = filePath.resolveSibling(filePath.getFileName() + "." + System.currentTimeMillis() + ".bak");
+    Path getBackupPath(Path filePath) {
+        return filePath.resolveSibling(filePath.getFileName() + "." + System.currentTimeMillis() + ".bak");
+    }
+
+    /**
+     * Saves a copy of the file at {@code filePath} at {@link #getBackupPath(Path)}, so that discarded entries
+     * remain recoverable after the next save overwrites the file. Failure to back up is logged and otherwise
+     * ignored.
+     */
+    private void backUp(Path filePath) {
+        Path backupPath = getBackupPath(filePath);
         try {
             Files.copy(filePath, backupPath);
             logger.info("Original data file backed up to " + backupPath);

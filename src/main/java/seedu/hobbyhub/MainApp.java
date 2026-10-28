@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.function.IntConsumer;
 import java.util.logging.Logger;
 
 import javafx.application.Application;
@@ -47,6 +48,9 @@ public class MainApp extends Application {
     /** Held for the lifetime of the application, as the lock is lost if this reference is garbage collected. */
     private InstanceLock instanceLock;
 
+    /** Called with a non-zero status to exit the application. Replaced in tests, as exiting would end the JVM. */
+    private IntConsumer exitHandler = System::exit;
+
     @Override
     public void init() throws Exception {
         logger.info("=============================[ Initializing HobbyHub ]===========================");
@@ -67,6 +71,14 @@ public class MainApp extends Application {
     }
 
     /**
+     * Replaces the action taken to exit the application when another instance is already running.
+     * Intended for tests, as the default action ends the JVM.
+     */
+    void setExitHandler(IntConsumer exitHandler) {
+        this.exitHandler = exitHandler;
+    }
+
+    /**
      * Acquires the lock guarding the data file of {@code storage}, and exits the application if another
      * instance already holds it. Continues without a lock if the lock file cannot be created or locked.
      */
@@ -80,7 +92,7 @@ public class MainApp extends Application {
                 logger.severe("Another HobbyHub instance is already using " + storage.getHobbyHubFilePath()
                         + ". Exiting.");
                 System.err.println("Another HobbyHub instance is already running.");
-                System.exit(1);
+                exitHandler.accept(1);
             }
         } catch (IOException e) {
             logger.warning("Could not acquire instance lock, continuing without it: " + StringUtil.getDetails(e));
@@ -118,7 +130,7 @@ public class MainApp extends Application {
                         + " populated with a sample HobbyHub.");
             }
             initialData = hobbyHubOptional.orElseGet(SampleDataUtil::getSampleHobbyHub);
-        } catch (DataLoadingException | IllegalArgumentException e) {
+        } catch (DataLoadingException e) {
             logger.warning("Data file at " + storage.getHobbyHubFilePath() + " could not be loaded."
                     + " Will be starting with an empty HobbyHub.");
             initialData = new HobbyHub();

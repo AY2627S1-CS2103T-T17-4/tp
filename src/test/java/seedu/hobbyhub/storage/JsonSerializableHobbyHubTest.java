@@ -8,6 +8,7 @@ import static seedu.hobbyhub.testutil.TypicalSessions.CHESS_MEETUP;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -122,4 +123,26 @@ public class JsonSerializableHobbyHubTest {
         assertEquals(original, new JsonSerializableHobbyHub(original).toModelType());
     }
 
+    @Test
+    public void toModelType_invalidSession_discardsSession() {
+        JsonAdaptedSession invalidSession =
+            new JsonAdaptedSession(null, "2026-11-01T10:00", "Park", false, List.of());
+        JsonSerializableHobbyHub dataFromFile = new JsonSerializableHobbyHub(List.of(), List.of(invalidSession));
+
+        HobbyHub hobbyHub = dataFromFile.toModelType();
+
+        assertEquals(1, dataFromFile.getDiscardedCount());
+        assertTrue(hobbyHub.getSessionList().isEmpty());
+    }
+
+    @Test
+    public void constructor_nullLists_treatedAsEmpty() {
+        JsonSerializableHobbyHub dataFromFile = new JsonSerializableHobbyHub(null, null);
+
+        HobbyHub hobbyHub = dataFromFile.toModelType();
+
+        assertEquals(0, dataFromFile.getDiscardedCount());
+        assertTrue(hobbyHub.getMemberList().isEmpty());
+        assertTrue(hobbyHub.getSessionList().isEmpty());
+    }
 }
