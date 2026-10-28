@@ -57,6 +57,10 @@ public class HobbyContainsKeywordsPredicateTest {
         // Partial keyword in the middle of a hobby
         predicate = new HobbyContainsKeywordsPredicate(List.of("hes"));
         assertTrue(predicate.test(new MemberBuilder().withHobby("Chess").build()));
+
+        // Canonically equivalent Unicode keyword
+        predicate = new HobbyContainsKeywordsPredicate(List.of("Cafe\u0301"));
+        assertTrue(predicate.test(new MemberBuilder().withHobby("Café").build()));
     }
 
     @Test

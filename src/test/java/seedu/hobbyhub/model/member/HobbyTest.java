@@ -45,6 +45,16 @@ public class HobbyTest {
     }
 
     @Test
+    public void constructor_canonicallyEquivalentName_normalizesToNfc() {
+        Hobby composed = new Hobby("Café");
+        Hobby decomposed = new Hobby("Cafe\u0301");
+
+        assertTrue(composed.equals(decomposed));
+        assertTrue(composed.hashCode() == decomposed.hashCode());
+        assertTrue(decomposed.value.equals("Café"));
+    }
+
+    @Test
     public void equals() {
         Hobby hobby = new Hobby("Board Games");
 
