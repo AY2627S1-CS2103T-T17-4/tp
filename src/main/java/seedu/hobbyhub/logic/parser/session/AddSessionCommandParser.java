@@ -22,7 +22,8 @@ public class AddSessionCommandParser implements Parser<AddSessionCommand> {
 
     @Override
     public AddSessionCommand parse(String args) throws ParseException {
-        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_LOCATION, PREFIX_DATETIME);
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenizeWithExactPrefixes(
+                args, PREFIX_NAME, PREFIX_LOCATION, PREFIX_DATETIME);
 
         if (!areRequiredFieldsPresent(argMultimap) || !argMultimap.getPreamble().isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddSessionCommand.MESSAGE_USAGE));

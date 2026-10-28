@@ -177,6 +177,18 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseSessionName_quotedValue_returnsUnquotedName() throws Exception {
+        assertEquals(new SessionName("Chess -night"), ParserUtil.parseSessionName(" \" Chess -night \" "));
+    }
+
+    @Test
+    public void parseSessionName_unbalancedQuotes_throwsParseException() {
+        for (String name : List.of("\"Chess -night", "Chess -night\"", "\"\"")) {
+            assertThrows(ParseException.class, () -> ParserUtil.parseSessionName(name));
+        }
+    }
+
+    @Test
     public void parseSessionLocation_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseSessionLocation(null));
     }

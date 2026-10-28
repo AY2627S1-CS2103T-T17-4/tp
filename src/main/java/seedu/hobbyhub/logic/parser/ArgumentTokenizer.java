@@ -24,7 +24,16 @@ public class ArgumentTokenizer {
      * @return           ArgumentMultimap object that maps prefixes to their arguments
      */
     public static ArgumentMultimap tokenize(String argsString, Prefix... prefixes) {
-        List<PrefixPosition> positions = findAllPrefixPositions(argsString, prefixes);
+        List<PrefixPosition> positions = findAllPrefixPositions(argsString, false, prefixes);
+        return extractArguments(argsString, positions);
+    }
+
+    /**
+     * Tokenizes arguments, recognizing a prefix only when followed by whitespace or the end of the input.
+     * For example, {@code -night} remains part of a value rather than being read as {@code -n}.
+     */
+    public static ArgumentMultimap tokenizeWithExactPrefixes(String argsString, Prefix... prefixes) {
+        List<PrefixPosition> positions = findAllPrefixPositions(argsString, true, prefixes);
         return extractArguments(argsString, positions);
     }
 
@@ -35,22 +44,27 @@ public class ArgumentTokenizer {
      * @param prefixes   Prefixes to find in the arguments string
      * @return           List of zero-based prefix positions in the given arguments string
      */
-    private static List<PrefixPosition> findAllPrefixPositions(String argsString, Prefix... prefixes) {
+    private static List<PrefixPosition> findAllPrefixPositions(String argsString,
+            boolean requireExactPrefixes, Prefix... prefixes) {
         return Arrays.stream(prefixes)
-                .flatMap(prefix -> findPrefixPositions(argsString, prefix).stream())
+                .flatMap(prefix -> findPrefixPositions(argsString, prefix, requireExactPrefixes).stream())
                 .collect(Collectors.toList());
     }
 
     /**
-     * @see #findAllPrefixPositions(String, Prefix...)
+     * @see #findAllPrefixPositions(String, boolean, Prefix...)
      */
-    private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix) {
+    private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix,
+            boolean requireExactPrefixes) {
         List<PrefixPosition> positions = new ArrayList<>();
 
         int prefixPosition = findPrefixPosition(argsString, prefix.getPrefix(), 0);
         while (prefixPosition != -1) {
             PrefixPosition extendedPrefix = new PrefixPosition(prefix, prefixPosition);
-            if (!isInsideQuotes(argsString, prefixPosition)) {
+            int prefixEnd = prefixPosition + prefix.getPrefix().length();
+            boolean isExactPrefix = prefixEnd == argsString.length()
+                    || Character.isWhitespace(argsString.charAt(prefixEnd));
+            if ((!requireExactPrefixes || isExactPrefix) && !isInsideQuotes(argsString, prefixPosition)) {
                 positions.add(extendedPrefix);
             }
             prefixPosition = findPrefixPosition(argsString, prefix.getPrefix(), prefixPosition);
