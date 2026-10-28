@@ -118,7 +118,7 @@ public class MainApp extends Application {
                         + " populated with a sample HobbyHub.");
             }
             initialData = hobbyHubOptional.orElseGet(SampleDataUtil::getSampleHobbyHub);
-        } catch (DataLoadingException e) {
+        } catch (DataLoadingException | IllegalArgumentException e) {
             logger.warning("Data file at " + storage.getHobbyHubFilePath() + " could not be loaded."
                     + " Will be starting with an empty HobbyHub.");
             initialData = new HobbyHub();

@@ -122,10 +122,11 @@ Format: `add -n SESSION_NAME -l LOCATION -t DATETIME`
   and be at most 50 characters long.
 * Session names must be unique, ignoring capitalization.
 * The location must not be blank.
-* The date-time must use the ISO-8601 format, such as `2026-10-24T14:00`.
+* The date-time must be given as year-month-day hour:minute, such as `2026-10-24 14:00` or `2026-10-24T14:00`.
+  Both formats are accepted. Seconds are not accepted.
 * A newly added session is not completed and has no assigned members.
 
-Example: `list -s` followed by `add -n Weekend Chess Meetup -l Community Center -t 2026-10-24T14:00`
+Example: `list -s` followed by `add -n Weekend Chess Meetup -l Community Center -t 2026-10-24 14:00`
 adds a new session.
 
 ### Listing members or sessions: `list`
@@ -170,12 +171,13 @@ Format: `edit INDEX [-l LOCATION] [-t DATETIME]`
 * The index refers to the currently displayed session list and must be a positive integer.
 * At least one of `-l` or `-t` must be supplied. An omitted field keeps its current value.
 * The location must not be blank.
-* The date-time must use the ISO-8601 format, such as `2026-10-24T14:00`.
+* The date-time must be given as year-month-day hour:minute, such as `2026-10-24 14:00` or `2026-10-24T14:00`.
+  Both formats are accepted. Seconds are not accepted.
 * The session's name, completion status and assigned members are kept.
 
 Examples:
 * `edit 1 -l Sports Hall` changes the location of the first displayed session.
-* `edit 2 -l Community Center -t 2026-11-01T10:30` changes both editable fields of the second displayed session.
+* `edit 2 -l Community Center -t 2026-11-01 10:30` changes both editable fields of the second displayed session.
 
 ### Searching members and sessions: `search`
 
@@ -395,12 +397,12 @@ _Details coming soon ..._
 Action | Format, Examples
 --------|------------------
 **Add member** | `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -g friend -g colleague -h Chess`
-**Add session** | `add -n SESSION_NAME -l LOCATION -t DATETIME`<br> e.g., `add -n Weekend Chess Meetup -l Community Center -t 2026-10-24T14:00`
+**Add session** | `add -n SESSION_NAME -l LOCATION -t DATETIME`<br> `DATETIME` is `2026-10-24 14:00` or `2026-10-24T14:00`<br> e.g., `add -n Weekend Chess Meetup -l Community Center -t 2026-10-24 14:00`
 **Assign** | `assign INDEX SESSION_NAME`<br> e.g., `assign 1 Weekend Chess Meetup`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3` (member list) or `delete 1` (session list)
 **Edit member** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
-**Edit session** | `edit INDEX [-l LOCATION] [-t DATETIME]`<br> e.g., `edit 1 -l Sports Hall`
+**Edit session** | `edit INDEX [-l LOCATION] [-t DATETIME]`<br> `DATETIME` is `2026-10-24 14:00` or `2026-10-24T14:00`<br> e.g., `edit 1 -l Sports Hall -t 2026-11-01 10:30`
 **Search members** | `search [-n NAME] [-h HOBBY] [-g GROUP] [-c EMAIL] [-sl SKILL_LEVEL]` (at least one option; AND matching)
 **Search sessions** | `search [-n NAME] [-l LOCATION] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]` (at least one option; AND matching)
 **List** | `list [-m \| -s]` switches lists with a flag, or shows all entries in the current list without one

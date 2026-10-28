@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.commons.util.JsonUtil;
 import seedu.hobbyhub.model.HobbyHub;
+import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.testutil.HobbyHubBuilder;
 import seedu.hobbyhub.testutil.SessionBuilder;
 import seedu.hobbyhub.testutil.TypicalMembers;
@@ -24,6 +25,8 @@ public class JsonSerializableHobbyHubTest {
     private static final Path TYPICAL_MEMBERS_FILE = TEST_DATA_FOLDER.resolve("typicalMembersHobbyHub.json");
     private static final Path INVALID_MEMBER_FILE = TEST_DATA_FOLDER.resolve("invalidMemberHobbyHub.json");
     private static final Path DUPLICATE_MEMBER_FILE = TEST_DATA_FOLDER.resolve("duplicateMemberHobbyHub.json");
+    private static final Path DUPLICATE_HOBBY_MEMBER_FILE =
+            TEST_DATA_FOLDER.resolve("duplicateHobbyMemberHobbyHub.json");
     private static final Path TYPICAL_SESSIONS_FILE = TEST_DATA_FOLDER.resolve("typicalSessionsHobbyHub.json");
     private static final Path DUPLICATE_SESSION_FILE = TEST_DATA_FOLDER.resolve("duplicateSessionHobbyHub.json");
     private static final Path SESSION_WITH_UNKNOWN_MEMBER_FILE =
@@ -66,6 +69,15 @@ public class JsonSerializableHobbyHubTest {
         assertEquals(1, dataFromFile.getDiscardedCount());
         assertEquals(1, hobbyHub.getSessionList().size());
     }
+  
+    @Test
+    public void toModelType_memberWithHobbiesDifferingOnlyByCaseAndSpace_throwsIllegalValueException()
+            throws Exception {
+        JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(DUPLICATE_HOBBY_MEMBER_FILE,
+                JsonSerializableHobbyHub.class).get();
+        assertThrows(IllegalValueException.class, Member.MESSAGE_DUPLICATE_HOBBY, dataFromFile::toModelType);
+    }
+
     @Test
     public void toModelType_typicalSessionsFile_success() throws Exception {
         JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(TYPICAL_SESSIONS_FILE,

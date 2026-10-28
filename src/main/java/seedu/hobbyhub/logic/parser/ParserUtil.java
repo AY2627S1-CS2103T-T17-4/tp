@@ -3,7 +3,9 @@ package seedu.hobbyhub.logic.parser;
 import static java.util.Objects.requireNonNull;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -34,9 +36,13 @@ public class ParserUtil {
     public static final String MESSAGE_INVALID_SKILL = "Skill level must be Beginner, Intermediate, or Advanced.";
     public static final String MESSAGE_INVALID_SESSION_LOCATION = "Session location cannot be blank.";
     public static final String MESSAGE_INVALID_SESSION_DATE_TIME =
-            "Session date-time must use ISO-8601 format (e.g. 2026-10-24T14:00).";
+            "Session date-time must look like 2026-10-24 14:00 or 2026-10-24T14:00 (year-month-day hour:minute).";
 
     public static final String MESSAGE_INVALID_INDEX = "Index must be a positive integer.";
+
+    private static final List<DateTimeFormatter> SESSION_DATE_TIME_FORMATTERS = List.of(
+            DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm").withResolverStyle(ResolverStyle.STRICT),
+            DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm").withResolverStyle(ResolverStyle.STRICT));
 
     /**
      * Parses {@code oneBasedIndex} into an {@code Index} and returns it. Leading and trailing whitespaces will be
@@ -95,17 +101,22 @@ public class ParserUtil {
     }
 
     /**
-     * Parses an ISO-8601 date-time into a {@code LocalDateTime}.
+     * Parses a date-time in either {@code yyyy-MM-dd HH:mm} or {@code yyyy-MM-ddTHH:mm} format
+     * into a {@code LocalDateTime}. Leading and trailing whitespaces will be trimmed.
      *
      * @throws ParseException if the date-time is invalid.
      */
     public static LocalDateTime parseSessionDateTime(String dateTime) throws ParseException {
         requireNonNull(dateTime);
-        try {
-            return LocalDateTime.parse(dateTime.trim());
-        } catch (DateTimeParseException e) {
-            throw new ParseException(MESSAGE_INVALID_SESSION_DATE_TIME);
+        String trimmedDateTime = dateTime.trim();
+        for (DateTimeFormatter formatter : SESSION_DATE_TIME_FORMATTERS) {
+            try {
+                return LocalDateTime.parse(trimmedDateTime, formatter);
+            } catch (DateTimeParseException e) {
+                // Try the next accepted format.
+            }
         }
+        throw new ParseException(MESSAGE_INVALID_SESSION_DATE_TIME);
     }
 
     /**
