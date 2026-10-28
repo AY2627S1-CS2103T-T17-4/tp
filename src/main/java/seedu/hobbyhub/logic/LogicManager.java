@@ -12,6 +12,7 @@ import seedu.hobbyhub.logic.commands.CommandResult;
 import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.logic.parser.HobbyHubParser;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
+import seedu.hobbyhub.model.HobbyHub;
 import seedu.hobbyhub.model.ListState;
 import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.member.Member;
@@ -46,6 +47,7 @@ public class LogicManager implements Logic {
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
+        HobbyHub hobbyHubBeforeCommand = new HobbyHub(model.getHobbyHub());
         CommandResult commandResult;
         Command command = hobbyHubParser.parseCommand(commandText, model.getListState());
         commandResult = command.execute(model);
@@ -53,8 +55,10 @@ public class LogicManager implements Logic {
         try {
             storage.saveHobbyHub(model.getHobbyHub());
         } catch (AccessDeniedException e) {
+            model.setHobbyHub(hobbyHubBeforeCommand);
             throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
         } catch (IOException ioe) {
+            model.setHobbyHub(hobbyHubBeforeCommand);
             throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
         }
 
