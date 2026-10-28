@@ -14,6 +14,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import seedu.hobbyhub.commons.core.GuiSettings;
 import seedu.hobbyhub.commons.exceptions.DataLoadingException;
 import seedu.hobbyhub.model.HobbyHub;
 import seedu.hobbyhub.model.Model;
@@ -52,6 +53,43 @@ public class MainAppTest {
 
         assertEquals(new UserPrefs(), preferences);
         assertTrue(Files.exists(preferencesFile));
+    }
+
+    @Test
+    public void initPrefs_nullGuiSettings_restoresAndSavesDefaultSettings() throws Exception {
+        Path preferencesFile = testFolder.resolve("preferences.json");
+        Files.writeString(preferencesFile, "{\"guiSettings\":null}");
+        JsonUserPrefsStorage storage = new JsonUserPrefsStorage(preferencesFile);
+
+        UserPrefs preferences = new MainApp().initPrefs(storage);
+
+        assertEquals(new GuiSettings(), preferences.getGuiSettings());
+        assertEquals(new GuiSettings(), storage.readUserPrefs().orElseThrow().getGuiSettings());
+    }
+
+    @Test
+    public void initPrefs_validGuiSettings_preservesSavedSettings() throws Exception {
+        Path preferencesFile = testFolder.resolve("preferences.json");
+        JsonUserPrefsStorage storage = new JsonUserPrefsStorage(preferencesFile);
+        UserPrefs savedPreferences = new UserPrefs();
+        savedPreferences.setGuiSettings(new GuiSettings(1000, 700, 100, 200));
+        storage.saveUserPrefs(savedPreferences);
+
+        UserPrefs preferences = new MainApp().initPrefs(storage);
+
+        assertEquals(savedPreferences, preferences);
+    }
+
+    @Test
+    public void init_nullGuiSettings_initializesModelWithDefaultSettings() throws Exception {
+        Path preferencesFile = testFolder.resolve("preferences.json");
+        Files.writeString(preferencesFile, "{\"guiSettings\":null}");
+        TestMainApp app = new TestMainApp(preferencesFile, testFolder.resolve("hobbyhub.json"));
+
+        app.init();
+
+        assertEquals(new GuiSettings(), app.model.getGuiSettings());
+        assertFalse(app.model.getHobbyHub().getMemberList().isEmpty());
     }
 
     @Test

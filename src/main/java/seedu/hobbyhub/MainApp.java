@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import seedu.hobbyhub.commons.core.GuiSettings;
 import seedu.hobbyhub.commons.core.LogsCenter;
 import seedu.hobbyhub.commons.exceptions.DataLoadingException;
 import seedu.hobbyhub.commons.util.StringUtil;
@@ -120,6 +121,11 @@ public class MainApp extends Application {
             logger.warning("Preference file at " + prefsFilePath + " could not be loaded."
                     + " Using default preferences.");
             initializedPrefs = new UserPrefs();
+        }
+
+        if (initializedPrefs.getGuiSettings() == null) {
+            logger.warning("Saved GUI settings are null. Using default window settings.");
+            initializedPrefs.setGuiSettings(new GuiSettings());
         }
 
         //Update prefs file in case it was missing to begin with or there are new/unused fields
