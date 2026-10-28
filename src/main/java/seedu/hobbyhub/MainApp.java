@@ -20,6 +20,7 @@ import seedu.hobbyhub.model.ReadOnlyHobbyHub;
 import seedu.hobbyhub.model.ReadOnlyUserPrefs;
 import seedu.hobbyhub.model.UserPrefs;
 import seedu.hobbyhub.model.util.SampleDataUtil;
+import seedu.hobbyhub.storage.InstanceLock;
 import seedu.hobbyhub.storage.JsonHobbyHubStorage;
 import seedu.hobbyhub.storage.JsonUserPrefsStorage;
 import seedu.hobbyhub.storage.Storage;
@@ -43,6 +44,9 @@ public class MainApp extends Application {
     protected Storage storage;
     protected Model model;
 
+    /** Held for the lifetime of the application, as the lock is lost if this reference is garbage collected. */
+    private InstanceLock instanceLock;
+
     @Override
     public void init() throws Exception {
         logger.info("=============================[ Initializing HobbyHub ]===========================");
@@ -53,11 +57,34 @@ public class MainApp extends Application {
         JsonHobbyHubStorage hobbyHubStorage = createHobbyHubStorage();
         storage = new StorageManager(hobbyHubStorage, userPrefsStorage);
 
+        acquireInstanceLock(storage);
+
         model = initModelManager(storage, userPrefs);
 
         logic = new LogicManager(model, storage);
 
         ui = new UiManager(logic, storage.getHobbyHubFilePath());
+    }
+
+    /**
+     * Acquires the lock guarding the data file of {@code storage}, and exits the application if another
+     * instance already holds it. Continues without a lock if the lock file cannot be created or locked.
+     */
+    private void acquireInstanceLock(Storage storage) {
+        try {
+            Optional<InstanceLock> lock = InstanceLock.tryAcquire(storage.getHobbyHubFilePath());
+            if (lock.isPresent()) {
+                instanceLock = lock.get();
+                logger.info("Acquired instance lock for " + storage.getHobbyHubFilePath());
+            } else {
+                logger.severe("Another HobbyHub instance is already using " + storage.getHobbyHubFilePath()
+                        + ". Exiting.");
+                System.err.println("Another HobbyHub instance is already running.");
+                System.exit(1);
+            }
+        } catch (IOException e) {
+            logger.warning("Could not acquire instance lock, continuing without it: " + StringUtil.getDetails(e));
+        }
     }
 
     /**
@@ -146,5 +173,21 @@ public class MainApp extends Application {
         } catch (IOException e) {
             logger.severe("Failed to save preferences " + StringUtil.getDetails(e));
         }
+        releaseInstanceLock();
+    }
+
+    /**
+     * Releases the instance lock, if one is held.
+     */
+    private void releaseInstanceLock() {
+        if (instanceLock == null) {
+            return;
+        }
+        try {
+            instanceLock.close();
+        } catch (IOException e) {
+            logger.severe("Failed to release instance lock " + StringUtil.getDetails(e));
+        }
+        instanceLock = null;
     }
 }

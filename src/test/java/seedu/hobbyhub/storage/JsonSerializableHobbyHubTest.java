@@ -1,7 +1,7 @@
 package seedu.hobbyhub.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static seedu.hobbyhub.testutil.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.testutil.TypicalMembers.ALICE;
 import static seedu.hobbyhub.testutil.TypicalMembers.BENSON;
 import static seedu.hobbyhub.testutil.TypicalSessions.CHESS_MEETUP;
@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 
-import seedu.hobbyhub.commons.exceptions.IllegalValueException;
 import seedu.hobbyhub.commons.util.JsonUtil;
 import seedu.hobbyhub.model.HobbyHub;
 import seedu.hobbyhub.testutil.HobbyHubBuilder;
@@ -42,20 +41,31 @@ public class JsonSerializableHobbyHubTest {
     }
 
     @Test
-    public void toModelType_invalidMemberFile_throwsIllegalValueException() throws Exception {
+    public void toModelType_invalidMemberFile_discardsInvalidMember() throws Exception {
         JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(INVALID_MEMBER_FILE,
                 JsonSerializableHobbyHub.class).get();
-        assertThrows(IllegalValueException.class, dataFromFile::toModelType);
+        HobbyHub hobbyHub = dataFromFile.toModelType();
+        assertEquals(1, dataFromFile.getDiscardedCount());
+        assertTrue(hobbyHub.getMemberList().isEmpty());
     }
 
     @Test
-    public void toModelType_duplicateMembers_throwsIllegalValueException() throws Exception {
+    public void toModelType_duplicateMembers_discardsLaterDuplicate() throws Exception {
         JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(DUPLICATE_MEMBER_FILE,
                 JsonSerializableHobbyHub.class).get();
-        assertThrows(IllegalValueException.class, JsonSerializableHobbyHub.MESSAGE_DUPLICATE_MEMBER,
-                dataFromFile::toModelType);
+        HobbyHub hobbyHub = dataFromFile.toModelType();
+        assertEquals(1, dataFromFile.getDiscardedCount());
+        assertEquals(1, hobbyHub.getMemberList().size());
     }
 
+    @Test
+    public void toModelType_duplicateSessions_discardsLaterDuplicate() throws Exception {
+        JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(DUPLICATE_SESSION_FILE,
+                JsonSerializableHobbyHub.class).get();
+        HobbyHub hobbyHub = dataFromFile.toModelType();
+        assertEquals(1, dataFromFile.getDiscardedCount());
+        assertEquals(1, hobbyHub.getSessionList().size());
+    }
     @Test
     public void toModelType_typicalSessionsFile_success() throws Exception {
         JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(TYPICAL_SESSIONS_FILE,
@@ -71,14 +81,6 @@ public class JsonSerializableHobbyHubTest {
         JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(TYPICAL_MEMBERS_FILE,
                 JsonSerializableHobbyHub.class).get();
         assertEquals(0, dataFromFile.toModelType().getSessionList().size());
-    }
-
-    @Test
-    public void toModelType_duplicateSessions_throwsIllegalValueException() throws Exception {
-        JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(DUPLICATE_SESSION_FILE,
-                JsonSerializableHobbyHub.class).get();
-        assertThrows(IllegalValueException.class, JsonSerializableHobbyHub.MESSAGE_DUPLICATE_SESSION,
-                dataFromFile::toModelType);
     }
 
     @Test
