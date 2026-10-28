@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.logic.commands.SearchCommand;
 import seedu.hobbyhub.model.AllMatchPredicate;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.HobbyAndSkillPredicate;
 import seedu.hobbyhub.model.member.HobbyContainsKeywordsPredicate;
@@ -68,6 +69,8 @@ public class SearchCommandParserTest {
             assertParseSuccess(parser, " -sl " + level,
                     new SearchCommand(new MemberSearchPredicate(Field.SKILL_LEVEL, level)));
         }
+        assertParseSuccess(parser, " -d tuesday",
+                new SearchCommand(new MemberSearchPredicate(Field.AVAILABILITY, "TUESDAY")));
     }
 
     @Test
@@ -80,6 +83,7 @@ public class SearchCommandParserTest {
         }
         assertParseFailure(parser, "-c invalid", Email.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, "-sl Expert", "Skill level must be Beginner, Intermediate, or Advanced.");
+        assertParseFailure(parser, "-d Funday", Availability.MESSAGE_CONSTRAINTS);
     }
 
     @Test

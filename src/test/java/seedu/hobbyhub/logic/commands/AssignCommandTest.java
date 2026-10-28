@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.testutil.TypicalMembers.ALICE;
 
+import java.time.DayOfWeek;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ import seedu.hobbyhub.model.ModelManager;
 import seedu.hobbyhub.model.UserPrefs;
 import seedu.hobbyhub.model.session.Session;
 import seedu.hobbyhub.model.session.SessionName;
+import seedu.hobbyhub.testutil.MemberBuilder;
 import seedu.hobbyhub.testutil.SessionBuilder;
 
 /** Tests the {@code assign} command. */
@@ -51,6 +53,20 @@ public class AssignCommandTest {
                 result.getFeedbackToUser());
         assertTrue(assignedSession.hasMember(ALICE.getEmail()));
         assertEquals(List.of(assignedSession), model.getFilteredMemberList().get(0).getSessions());
+    }
+
+    @Test
+    public void execute_sessionOutsideMemberAvailability_stillAssignsMember() throws Exception {
+        HobbyHub hobbyHub = new HobbyHub();
+        hobbyHub.addMember(new MemberBuilder(ALICE).withAvailability(DayOfWeek.MONDAY).build());
+        Session tuesdaySession = new SessionBuilder().withName(SESSION_NAME.fullName)
+                .withDateTime("2026-10-27T14:00").build();
+        hobbyHub.addSession(tuesdaySession);
+        model = new ModelManager(hobbyHub, new UserPrefs());
+
+        new AssignCommand(Index.fromOneBased(1), SESSION_NAME).execute(model);
+
+        assertTrue(model.getHobbyHub().getSessionList().getFirst().hasMember(ALICE.getEmail()));
     }
 
     @Test

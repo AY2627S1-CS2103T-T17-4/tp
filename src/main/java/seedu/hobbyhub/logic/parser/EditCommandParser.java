@@ -3,6 +3,7 @@ package seedu.hobbyhub.logic.parser;
 import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
@@ -20,6 +21,7 @@ import seedu.hobbyhub.logic.commands.EditCommand;
 import seedu.hobbyhub.logic.commands.EditCommand.EditMemberDescriptor;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.group.Group;
+import seedu.hobbyhub.model.member.Availability;
 
 /**
  * Parses input arguments and creates a new EditCommand object
@@ -36,7 +38,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         ArgumentMultimap argMultimap =
                 ArgumentTokenizer
                     .tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS,
-                            PREFIX_GROUP, PREFIX_HOBBY, PREFIX_LEGACY_TAG);
+                            PREFIX_GROUP, PREFIX_HOBBY, PREFIX_AVAILABILITY, PREFIX_LEGACY_TAG);
 
         if (argMultimap.getValue(PREFIX_LEGACY_TAG).isPresent()) {
             throw new ParseException("The -t option has been replaced by -g for groups.");
@@ -70,6 +72,8 @@ public class EditCommandParser implements Parser<EditCommand> {
             editMemberDescriptor.setHobbies(ParserUtil.parseHobbies(argMultimap.getAllValues(PREFIX_HOBBY)));
         }
         parseGroupsForEdit(argMultimap.getAllValues(PREFIX_GROUP)).ifPresent(editMemberDescriptor::setGroups);
+        parseAvailabilityForEdit(argMultimap.getAllValues(PREFIX_AVAILABILITY))
+                .ifPresent(editMemberDescriptor::setAvailability);
 
         if (!editMemberDescriptor.isAnyFieldEdited()) {
             throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);
@@ -91,6 +95,17 @@ public class EditCommandParser implements Parser<EditCommand> {
         }
         Collection<String> groupSet = groups.size() == 1 && groups.contains("") ? Collections.emptySet() : groups;
         return Optional.of(ParserUtil.parseGroups(groupSet));
+    }
+
+    /** Parses availability options, with one empty {@code -d} clearing all selected weekdays. */
+    private Optional<Availability> parseAvailabilityForEdit(Collection<String> days) throws ParseException {
+        assert days != null;
+        if (days.isEmpty()) {
+            return Optional.empty();
+        }
+        Collection<String> selectedDays = days.size() == 1 && days.contains("")
+                ? Collections.emptySet() : days;
+        return Optional.of(ParserUtil.parseAvailability(selectedDays));
     }
 
 }

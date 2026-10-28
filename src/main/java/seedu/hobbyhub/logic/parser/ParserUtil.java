@@ -2,6 +2,7 @@ package seedu.hobbyhub.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -18,6 +19,7 @@ import seedu.hobbyhub.commons.util.StringUtil;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
@@ -243,5 +245,25 @@ public class ParserUtil {
             groupSet.add(parseGroup(groupName));
         }
         return groupSet;
+    }
+
+    /** Parses a full weekday name, ignoring capitalization. */
+    public static DayOfWeek parseAvailabilityDay(String day) throws ParseException {
+        requireNonNull(day);
+        try {
+            return DayOfWeek.valueOf(day.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(Availability.MESSAGE_CONSTRAINTS);
+        }
+    }
+
+    /** Parses repeated weekday options into a member availability value. */
+    public static Availability parseAvailability(Collection<String> days) throws ParseException {
+        requireNonNull(days);
+        Set<DayOfWeek> parsedDays = new HashSet<>();
+        for (String day : days) {
+            parsedDays.add(parseAvailabilityDay(day));
+        }
+        return new Availability(parsedDays);
     }
 }

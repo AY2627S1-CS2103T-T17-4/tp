@@ -2,6 +2,7 @@ package seedu.hobbyhub.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
@@ -28,7 +29,8 @@ public class AddCommand extends Command {
             + PREFIX_EMAIL + " EMAIL "
             + "[" + PREFIX_ADDRESS + " ADDRESS] "
             + PREFIX_HOBBY + " \"HOBBY:SKILL\" [" + PREFIX_HOBBY + " \"HOBBY:SKILL\"]... "
-            + "[" + PREFIX_GROUP + " GROUP]...\n"
+            + "[" + PREFIX_GROUP + " GROUP]... "
+            + "[" + PREFIX_AVAILABILITY + " DAY]...\n"
             + "Example: " + COMMAND_WORD + " "
             + PREFIX_NAME + " John Doe "
             + PREFIX_PHONE + " 98765432 "
@@ -36,7 +38,8 @@ public class AddCommand extends Command {
             + PREFIX_ADDRESS + " 311, Clementi Ave 2, #02-25 "
             + PREFIX_HOBBY + " \"Chess:Beginner\" "
             + PREFIX_GROUP + " friends "
-            + PREFIX_GROUP + " owesMoney";
+            + PREFIX_GROUP + " owesMoney "
+            + PREFIX_AVAILABILITY + " Monday";
 
     public static final String MESSAGE_SUCCESS = "New member added: %1$s";
     public static final String MESSAGE_DUPLICATE_MEMBER = "A member with this email already exists.";

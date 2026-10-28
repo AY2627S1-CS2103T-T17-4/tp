@@ -35,6 +35,8 @@ import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_FIRST_MEMBER;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_SECOND_MEMBER;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_THIRD_MEMBER;
 
+import java.time.DayOfWeek;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.commons.core.index.Index;
@@ -43,6 +45,7 @@ import seedu.hobbyhub.logic.commands.EditCommand;
 import seedu.hobbyhub.logic.commands.EditCommand.EditMemberDescriptor;
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Name;
@@ -93,6 +96,7 @@ public class EditCommandParserTest {
         assertParseFailure(parser, "1" + INVALID_ADDRESS_DESC, Address.MESSAGE_CONSTRAINTS); // invalid address
         assertParseFailure(parser, "1" + INVALID_GROUP_DESC, Group.MESSAGE_CONSTRAINTS); // invalid group
         assertParseFailure(parser, "1" + INVALID_HOBBY_DESC, Hobby.MESSAGE_CONSTRAINTS); // invalid hobby
+        assertParseFailure(parser, "1 -d Funday", Availability.MESSAGE_CONSTRAINTS);
 
         // invalid phone followed by valid email
         assertParseFailure(parser, "1" + INVALID_PHONE_DESC + EMAIL_DESC_AMY, Phone.MESSAGE_CONSTRAINTS);
@@ -122,6 +126,13 @@ public class EditCommandParserTest {
                 .withGroups(VALID_GROUP_HUSBAND, VALID_GROUP_FRIEND).withHobby(VALID_HOBBY_AMY).build();
         EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
 
+        assertParseSuccess(parser, userInput, expectedCommand);
+
+        // availability
+        userInput = targetIndex.getOneBased() + " -d Monday -d Friday";
+        descriptor = new EditMemberDescriptorBuilder()
+                .withAvailability(DayOfWeek.MONDAY, DayOfWeek.FRIDAY).build();
+        expectedCommand = new EditCommand(targetIndex, descriptor);
         assertParseSuccess(parser, userInput, expectedCommand);
     }
 
@@ -218,5 +229,11 @@ public class EditCommandParserTest {
         EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
 
         assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
+    public void parse_resetAvailability_success() {
+        EditMemberDescriptor descriptor = new EditMemberDescriptorBuilder().withAvailability().build();
+        assertParseSuccess(parser, "1 -d", new EditCommand(INDEX_FIRST_MEMBER, descriptor));
     }
 }

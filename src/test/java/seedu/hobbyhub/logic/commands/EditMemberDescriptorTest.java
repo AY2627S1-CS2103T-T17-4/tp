@@ -71,7 +71,8 @@ public class EditMemberDescriptorTest {
                 + editMemberDescriptor.getEmail().orElse(null) + ", address="
                 + editMemberDescriptor.getAddress().orElse(null) + ", groups="
                 + editMemberDescriptor.getGroups().orElse(null) + ", hobbies="
-                + editMemberDescriptor.getHobbies().orElse(null) + "}";
+                + editMemberDescriptor.getHobbies().orElse(null) + ", availability="
+                + editMemberDescriptor.getAvailability().orElse(null) + "}";
         assertEquals(expected, editMemberDescriptor.toString());
     }
 }

@@ -84,11 +84,13 @@ Format: `help`
 
 Adds a person to HobbyHub.
 
-Format: `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…`
+Format: `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]… [-d DAY]…`
 
-* Name, email and at least one hobby are required. Phone number and address are optional.
+* Name, email and at least one hobby are required. Phone number, address and availability are optional.
 * Omit `-p` or `-a` when those details are unknown. If supplied during add, each must have a valid, non-empty value.
-* Supply name and email once, and phone/address at most once if included. Repeat `-h` for additional hobbies and `-g` for additional groups.
+* Supply name and email once, and phone/address at most once if included. Repeat `-h` for additional hobbies, `-g`
+  for additional groups and `-d` for each available weekday.
+* Availability uses full weekday names from `Monday` to `Sunday`, ignoring capitalization. Repeated days are stored once.
 * Names and group names must start with a Unicode letter or digit. They may also contain Unicode letters and digits,
   combining marks, spaces, apostrophes, hyphens, periods, ampersands, and plus signs.
 * Phone numbers must contain at least three digits and may have one leading `+`. Do not include spaces or other formatting.
@@ -107,6 +109,8 @@ A person can have any number of groups, including zero.
 
 Examples:
 * `add -n Alice -c alice@example.com -h "Chess:Beginner"` Adds a member without phone or address.
+* `add -n Alice -c alice@example.com -h Chess -d Monday -d Saturday` Adds a member who is generally available
+  on Mondays and Saturdays.
 * `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h "Chess:Beginner" -h "Table Tennis:Advanced"`
 * `add -n Betsy Crowe -g friend -c betsycrowe@example.com -a Newgate Prison -p 1234567 -g criminal -h Chess`
 
@@ -144,7 +148,7 @@ Format: `list [-m | -s]`
 
 Edits an existing person in HobbyHub.
 
-Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…`
+Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]… [-d DAY]…`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
@@ -155,11 +159,15 @@ Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOB
 * When editing groups, all of the person's existing groups are removed; adding groups is not cumulative.
 * To remove all of a person's groups, enter `-g` without a group after it.
 * Omitting `-g` preserves the member's current groups.
+* Supplying one or more `-d` options replaces the member's entire availability. Use full weekday names from
+  `Monday` to `Sunday`. Enter `-d` without a day to clear all availability; omit `-d` to preserve it.
 
 Examples:
 * `edit 1 -h "Chess:Advanced" -h "Cycling:Intermediate"` Replaces the member's hobbies with these two entries.
 * `edit 1 -p 91234567 -c johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
 * `edit 2 -n Betsy Crower -g` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing groups.
+* `edit 1 -d Tuesday -d Thursday` Replaces the 1st member's availability with Tuesday and Thursday.
+* `edit 1 -d` Clears the 1st member's availability.
 
 ### Editing a session: `edit`
 
@@ -194,7 +202,7 @@ No matches produce an empty list and a count of zero.
 
 #### Member search options
 
-Format: `search [-n NAME_FRAGMENT] [-h HOBBY_FRAGMENT] [-g GROUP_FRAGMENT] [-c EMAIL] [-sl SKILL_LEVEL]`
+Format: `search [-n NAME_FRAGMENT] [-h HOBBY_FRAGMENT] [-g GROUP_FRAGMENT] [-c EMAIL] [-sl SKILL_LEVEL] [-d DAY]`
 
 At least one option is required.
 
@@ -205,11 +213,12 @@ At least one option is required.
 | Group | `search -g GROUP_FRAGMENT` | Case-insensitive substring in any group name |
 | Email | `search -c EMAIL` | Complete, valid email address, ignoring case |
 | Skill level | `search -sl SKILL_LEVEL` | Any hobby at Beginner, Intermediate, or Advanced, ignoring case |
+| Availability | `search -d DAY` | Contains the specified weekday from Monday to Sunday, ignoring case |
 
 Hobbies and groups are searched independently. Without `-h`, a skill-level search matches any hobby at that level.
 When `-h` and `-sl` are combined, the same hobby must match both the name fragment and skill level.
 For example, a member with Chess:Beginner and Tennis:Advanced does not match `search -h Chess -sl Advanced`.
-Phone, address, and availability are not searchable.
+Phone and address are not searchable.
 
 Examples after `list -m`:
 
@@ -218,9 +227,14 @@ Examples after `list -m`:
 * `search -g Weekend Club` finds members with a group name containing `Weekend Club`.
 * `search -c alice@example.com` finds the member with that email address.
 * `search -sl Advanced` finds members with at least one Advanced hobby.
+* `search -d Monday` finds members whose availability includes Monday.
 * `search -h Chess -sl Beginner` finds members whose Chess hobby is Beginner.
 * `search -n Alice -g Weekend` finds members whose name contains `Alice` and whose group name contains `Weekend`.
-* `search -n Alice -h Tennis -g Weekend -c alice@example.com -sl Advanced` requires all five conditions to match.
+* `search -n Alice -h Tennis -g Weekend -c alice@example.com -sl Advanced -d Monday` requires all six
+  conditions to match.
+
+Availability records the weekdays on which a member is generally available. It is informational only: HobbyHub does
+not require a session's date or time to match a member's availability when assigning that member to the session.
 
 #### Session search options
 
@@ -295,7 +309,7 @@ Example: `list -s` followed by `view 1` deletes the first displayed session.
 
 ### Viewing a person: `view`
 
-Viewing the additional details specified person from HobbyHub (Phone, address and email).
+Views the specified person's additional details, including phone, address, email and availability.
 
 Format: `view INDEX`
 
@@ -396,14 +410,14 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add member** | `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -g friend -g colleague -h Chess`
+**Add member** | `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]… [-d DAY]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -g friend -g colleague -h Chess -d Monday`
 **Add session** | `add -n SESSION_NAME -l LOCATION -t DATETIME`<br> `DATETIME` is `2026-10-24 14:00` or `2026-10-24T14:00`<br> e.g., `add -n Weekend Chess Meetup -l Community Center -t 2026-10-24 14:00`
 **Assign** | `assign INDEX SESSION_NAME`<br> e.g., `assign 1 Weekend Chess Meetup`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3` (member list) or `delete 1` (session list)
-**Edit member** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
+**Edit member** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]… [-d DAY]…​`<br> e.g., `edit 2 -n James Lee -d Tuesday -d Thursday`
 **Edit session** | `edit INDEX [-l LOCATION] [-t DATETIME]`<br> `DATETIME` is `2026-10-24 14:00` or `2026-10-24T14:00`<br> e.g., `edit 1 -l Sports Hall -t 2026-11-01 10:30`
-**Search members** | `search [-n NAME] [-h HOBBY] [-g GROUP] [-c EMAIL] [-sl SKILL_LEVEL]` (at least one option; AND matching)
+**Search members** | `search [-n NAME] [-h HOBBY] [-g GROUP] [-c EMAIL] [-sl SKILL_LEVEL] [-d DAY]` (at least one option; AND matching)
 **Search sessions** | `search [-n NAME] [-l LOCATION] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]` (at least one option; AND matching)
 **List** | `list [-m \| -s]` switches lists with a flag, or shows all entries in the current list without one
 **View** | `view INDEX`<br> e.g., `view 3`

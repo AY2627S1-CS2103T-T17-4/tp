@@ -1,6 +1,7 @@
 package seedu.hobbyhub.testutil;
 
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
@@ -44,6 +45,9 @@ public class MemberUtil {
         member.getGroups().stream().forEach(
             s -> sb.append(PREFIX_GROUP + s.groupName + " ")
         );
+        member.getAvailability().getDays().forEach(
+            day -> sb.append(PREFIX_AVAILABILITY).append(day.name()).append(" ")
+        );
         return sb.toString();
     }
 
@@ -61,11 +65,19 @@ public class MemberUtil {
         if (descriptor.getGroups().isPresent()) {
             Set<Group> groups = descriptor.getGroups().get();
             if (groups.isEmpty()) {
-                sb.append(PREFIX_GROUP);
+                sb.append(PREFIX_GROUP).append(" ");
             } else {
                 groups.forEach(s -> sb.append(PREFIX_GROUP).append(s.groupName).append(" "));
             }
         }
+        descriptor.getAvailability().ifPresent(availability -> {
+            if (availability.isEmpty()) {
+                sb.append(PREFIX_AVAILABILITY).append(" ");
+            } else {
+                availability.getDays().forEach(day -> sb.append(PREFIX_AVAILABILITY)
+                        .append(day.name()).append(" "));
+            }
+        });
         return sb.toString();
     }
 }

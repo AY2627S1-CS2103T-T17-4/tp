@@ -107,6 +107,7 @@ public class MemberTest {
         String expected = Member.class.getCanonicalName() + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
                 + ", email=" + ALICE.getEmail() + ", address=" + ALICE.getAddress()
                 + ", hobbies=" + ALICE.getHobbies() + ", groups=" + ALICE.getGroups()
+                + ", availability=" + ALICE.getAvailability()
                 + ", sessions=" + ALICE.getSessions() + "}";
         assertEquals(expected, ALICE.toString());
     }
