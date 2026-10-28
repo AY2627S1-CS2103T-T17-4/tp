@@ -138,6 +138,15 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_tabBeforePhoneOption_updatesAddressAndPhoneSeparately() {
+        EditMemberDescriptor descriptor = new EditMemberDescriptorBuilder()
+                .withAddress("New Home").withPhone("98765432").build();
+
+        assertParseSuccess(parser, "1 -a New Home\t-p 98765432",
+                new EditCommand(INDEX_FIRST_MEMBER, descriptor));
+    }
+
+    @Test
     public void parse_oneFieldSpecified_success() {
         // name
         Index targetIndex = INDEX_THIRD_MEMBER;
