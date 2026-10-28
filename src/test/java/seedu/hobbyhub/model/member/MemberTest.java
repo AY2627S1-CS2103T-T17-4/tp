@@ -1,5 +1,6 @@
 package seedu.hobbyhub.model.member;
 
+import static java.time.DayOfWeek.MONDAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -97,9 +98,24 @@ public class MemberTest {
         editedAlice = new MemberBuilder(ALICE).withGroups(VALID_GROUP_HUSBAND).build();
         assertFalse(ALICE.equals(editedAlice));
 
+        // different availability -> returns false
+        editedAlice = new MemberBuilder(ALICE).withAvailability(MONDAY).build();
+        assertFalse(ALICE.equals(editedAlice));
+
         // different assigned sessions -> returns false
         editedAlice = ALICE.withSessions(List.of(new SessionBuilder().withMembers(ALICE.getEmail().value).build()));
         assertFalse(ALICE.equals(editedAlice));
+    }
+
+    @Test
+    public void constructor_sessionsWithoutAvailability_usesEmptyAvailability() {
+        var sessions = List.of(new SessionBuilder().withMembers(ALICE.getEmail().value).build());
+
+        Member member = new Member(ALICE.getName(), ALICE.getPhone(), ALICE.getEmail(), ALICE.getAddress(),
+                ALICE.getHobbies(), ALICE.getGroups(), sessions);
+
+        assertTrue(member.getAvailability().isEmpty());
+        assertEquals(sessions, member.getSessions());
     }
 
     @Test

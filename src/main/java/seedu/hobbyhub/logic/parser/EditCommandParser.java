@@ -88,7 +88,7 @@ public class EditCommandParser implements Parser<EditCommand> {
      * {@code Set<Group>} containing zero groups.
      */
     private Optional<Set<Group>> parseGroupsForEdit(Collection<String> groups) throws ParseException {
-        assert groups != null;
+        requireNonNull(groups);
 
         if (groups.isEmpty()) {
             return Optional.empty();
@@ -99,7 +99,7 @@ public class EditCommandParser implements Parser<EditCommand> {
 
     /** Parses availability options, with one empty {@code -d} clearing all selected weekdays. */
     private Optional<Availability> parseAvailabilityForEdit(Collection<String> days) throws ParseException {
-        assert days != null;
+        requireNonNull(days);
         if (days.isEmpty()) {
             return Optional.empty();
         }

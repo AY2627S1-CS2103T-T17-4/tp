@@ -158,6 +158,16 @@ public class JsonAdaptedMemberTest {
     }
 
     @Test
+    public void toModelType_nullAvailabilityDay_throwsIllegalValueException() {
+        List<String> availability = new ArrayList<>();
+        availability.add(null);
+        JsonAdaptedMember member = new JsonAdaptedMember(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
+                VALID_HOBBY, null, VALID_GROUPS, null, availability);
+
+        assertThrows(IllegalValueException.class, Availability.MESSAGE_CONSTRAINTS, member::toModelType);
+    }
+
+    @Test
     public void toModelType_invalidGroups_throwsIllegalValueException() {
         List<JsonAdaptedGroup> invalidGroups = new ArrayList<>(VALID_GROUPS);
         invalidGroups.add(new JsonAdaptedGroup(INVALID_GROUP));

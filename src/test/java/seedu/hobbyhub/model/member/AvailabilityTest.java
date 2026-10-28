@@ -26,6 +26,10 @@ public class AvailabilityTest {
         assertFalse(availability.contains(DayOfWeek.TUESDAY));
         assertEquals(availability, new Availability(List.of(
                 DayOfWeek.FRIDAY, DayOfWeek.SUNDAY, DayOfWeek.MONDAY)));
+        assertEquals(availability, availability);
+        assertFalse(availability.equals(new Availability(List.of(DayOfWeek.TUESDAY))));
+        assertFalse(availability.equals(null));
+        assertFalse(availability.equals("Monday"));
     }
 
     @Test
