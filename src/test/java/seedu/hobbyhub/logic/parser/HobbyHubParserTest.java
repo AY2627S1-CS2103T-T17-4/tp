@@ -64,7 +64,15 @@ public class HobbyHubParserTest {
     @Test
     public void parseCommand_clear() throws Exception {
         assertTrue(parser.parseCommand(ClearCommand.COMMAND_WORD, MEMBERS) instanceof ClearCommand);
-        assertTrue(parser.parseCommand(ClearCommand.COMMAND_WORD + " 3", MEMBERS) instanceof ClearCommand);
+    }
+
+    @Test
+    public void parseCommand_clearWithArguments_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ClearCommand.MESSAGE_USAGE);
+        for (String arguments : List.of("unexpected", "3", "-m")) {
+            assertThrows(ParseException.class, expectedMessage, () ->
+                    parser.parseCommand(ClearCommand.COMMAND_WORD + " " + arguments, MEMBERS));
+        }
     }
 
     @Test

@@ -37,6 +37,25 @@ public class SessionCommandParserTest {
     }
 
     @Test
+    public void parse_addSessionWithSpaceSeparatedDateTime_returnsCommand() {
+        AddSessionCommand expectedCommand = new AddSessionCommand(new SessionBuilder()
+                .withName("Golf Meet")
+                .withDateTime("2026-11-01T10:00")
+                .withLocation("Golf Club")
+                .withMembers()
+                .build());
+        assertParseSuccess(new AddSessionCommandParser(),
+                " -n Golf Meet -l Golf Club -t 2026-11-01 10:00", expectedCommand);
+    }
+
+    @Test
+    public void parse_editSessionWithSpaceSeparatedDateTime_returnsCommand() {
+        EditSessionCommand expectedCommand = new EditSessionCommand(
+                Index.fromOneBased(1), null, LocalDateTime.parse("2026-11-01T10:00"));
+        assertParseSuccess(new EditSessionCommandParser(), " 1 -t 2026-11-01 10:00", expectedCommand);
+    }
+
+    @Test
     public void parse_addSessionMissingName_throwsParseException() {
         assertInvalidSessionCommandFormat("-l Golf Club -t 2026-10-24T14:00");
     }

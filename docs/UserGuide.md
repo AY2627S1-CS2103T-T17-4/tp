@@ -64,7 +64,8 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 * Parameters can be in any order.<br>
   For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `exit`, and `clear`, are ignored.<br>
+* Extraneous parameters for `help` and `exit` are ignored. The `clear` command rejects extraneous parameters
+  to prevent accidental deletion.<br>
   For example, `help 123` is interpreted as `help`.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
@@ -88,10 +89,14 @@ Format: `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-
 * Name, email and at least one hobby are required. Phone number and address are optional.
 * Omit `-p` or `-a` when those details are unknown. If supplied during add, each must have a valid, non-empty value.
 * Supply name and email once, and phone/address at most once if included. Repeat `-h` for additional hobbies and `-g` for additional groups.
-* Names must contain only letters, digits, and spaces. Phone numbers must contain at least three digits and no other characters.
-* Use a valid email address, such as `johnd@example.com`. Group names must start with a letter or digit and contain only letters, digits and spaces.
-* Hobbies must start with a letter or digit and may contain letters, digits, spaces, and `&`, `+`, `'`, `/`, or `-`.
+* Names and group names must start with a Unicode letter or digit. They may also contain Unicode letters and digits,
+  combining marks, spaces, apostrophes, hyphens, periods, ampersands, and plus signs.
+* Phone numbers must contain at least three digits and may have one leading `+`. Do not include spaces or other formatting.
+* Use a valid email address, such as `johnd@example.com`. Hobby names must start with a letter or digit and may contain
+  letters, digits, spaces, and `&`, `+`, `'`, `/`, or `-`.
 * Enclose a hobby and skill pair in double quotes when it contains spaces, for example, `-h "Board Games:Advanced"`.
+* Each `-h` option requires a non-empty hobby value. Unknown add options are rejected. Quote hobby text containing an
+  option-like token, such as `-h "Chess -x"`, to keep it as part of the hobby value.
 * Skill labels are Beginner, Intermediate and Advanced, ignoring capitalization. Hobby names cannot repeat,
   even with different skill levels. Legacy `-h Board Games` input remains valid and defaults to Beginner.
 * Email addresses must be unique, ignoring capitalization. Members may share a name.
@@ -104,6 +109,25 @@ Examples:
 * `add -n Alice -c alice@example.com -h "Chess:Beginner"` Adds a member without phone or address.
 * `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h "Chess:Beginner" -h "Table Tennis:Advanced"`
 * `add -n Betsy Crowe -g friend -c betsycrowe@example.com -a Newgate Prison -p 1234567 -g criminal -h Chess`
+
+### Adding a session: `add`
+
+Adds a session to HobbyHub.
+
+Format: `add -n SESSION_NAME -l LOCATION -t DATETIME`
+
+* This command is available while the session list is shown. Use `list -s` to switch to it.
+* The session name, location and date-time are required and must each be supplied once.
+* Session names must start with a letter or digit, contain only letters, digits, spaces, `_`, `-`, `'`, and `&`,
+  and be at most 50 characters long.
+* Session names must be unique, ignoring capitalization.
+* The location must not be blank.
+* The date-time must be given as year-month-day hour:minute, such as `2026-10-24 14:00` or `2026-10-24T14:00`.
+  Both formats are accepted. Seconds are not accepted.
+* A newly added session is not completed and has no assigned members.
+
+Example: `list -s` followed by `add -n Weekend Chess Meetup -l Community Center -t 2026-10-24 14:00`
+adds a new session.
 
 ### Listing members or sessions: `list`
 
@@ -136,6 +160,24 @@ Examples:
 * `edit 1 -h "Chess:Advanced" -h "Cycling:Intermediate"` Replaces the member's hobbies with these two entries.
 * `edit 1 -p 91234567 -c johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
 * `edit 2 -n Betsy Crower -g` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing groups.
+
+### Editing a session: `edit`
+
+Edits the location and/or date-time of a session.
+
+Format: `edit INDEX [-l LOCATION] [-t DATETIME]`
+
+* This command is available while the session list is shown. Use `list -s` to switch to it.
+* The index refers to the currently displayed session list and must be a positive integer.
+* At least one of `-l` or `-t` must be supplied. An omitted field keeps its current value.
+* The location must not be blank.
+* The date-time must be given as year-month-day hour:minute, such as `2026-10-24 14:00` or `2026-10-24T14:00`.
+  Both formats are accepted. Seconds are not accepted.
+* The session's name, completion status and assigned members are kept.
+
+Examples:
+* `edit 1 -l Sports Hall` changes the location of the first displayed session.
+* `edit 2 -l Community Center -t 2026-11-01 10:30` changes both editable fields of the second displayed session.
 
 ### Searching members and sessions: `search`
 
@@ -277,6 +319,19 @@ Format: `assign INDEX SESSION_NAME`
 
 Example: `assign 1 Weekend Chess Meetup` assigns the first displayed member to that session.
 
+### Unassigning a person from a session: `unassign`
+
+Unassigns the member at the specified index from an existing session.
+
+Format: `unassign INDEX SESSION_NAME`
+
+* This command is available while the member list is shown. Use `list -m` to switch to it.
+* The index refers to the currently displayed member list, including search results, and must be a positive integer.
+* The session name may contain spaces and must match an existing session name.
+* The member must be assigned to the specified session.
+
+Example: `unassign 1 Weekend Chess Meetup` unassigns the first displayed member from that session.
+
 ### Marking a session as completed: `mark` / `unmark`
 
 Marks the session at the specified index as completed, or as not completed.
@@ -341,15 +396,18 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -g friend -g colleague -h Chess`
+**Add member** | `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -g friend -g colleague -h Chess`
+**Add session** | `add -n SESSION_NAME -l LOCATION -t DATETIME`<br> `DATETIME` is `2026-10-24 14:00` or `2026-10-24T14:00`<br> e.g., `add -n Weekend Chess Meetup -l Community Center -t 2026-10-24 14:00`
 **Assign** | `assign INDEX SESSION_NAME`<br> e.g., `assign 1 Weekend Chess Meetup`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3` (member list) or `delete 1` (session list)
-**Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
+**Edit member** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
+**Edit session** | `edit INDEX [-l LOCATION] [-t DATETIME]`<br> `DATETIME` is `2026-10-24 14:00` or `2026-10-24T14:00`<br> e.g., `edit 1 -l Sports Hall -t 2026-11-01 10:30`
 **Search members** | `search [-n NAME] [-h HOBBY] [-g GROUP] [-c EMAIL] [-sl SKILL_LEVEL]` (at least one option; AND matching)
 **Search sessions** | `search [-n NAME] [-l LOCATION] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]` (at least one option; AND matching)
 **List** | `list [-m \| -s]` switches lists with a flag, or shows all entries in the current list without one
 **View** | `view INDEX`<br> e.g., `view 3`
+**Unassign** | `unassign INDEX SESSION_NAME`<br> e.g., `unassign 1 Weekend Chess Meetup`
 **Mark / Unmark** (session list) | `mark INDEX` or `unmark INDEX`<br> e.g., `mark 1`
 **Help** | `help`
 **Exit** | `exit`

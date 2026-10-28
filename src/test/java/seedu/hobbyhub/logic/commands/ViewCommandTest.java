@@ -39,7 +39,9 @@ public class ViewCommandTest {
 
         Model expectedModel = new ModelManager(model.getHobbyHub(), new UserPrefs());
 
-        assertCommandSuccess(viewCommand, model, ViewCommand.formatMember(member), expectedModel);
+        CommandResult expectedResult = new CommandResult(ViewCommand.formatMember(member),
+                ViewCommand.createViewDetails(member));
+        assertCommandSuccess(viewCommand, model, expectedResult, expectedModel);
     }
 
     @Test
@@ -59,7 +61,9 @@ public class ViewCommandTest {
         Model expectedModel = new ModelManager(model.getHobbyHub(), new UserPrefs());
         showMemberAtIndex(expectedModel, INDEX_SECOND_MEMBER);
 
-        assertCommandSuccess(viewCommand, model, ViewCommand.formatMember(member), expectedModel);
+        CommandResult expectedResult = new CommandResult(ViewCommand.formatMember(member),
+                ViewCommand.createViewDetails(member));
+        assertCommandSuccess(viewCommand, model, expectedResult, expectedModel);
     }
 
     @Test
@@ -95,6 +99,26 @@ public class ViewCommandTest {
                     + " @ " + CHESS_MEETUP.getLocation() + ")"));
         // multiple sessions joined with "; "
         assertTrue(details.contains("; " + CYCLING_TRIP.getName()));
+    }
+
+    @Test
+    public void createViewDetails_memberWithNoGroupsOrSessions_showsNone() {
+        ViewDetails details = ViewCommand.createViewDetails(CARL);
+
+        assertEquals(ViewDetails.RecordType.MEMBER, details.recordType());
+        assertEquals(CARL.getEmail().value, details.recordId());
+        assertEquals("None", details.fields().get(3).value());
+        assertEquals("None", details.fields().get(4).value());
+    }
+
+    @Test
+    public void createViewDetails_memberWithGroupsAndSessions_listsThem() {
+        Member member = ALICE.withSessions(List.of(CHESS_MEETUP));
+
+        ViewDetails details = ViewCommand.createViewDetails(member);
+
+        assertTrue(details.fields().get(3).value().contains("friends"));
+        assertTrue(details.fields().get(4).value().contains(CHESS_MEETUP.getName().toString()));
     }
 
     @Test

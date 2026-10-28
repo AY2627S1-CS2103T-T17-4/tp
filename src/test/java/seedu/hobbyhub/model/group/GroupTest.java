@@ -16,7 +16,7 @@ public class GroupTest {
     @Test
     public void constructor_invalidName_rejected() {
         assertThrows(NullPointerException.class, () -> new Group(null));
-        for (String name : new String[] {"", " ", " Leading", "@Club", "Club:Advanced", "Club-name"}) {
+        for (String name : new String[] {"", " ", " Leading", "@Club", "Club:Advanced", "Club*name"}) {
             assertFalse(Group.isValidGroupName(name));
             assertThrows(IllegalArgumentException.class, () -> new Group(name));
         }
@@ -28,6 +28,11 @@ public class GroupTest {
         Group group = new Group("Weekend Club");
         assertTrue(Group.isValidGroupName("Weekend Club"));
         assertTrue(Group.isValidGroupName("Club123"));
+        assertTrue(Group.isValidGroupName("Parents & Friends"));
+        assertTrue(Group.isValidGroupName("C++ Club"));
+        assertTrue(Group.isValidGroupName("O'Connor Club"));
+        assertTrue(Group.isValidGroupName("Anne-Marie Club"));
+        assertTrue(Group.isValidGroupName("Jos\u00e9 Club"));
         assertEquals(group, new Group("Weekend Club"));
         assertEquals(group.hashCode(), new Group("Weekend Club").hashCode());
         assertTrue(group.equals(group));

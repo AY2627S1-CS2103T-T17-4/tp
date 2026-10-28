@@ -142,7 +142,8 @@ class JsonAdaptedMember {
                     throw new IllegalValueException(Hobby.MESSAGE_CONSTRAINTS);
                 }
                 Hobby parsed = adapted.toModelType();
-                if (modelHobbies.stream().anyMatch(existing -> existing.value.trim().equalsIgnoreCase(parsed.value))) {
+                String parsedName = parsed.value.trim();
+                if (modelHobbies.stream().anyMatch(existing -> existing.value.trim().equalsIgnoreCase(parsedName))) {
                     throw new IllegalValueException(Member.MESSAGE_DUPLICATE_HOBBY);
                 }
                 modelHobbies.add(parsed);

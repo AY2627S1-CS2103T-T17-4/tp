@@ -42,7 +42,33 @@ public class ViewCommand extends Command {
             throw new CommandException(Messages.MESSAGE_INVALID_MEMBER_DISPLAYED_INDEX);
         }
 
-        return new CommandResult(formatMember(lastShownList.get(targetIndex.getZeroBased())));
+        Member member = lastShownList.get(targetIndex.getZeroBased());
+        return new CommandResult(formatMember(member), createViewDetails(member));
+    }
+
+    /** Creates structured UI details for the supplied member. */
+    public static ViewDetails createViewDetails(Member member) {
+        String hobbies = member.getHobbies().stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+        String groups = member.getGroups().isEmpty()
+                ? "None"
+                : member.getGroups().stream().map(Object::toString).sorted(String.CASE_INSENSITIVE_ORDER)
+                        .collect(Collectors.joining(", "));
+        String sessions = member.getSessions().isEmpty()
+                ? "None"
+                : member.getSessions().stream()
+                        .map(session -> session.getName() + " (" + session.getDate() + " @ "
+                                + session.getLocation() + ")")
+                        .collect(Collectors.joining("\n"));
+
+        return new ViewDetails(member.getName().fullName, member.getEmail().value, List.of(
+                new ViewDetails.Field("Phone", member.getPhone().toString()),
+                new ViewDetails.Field("Address", member.getAddress().toString()),
+                new ViewDetails.Field("Hobbies", hobbies),
+                new ViewDetails.Field("Groups", groups),
+                new ViewDetails.Field("Sessions", sessions)), ViewDetails.RecordType.MEMBER,
+                member.getEmail().value);
     }
 
     /**
