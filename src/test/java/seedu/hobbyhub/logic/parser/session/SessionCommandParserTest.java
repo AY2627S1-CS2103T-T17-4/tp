@@ -122,13 +122,42 @@ public class SessionCommandParserTest {
     @Test
     public void parse_editSessionWithUnsupportedNameOption_throwsParseException() {
         assertParseFailure(new EditSessionCommandParser(), " 1 -l Community Center -n Renamed",
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditSessionCommand.MESSAGE_USAGE));
+                EditSessionCommandParser.MESSAGE_UNKNOWN_OPTION);
     }
 
     @Test
     public void parse_editSessionWithUnsupportedOptionAtStart_throwsParseException() {
         assertParseFailure(new EditSessionCommandParser(), "-n Renamed 1 -l Community Center",
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditSessionCommand.MESSAGE_USAGE));
+                EditSessionCommandParser.MESSAGE_UNKNOWN_OPTION);
+    }
+
+    @Test
+    public void parse_addSessionWithUnknownOption_throwsParseException() {
+        assertParseFailure(new AddSessionCommandParser(),
+                " -n Golf -l Sentosa -t 2026-11-01T10:00 -c amy@example.com",
+                AddSessionCommandParser.MESSAGE_UNKNOWN_OPTION);
+        assertParseFailure(new AddSessionCommandParser(), " -n Golf -l Sentosa -tt 2026-11-01T10:00",
+                AddSessionCommandParser.MESSAGE_UNKNOWN_OPTION);
+    }
+
+    @Test
+    public void parse_addSessionWithQuotedOptionText_returnsCommand() {
+        AddSessionCommand expectedCommand = new AddSessionCommand(new SessionBuilder()
+                .withName("Golf Meet")
+                .withDateTime("2026-11-01T10:00")
+                .withLocation("\"Hall -x 2\"")
+                .withMembers()
+                .build());
+        assertParseSuccess(new AddSessionCommandParser(), " -n Golf Meet -l \"Hall -x 2\" -t 2026-11-01T10:00",
+                expectedCommand);
+    }
+
+    @Test
+    public void parse_editSessionWithUnpairedQuote_returnsCommand() {
+        EditSessionCommand expectedCommand = new EditSessionCommand(Index.fromOneBased(1), "\"Sunrise Hall",
+                LocalDateTime.parse("2026-11-01T10:00"));
+        assertParseSuccess(new EditSessionCommandParser(), " 1 -l \"Sunrise Hall -t 2026-11-01T10:00",
+                expectedCommand);
     }
 
     @Test

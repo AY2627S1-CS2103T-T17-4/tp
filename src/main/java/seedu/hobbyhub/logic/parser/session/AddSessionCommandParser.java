@@ -20,8 +20,13 @@ import seedu.hobbyhub.model.session.Session;
  */
 public class AddSessionCommandParser implements Parser<AddSessionCommand> {
 
+    public static final String MESSAGE_UNKNOWN_OPTION =
+            "Unknown session add option. Use only -n, -l, or -t.";
+
     @Override
     public AddSessionCommand parse(String args) throws ParseException {
+        ArgumentTokenizer.verifyNoUnknownOptions(args, MESSAGE_UNKNOWN_OPTION,
+                PREFIX_NAME, PREFIX_LOCATION, PREFIX_DATETIME);
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_LOCATION, PREFIX_DATETIME);
 
         if (!areRequiredFieldsPresent(argMultimap) || !argMultimap.getPreamble().isEmpty()) {

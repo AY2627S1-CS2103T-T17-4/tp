@@ -64,6 +64,10 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 * Parameters can be in any order.<br>
   For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
 
+* `add` and `edit` reject options they don't support, such as `-x`, for both members and sessions.<br>
+  To use option-like text inside a value, put the whole value in double quotes, for example `-a "Block 5 -x"`.
+  A `"` that isn't part of such a pair, as in `-a Block 5 "Sunrise`, is kept as an ordinary character.
+
 * Extraneous parameters for `help` and `exit` are ignored. The `clear` command rejects extraneous parameters
   to prevent accidental deletion.<br>
   For example, `help 123` is interpreted as `help`.
