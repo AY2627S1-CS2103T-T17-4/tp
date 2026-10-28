@@ -1,6 +1,7 @@
 package seedu.hobbyhub.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.SkillLevel;
 import seedu.hobbyhub.testutil.MemberBuilder;
@@ -35,6 +37,17 @@ public class MemberCardTest {
                     .map(node -> ((Label) node).getText())
                     .collect(Collectors.toList());
             assertEquals(List.of("apple", "zebra"), groupNames);
+        });
+    }
+
+    @Test
+    public void constructor_longName_wrapsInsteadOfTruncating() {
+        FxTestHelper.runOnFxThread(() -> {
+            var member = new MemberBuilder().withName("Alexandria Constantinople Bartholomew Montgomery").build();
+            MemberCard card = new MemberCard(member, 1);
+            Label nameLabel = (Label) card.getRoot().lookup("#name");
+            assertTrue(nameLabel.isWrapText());
+            assertEquals(Region.USE_PREF_SIZE, nameLabel.getMinHeight());
         });
     }
 

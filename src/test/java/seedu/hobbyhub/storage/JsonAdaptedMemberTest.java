@@ -17,6 +17,7 @@ import seedu.hobbyhub.commons.exceptions.IllegalValueException;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
+import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
 
@@ -111,6 +112,15 @@ public class JsonAdaptedMemberTest {
                 new JsonAdaptedMember(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS, INVALID_HOBBY, VALID_GROUPS);
         String expectedMessage = Hobby.MESSAGE_CONSTRAINTS;
         assertThrows(IllegalValueException.class, expectedMessage, member::toModelType);
+    }
+
+    @Test
+    public void toModelType_hobbiesDifferingOnlyByCaseAndTrailingSpace_throwsIllegalValueException() {
+        List<JsonAdaptedHobby> hobbies = List.of(new JsonAdaptedHobby("Chess", "Beginner"),
+                new JsonAdaptedHobby("chess ", "Advanced"));
+        JsonAdaptedMember member = new JsonAdaptedMember(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
+                null, hobbies, VALID_GROUPS, null);
+        assertThrows(IllegalValueException.class, Member.MESSAGE_DUPLICATE_HOBBY, member::toModelType);
     }
 
     @Test

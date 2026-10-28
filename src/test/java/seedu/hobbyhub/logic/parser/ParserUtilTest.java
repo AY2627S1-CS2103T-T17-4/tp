@@ -3,6 +3,7 @@ package seedu.hobbyhub.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_INDEX;
+import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_SESSION_DATE_TIME;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_FIRST_MEMBER;
 
@@ -204,6 +205,31 @@ public class ParserUtilTest {
     public void parseSessionDateTime_validValueWithWhitespace_returnsDateTime() throws Exception {
         assertEquals(LocalDateTime.parse("2026-10-24T14:00"),
                 ParserUtil.parseSessionDateTime(" 2026-10-24T14:00 "));
+    }
+
+    @Test
+    public void parseSessionDateTime_spaceSeparatedValue_returnsDateTime() throws Exception {
+        assertEquals(LocalDateTime.parse("2026-11-01T10:00"), ParserUtil.parseSessionDateTime("2026-11-01 10:00"));
+    }
+
+    @Test
+    public void parseSessionDateTime_isoValue_returnsDateTime() throws Exception {
+        assertEquals(LocalDateTime.parse("2026-11-01T10:00"), ParserUtil.parseSessionDateTime("2026-11-01T10:00"));
+    }
+
+    @Test
+    public void parseSessionDateTime_nonExistentDateOrTime_throwsParseException() {
+        assertThrows(ParseException.class, MESSAGE_INVALID_SESSION_DATE_TIME, () ->
+                ParserUtil.parseSessionDateTime("2026-02-30 10:00"));
+        assertThrows(ParseException.class, MESSAGE_INVALID_SESSION_DATE_TIME, () ->
+                ParserUtil.parseSessionDateTime("2026-11-01 25:00"));
+        assertThrows(ParseException.class, MESSAGE_INVALID_SESSION_DATE_TIME, () ->
+                ParserUtil.parseSessionDateTime("2026-02-30T10:00"));
+    }
+
+    @Test
+    public void parseSessionDateTime_valueWithSeconds_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parseSessionDateTime("2026-11-01T10:00:30"));
     }
 
     @Test
