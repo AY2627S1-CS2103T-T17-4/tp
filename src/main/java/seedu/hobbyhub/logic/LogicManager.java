@@ -67,8 +67,18 @@ public class LogicManager implements Logic {
     }
 
     @Override
+    public ObservableList<Member> getMemberList() {
+        return model.getHobbyHub().getMemberList();
+    }
+
+    @Override
     public ObservableList<Session> getFilteredSessionList() {
         return model.getFilteredSessionList();
+    }
+
+    @Override
+    public ObservableList<Session> getSessionList() {
+        return model.getHobbyHub().getSessionList();
     }
 
     @Override

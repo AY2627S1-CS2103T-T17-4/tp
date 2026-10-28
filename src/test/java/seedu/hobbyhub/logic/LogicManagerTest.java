@@ -35,6 +35,7 @@ import seedu.hobbyhub.storage.JsonHobbyHubStorage;
 import seedu.hobbyhub.storage.JsonUserPrefsStorage;
 import seedu.hobbyhub.storage.StorageManager;
 import seedu.hobbyhub.testutil.MemberBuilder;
+import seedu.hobbyhub.testutil.SessionBuilder;
 
 public class LogicManagerTest {
     private static final IOException DUMMY_IO_EXCEPTION = new IOException("dummy IO exception");
@@ -109,6 +110,16 @@ public class LogicManagerTest {
     @Test
     public void getFilteredSessionList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredSessionList().remove(0));
+    }
+
+    @Test
+    public void getMemberAndSessionLists_returnsAllRecords() {
+        Member member = new MemberBuilder().build();
+        model.addMember(member);
+        model.addSession(new SessionBuilder().withMembers(member.getEmail().value).build());
+
+        assertEquals(model.getHobbyHub().getMemberList(), logic.getMemberList());
+        assertEquals(model.getHobbyHub().getSessionList(), logic.getSessionList());
     }
 
     @Test
