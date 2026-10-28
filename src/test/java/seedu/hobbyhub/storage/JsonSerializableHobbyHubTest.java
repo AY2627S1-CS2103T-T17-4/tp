@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.commons.util.JsonUtil;
 import seedu.hobbyhub.model.HobbyHub;
-import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.testutil.HobbyHubBuilder;
 import seedu.hobbyhub.testutil.SessionBuilder;
 import seedu.hobbyhub.testutil.TypicalMembers;
@@ -69,13 +68,14 @@ public class JsonSerializableHobbyHubTest {
         assertEquals(1, dataFromFile.getDiscardedCount());
         assertEquals(1, hobbyHub.getSessionList().size());
     }
-  
+
     @Test
-    public void toModelType_memberWithHobbiesDifferingOnlyByCaseAndSpace_throwsIllegalValueException()
-            throws Exception {
+    public void toModelType_memberWithHobbiesDifferingOnlyByCaseAndSpace_discardsMember() throws Exception {
         JsonSerializableHobbyHub dataFromFile = JsonUtil.readJsonFile(DUPLICATE_HOBBY_MEMBER_FILE,
                 JsonSerializableHobbyHub.class).get();
-        assertThrows(IllegalValueException.class, Member.MESSAGE_DUPLICATE_HOBBY, dataFromFile::toModelType);
+        HobbyHub hobbyHub = dataFromFile.toModelType();
+        assertEquals(1, dataFromFile.getDiscardedCount());
+        assertTrue(hobbyHub.getMemberList().isEmpty());
     }
 
     @Test
