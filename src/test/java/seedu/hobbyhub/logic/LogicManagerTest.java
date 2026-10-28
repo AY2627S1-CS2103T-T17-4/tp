@@ -9,7 +9,6 @@ import static seedu.hobbyhub.logic.commands.CommandTestUtil.HOBBY_DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
-import static seedu.hobbyhub.testutil.TypicalMembers.AMY;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -30,11 +29,9 @@ import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.ModelManager;
 import seedu.hobbyhub.model.ReadOnlyHobbyHub;
 import seedu.hobbyhub.model.UserPrefs;
-import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.storage.JsonHobbyHubStorage;
 import seedu.hobbyhub.storage.JsonUserPrefsStorage;
 import seedu.hobbyhub.storage.StorageManager;
-import seedu.hobbyhub.testutil.MemberBuilder;
 
 public class LogicManagerTest {
     private static final IOException DUMMY_IO_EXCEPTION = new IOException("dummy IO exception");
@@ -195,9 +192,7 @@ public class LogicManagerTest {
         // Triggers the saveHobbyHub method by executing an add command
         String addCommand = AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
                 + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + HOBBY_DESC_AMY;
-        Member expectedMember = new MemberBuilder(AMY).withGroups().build();
         ModelManager expectedModel = new ModelManager();
-        expectedModel.addMember(expectedMember);
         assertCommandFailure(addCommand, CommandException.class, expectedMessage, expectedModel);
     }
 }
