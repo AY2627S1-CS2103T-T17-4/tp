@@ -96,6 +96,16 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_internationalHobbyNames_success() {
+        Member expectedMember = new MemberBuilder().withName("Jose").withPhone("")
+                .withEmail("jose@example.com").withAddress("")
+                .withHobbies(new Hobby("Café"), new Hobby("書道")).withGroups().build();
+
+        assertParseSuccess(parser, " -n Jose -c jose@example.com -h Café -h 書道",
+                new AddCommand(expectedMember));
+    }
+
+    @Test
     public void parse_repeatedNonGroupValue_failure() {
         String validExpectedMemberString = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + ADDRESS_DESC_BOB + HOBBY_DESC_BOB + GROUP_DESC_FRIEND;

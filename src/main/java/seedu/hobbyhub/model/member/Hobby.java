@@ -12,14 +12,14 @@ import java.util.Objects;
 public class Hobby {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Hobbies should only contain alphanumeric characters, spaces, and the following special characters: "
-                    + "& + ' / -";
+            "Hobbies should start with a letter or digit and contain only Unicode letters, digits, combining marks, "
+                    + "spaces, and the following special characters: & + ' / -";
 
     /*
      * The first character of the hobby must not be a whitespace,
      * otherwise " " (a blank string) becomes a valid input.
      */
-    public static final String VALIDATION_REGEX = "[\\p{Alnum}][\\p{Alnum} &+'/-]*";
+    public static final String VALIDATION_REGEX = "[\\p{L}\\p{N}][\\p{L}\\p{N}\\p{M} &+'/-]*";
 
     public final String value;
     private final SkillLevel skillLevel;

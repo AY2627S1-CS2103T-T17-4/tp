@@ -90,7 +90,8 @@ Format: `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-
 * Supply name and email once, and phone/address at most once if included. Repeat `-h` for additional hobbies and `-g` for additional groups.
 * Names must contain only letters, digits, and spaces. Phone numbers must contain at least three digits and no other characters.
 * Use a valid email address, such as `johnd@example.com`. Group names must start with a letter or digit and contain only letters, digits and spaces.
-* Hobbies must start with a letter or digit and may contain letters, digits, spaces, and `&`, `+`, `'`, `/`, or `-`.
+* Hobbies must start with a Unicode letter or digit and may contain Unicode letters, digits, combining marks, spaces,
+  and `&`, `+`, `'`, `/`, or `-`.
 * Enclose a hobby and skill pair in double quotes when it contains spaces, for example, `-h "Board Games:Advanced"`.
 * Skill labels are Beginner, Intermediate and Advanced, ignoring capitalization. Hobby names cannot repeat,
   even with different skill levels. Legacy `-h Board Games` input remains valid and defaults to Beginner.
