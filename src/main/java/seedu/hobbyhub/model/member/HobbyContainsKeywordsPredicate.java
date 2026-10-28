@@ -14,7 +14,7 @@ public class HobbyContainsKeywordsPredicate implements Predicate<Member> {
     private final List<String> keywords;
 
     public HobbyContainsKeywordsPredicate(List<String> keywords) {
-        this.keywords = keywords;
+        this.keywords = keywords.stream().map(Hobby::normalizeName).toList();
     }
 
     @Override

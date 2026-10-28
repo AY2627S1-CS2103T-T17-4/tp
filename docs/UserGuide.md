@@ -92,8 +92,9 @@ Format: `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-
 * Names and group names must start with a Unicode letter or digit. They may also contain Unicode letters and digits,
   combining marks, spaces, apostrophes, hyphens, periods, ampersands, and plus signs.
 * Phone numbers must contain at least three digits and may have one leading `+`. Do not include spaces or other formatting.
-* Use a valid email address, such as `johnd@example.com`. Hobby names must start with a letter or digit and may contain
-  letters, digits, spaces, and `&`, `+`, `'`, `/`, or `-`.
+* Use a valid email address, such as `johnd@example.com`.
+* Hobbies must start with a Unicode letter or digit and may contain Unicode letters, digits, combining marks, spaces,
+  and `&`, `+`, `'`, `/`, or `-`.
 * Enclose a hobby and skill pair in double quotes when it contains spaces, for example, `-h "Board Games:Advanced"`.
 * Each `-h` option requires a non-empty hobby value. Unknown add options are rejected. Quote hobby text containing an
   option-like token, such as `-h "Chess -x"`, to keep it as part of the hobby value.

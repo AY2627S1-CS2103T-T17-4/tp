@@ -51,6 +51,8 @@ public class MultipleHobbiesTest {
                 .withHobbies(chess, new Hobby("chess", SkillLevel.BEGINNER)).build());
         assertThrows(IllegalArgumentException.class, () -> new MemberBuilder()
                 .withHobbies(chess, new Hobby("Chess ", SkillLevel.INTERMEDIATE)).build());
+        assertThrows(IllegalArgumentException.class, () -> new MemberBuilder()
+                .withHobbies(new Hobby("Café"), new Hobby("Cafe\u0301")).build());
     }
 
     @Test
