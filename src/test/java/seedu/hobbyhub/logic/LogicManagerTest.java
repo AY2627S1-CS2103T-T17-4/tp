@@ -29,6 +29,7 @@ import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.ModelManager;
 import seedu.hobbyhub.model.ReadOnlyHobbyHub;
 import seedu.hobbyhub.model.UserPrefs;
+import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.storage.JsonHobbyHubStorage;
 import seedu.hobbyhub.storage.JsonUserPrefsStorage;
 import seedu.hobbyhub.storage.StorageManager;
