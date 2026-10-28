@@ -27,6 +27,7 @@
     {
       "name": "Weekend Chess Meetup",
       "date": "2026-10-24",
+      "location": "Community Center",
       "members": [
         "alice@example.com"
       ]
@@ -34,6 +35,7 @@
     {
       "name": "weekend chess meetup",
       "date": "2026-11-01",
+      "location": "Sports Hall",
       "members": [
         "johnd@example.com"
       ]
