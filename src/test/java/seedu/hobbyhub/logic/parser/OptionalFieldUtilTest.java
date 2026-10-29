@@ -1,6 +1,7 @@
 package seedu.hobbyhub.logic.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collection;
@@ -37,6 +38,12 @@ public class OptionalFieldUtilTest {
         }
         return new HashSet<>(values);
     };
+
+    @Test
+    public void constructor_succeeds() {
+        OptionalFieldUtil util = new OptionalFieldUtil();
+        assertNotNull(util);
+    }
 
     @Test
     public void parseScalar_nullArguments_throwsNullPointerException() {
