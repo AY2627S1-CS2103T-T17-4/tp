@@ -67,6 +67,22 @@ public class EmailTest {
     }
 
     @Test
+    public void isValidEmail_consecutivePermittedSpecialCharacters_returnsTrue() {
+        for (String localPart : new String[] {"alice++tag", "alice__tag", "alice--tag", "alice+_-tag",
+            "alice.+tag", "alice+.tag"}) {
+            assertTrue(Email.isValidEmail(localPart + "@example.com"), localPart);
+        }
+    }
+
+    @Test
+    public void isValidEmail_invalidLocalPartBoundariesAndDots_returnsFalse() {
+        for (String localPart : new String[] {".alice", "alice.", "alice..tag", "alice+..tag", "+alice",
+            "alice+", "_alice", "alice_", "-alice", "alice-"}) {
+            assertFalse(Email.isValidEmail(localPart + "@example.com"), localPart);
+        }
+    }
+
+    @Test
     public void equals() {
         Email email = new Email("valid@email");
 

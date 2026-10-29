@@ -9,7 +9,6 @@ import static seedu.hobbyhub.logic.commands.CommandTestUtil.HOBBY_DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.hobbyhub.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
-import static seedu.hobbyhub.testutil.TypicalMembers.AMY;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -206,9 +205,7 @@ public class LogicManagerTest {
         // Triggers the saveHobbyHub method by executing an add command
         String addCommand = AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
                 + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + HOBBY_DESC_AMY;
-        Member expectedMember = new MemberBuilder(AMY).withGroups().build();
         ModelManager expectedModel = new ModelManager();
-        expectedModel.addMember(expectedMember);
         assertCommandFailure(addCommand, CommandException.class, expectedMessage, expectedModel);
     }
 }

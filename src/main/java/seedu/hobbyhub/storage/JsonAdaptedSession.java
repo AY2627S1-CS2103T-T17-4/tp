@@ -85,7 +85,7 @@ class JsonAdaptedSession {
         if (location == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "location"));
         }
-        if (location.trim().isEmpty()) {
+        if (location.isBlank()) {
             throw new IllegalValueException(MESSAGE_INVALID_LOCATION);
         }
 
