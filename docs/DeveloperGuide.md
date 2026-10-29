@@ -236,8 +236,9 @@ A `Session` does not hold `Member` objects. It stores the `Email` of each assign
 Each `Member` in turn holds the list of sessions it is assigned to, which `HobbyHub` rebuilds from the session list
 whenever members or sessions change.
 
-The sequence diagram below shows how the `Logic` component parses and executes `assign 1 Weekend Chess Meetup`,
-and saves the result.
+The sequence diagram below shows how the `Logic` component parses and executes `assign 1 Weekend Chess Meetup`.
+After the command returns, `LogicManager` saves the data as described in the previous section, so saving is not
+shown again here.
 
 ![Interactions inside the Logic component for the `assign 1 Weekend Chess Meetup` command](images/AssignSequenceDiagram-Logic.png)
 
@@ -248,7 +249,8 @@ The next sequence diagram shows what `AssignCommand#execute` does inside the `Mo
 
 ![Interactions inside the Model component for the `assign 1 Weekend Chess Meetup` command](images/AssignSequenceDiagram-Model.png)
 
-The activity diagram below summarises the checks `assign` makes and what happens when each one fails.
+The activity diagram below summarises the overall flow of `assign`. The checks are the ones listed in the steps
+above; each failed check shows its own error message and leaves the data unchanged.
 
 <img src="images/AssignActivityDiagram.png" width="500" />
 
@@ -298,6 +300,8 @@ Because sessions refer to members by email, other member commands keep the links
   `HobbyHub#refreshMemberSessions()`. Because `Session` and `Member` are immutable, `assign` does not change the
   existing objects: it replaces the session with a new one that includes Alice's email, and `refreshMemberSessions()`
   replaces Alice with a new `Member` whose session list includes the new session.
+  For simplicity, the `HobbyHub`, `UniqueMemberList` and `UniqueSessionList` objects that hold these members and the
+  session are omitted.
 
   ![Objects after `assign 1 Weekend Chess Meetup`](images/AssignObjectDiagram.png)
 

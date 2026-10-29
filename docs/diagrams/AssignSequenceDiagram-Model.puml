@@ -27,16 +27,11 @@ activate Model
 Model --> AssignCommand : members
 deactivate Model
 
-AssignCommand -> Model : getHobbyHub()
-activate Model
-Model --> AssignCommand : hobbyHub
-deactivate Model
-
 note right of AssignCommand
-  Finds session s whose name
-  matches, ignoring case, and
-  checks the member is not
-  already assigned to it.
+  Gets the member at INDEX, finds
+  session s with the given name
+  (ignoring case), and checks the
+  member is not already in s.
 end note
 
 AssignCommand -> Session : withMember(email)

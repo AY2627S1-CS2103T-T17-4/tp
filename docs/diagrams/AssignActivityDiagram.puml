@@ -6,47 +6,27 @@ skinparam dpi 150
 
 start
 :User enters assign INDEX SESSION_NAME;
+:Check that the member list is shown,
+the input is valid, the index is in range,
+the session exists and the member
+is not already assigned;
 
-if () then ([member list shown])
-else ([session list shown])
-  :Show "member list required";
-  stop
+if () then ([all checks pass])
+  :Replace the session with a copy
+  that includes the member's email;
+  :Refresh every member's session list;
+  :Save HobbyHub to the data file;
+  if () then ([saved])
+    :Show success message;
+  else ([save failed])
+    :Restore the HobbyHub copy
+    taken before the command;
+    :Show save error;
+  endif
+else ([a check fails])
+  :Show the error for the
+  first check that failed;
 endif
 
-if () then ([INDEX and SESSION_NAME valid])
-else ([invalid])
-  :Show invalid command format;
-  stop
-endif
-
-if () then ([INDEX within displayed members])
-else ([too large])
-  :Show invalid member index;
-  stop
-endif
-
-if () then ([session with that name exists])
-else ([no match, ignoring case])
-  :Show "No session named ... exists";
-  stop
-endif
-
-if () then ([member not yet assigned])
-else ([already assigned])
-  :Show "already assigned";
-  stop
-endif
-
-:Replace session with a copy
-that includes the member's email;
-:Refresh every member's session list;
-:Save HobbyHub to the data file;
-if () then ([saved])
-  :Show success message;
-else ([save failed])
-  :Restore the HobbyHub copy
-  taken before the command;
-  :Show save error;
-endif
 stop
 @enduml
