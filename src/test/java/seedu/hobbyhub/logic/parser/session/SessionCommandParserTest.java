@@ -37,6 +37,33 @@ public class SessionCommandParserTest {
     }
 
     @Test
+    public void parse_addSessionWithOptionLikeNameText_returnsCommand() {
+        for (String name : new String[] {"Chess -night", "Chess -lovers", "Chess -training"}) {
+            AddSessionCommand expectedCommand = new AddSessionCommand(new SessionBuilder()
+                    .withName(name).withLocation("Hall").withDateTime("2026-11-01T10:00").withMembers().build());
+            assertParseSuccess(new AddSessionCommandParser(),
+                    " -n " + name + " -l Hall -t 2026-11-01T10:00", expectedCommand);
+            assertParseSuccess(new AddSessionCommandParser(),
+                    " -n \"" + name + "\" -l Hall -t 2026-11-01T10:00", expectedCommand);
+        }
+    }
+
+    @Test
+    public void parse_addSessionWithQuotedOptionTokenInName_returnsCommand() {
+        AddSessionCommand expectedCommand = new AddSessionCommand(new SessionBuilder()
+                .withName("Chess -n club").withLocation("Hall").withDateTime("2026-11-01T10:00")
+                .withMembers().build());
+        assertParseSuccess(new AddSessionCommandParser(),
+                " -n \"Chess -n club\" -l Hall -t 2026-11-01T10:00", expectedCommand);
+    }
+
+    @Test
+    public void parse_addSessionWithRepeatedExactNameOption_throwsParseException() {
+        assertThrows(ParseException.class, () -> new AddSessionCommandParser().parse(
+                " -n Chess -n Club -l Hall -t 2026-11-01T10:00"));
+    }
+
+    @Test
     public void parse_addSessionWithSpaceSeparatedDateTime_returnsCommand() {
         AddSessionCommand expectedCommand = new AddSessionCommand(new SessionBuilder()
                 .withName("Golf Meet")

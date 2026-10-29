@@ -40,6 +40,7 @@ public class HobbyHub implements ReadOnlyHobbyHub {
      */
     public void setMembers(List<Member> members) {
         this.members.setMembers(members);
+        refreshMemberSessions();
     }
 
     /**
@@ -75,8 +76,8 @@ public class HobbyHub implements ReadOnlyHobbyHub {
      * Adds a member to the HobbyHub.
      * The member must not already exist in the HobbyHub.
      */
-    public void addMember(Member p) {
-        members.add(p);
+    public void addMember(Member member) {
+        members.add(member);
         refreshMemberSessions();
     }
 

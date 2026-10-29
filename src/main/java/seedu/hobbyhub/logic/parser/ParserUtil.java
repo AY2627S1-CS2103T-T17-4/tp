@@ -75,13 +75,16 @@ public class ParserUtil {
     }
 
     /**
-     * Parses a session name and returns it after trimming surrounding whitespace.
+     * Parses a session name after removing surrounding whitespace and an optional pair of double quotes.
      *
      * @throws ParseException if the given name is invalid.
      */
     public static SessionName parseSessionName(String name) throws ParseException {
         requireNonNull(name);
         String trimmedName = name.trim();
+        if (trimmedName.length() >= 2 && trimmedName.startsWith("\"") && trimmedName.endsWith("\"")) {
+            trimmedName = trimmedName.substring(1, trimmedName.length() - 1).trim();
+        }
         if (!SessionName.isValidSessionName(trimmedName)) {
             throw new ParseException(SessionName.MESSAGE_CONSTRAINTS);
         }

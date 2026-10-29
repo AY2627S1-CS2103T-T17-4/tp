@@ -27,7 +27,8 @@ public class AddSessionCommandParser implements Parser<AddSessionCommand> {
     public AddSessionCommand parse(String args) throws ParseException {
         ArgumentTokenizer.verifyNoUnknownOptions(args, MESSAGE_UNKNOWN_OPTION,
                 PREFIX_NAME, PREFIX_LOCATION, PREFIX_DATETIME);
-        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_LOCATION, PREFIX_DATETIME);
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenizeWithExactPrefixes(
+                args, PREFIX_NAME, PREFIX_LOCATION, PREFIX_DATETIME);
 
         if (!areRequiredFieldsPresent(argMultimap) || !argMultimap.getPreamble().isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddSessionCommand.MESSAGE_USAGE));
