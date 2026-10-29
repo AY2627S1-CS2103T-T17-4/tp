@@ -1,5 +1,6 @@
 package seedu.hobbyhub.logic.commands;
 
+import static java.time.DayOfWeek.MONDAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,6 +16,7 @@ import static seedu.hobbyhub.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.logic.commands.EditCommand.EditMemberDescriptor;
+import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.testutil.EditMemberDescriptorBuilder;
 
 public class EditMemberDescriptorTest {
@@ -60,6 +62,18 @@ public class EditMemberDescriptorTest {
         // different hobby -> returns false
         editedAmy = new EditMemberDescriptorBuilder(DESC_AMY).withHobby(VALID_HOBBY_BOB).build();
         assertFalse(DESC_AMY.equals(editedAmy));
+
+        // different availability -> returns false
+        editedAmy = new EditMemberDescriptorBuilder(DESC_AMY).withAvailability(MONDAY).build();
+        assertFalse(DESC_AMY.equals(editedAmy));
+    }
+
+    @Test
+    public void hobbyAccessors_presentAndNullValues_returnExpectedOptionals() {
+        EditMemberDescriptor descriptor = new EditMemberDescriptor().setHobby(new Hobby(VALID_HOBBY_BOB));
+
+        assertEquals(new Hobby(VALID_HOBBY_BOB), descriptor.getHobby().orElseThrow());
+        assertTrue(descriptor.setHobby(null).getHobby().isEmpty());
     }
 
     @Test
@@ -71,7 +85,8 @@ public class EditMemberDescriptorTest {
                 + editMemberDescriptor.getEmail().orElse(null) + ", address="
                 + editMemberDescriptor.getAddress().orElse(null) + ", groups="
                 + editMemberDescriptor.getGroups().orElse(null) + ", hobbies="
-                + editMemberDescriptor.getHobbies().orElse(null) + "}";
+                + editMemberDescriptor.getHobbies().orElse(null) + ", availability="
+                + editMemberDescriptor.getAvailability().orElse(null) + "}";
         assertEquals(expected, editMemberDescriptor.toString());
     }
 }

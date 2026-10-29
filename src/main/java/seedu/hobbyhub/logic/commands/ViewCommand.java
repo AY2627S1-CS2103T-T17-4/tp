@@ -67,6 +67,7 @@ public class ViewCommand extends Command {
                 new ViewDetails.Field("Address", member.getAddress().toString()),
                 new ViewDetails.Field("Hobbies", hobbies),
                 new ViewDetails.Field("Groups", groups),
+                new ViewDetails.Field("Availability", member.getAvailability().toString()),
                 new ViewDetails.Field("Sessions", sessions)), ViewDetails.RecordType.MEMBER,
                 member.getEmail().value);
     }
@@ -96,6 +97,7 @@ public class ViewCommand extends Command {
                 + "Address: " + m.getAddress() + "\n"
                 + "Hobbies: " + hobbies + "\n"
                 + "Groups: " + groups + "\n"
+                + "Availability: " + m.getAvailability() + "\n"
                 + "Sessions: " + sessions;
     }
 

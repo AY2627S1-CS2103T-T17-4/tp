@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
@@ -22,7 +23,8 @@ import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.session.Session;
 
 /**
- * An Immutable HobbyHub that is serializable to JSON format.
+ * A HobbyHub that is serializable to JSON format.
+ * Invalid members and sessions are discarded when converting to the model, instead of failing the whole conversion.
  */
 @JsonRootName(value = "addressbook")
 class JsonSerializableHobbyHub {
@@ -30,22 +32,33 @@ class JsonSerializableHobbyHub {
     public static final String MESSAGE_DUPLICATE_MEMBER = "Members list contains duplicate member(s).";
     public static final String MESSAGE_DUPLICATE_SESSION = "Sessions list contains duplicate session(s).";
 
+    /** Name of the JSON field holding the members. */
+    static final String MEMBERS_FIELD = "persons";
+    /** Name of the JSON field holding the sessions. */
+    static final String SESSIONS_FIELD = "sessions";
+
     private static final Logger logger = LogsCenter.getLogger(JsonSerializableHobbyHub.class);
 
-    @JsonProperty("persons")
+    @JsonProperty(MEMBERS_FIELD)
     private final List<JsonAdaptedMember> members = new ArrayList<>();
 
-    @JsonProperty("sessions")
+    @JsonProperty(SESSIONS_FIELD)
     private final List<JsonAdaptedSession> sessions = new ArrayList<>();
+
+    @JsonIgnore
+    private int discardedCount;
 
     /**
      * Constructs a {@code JsonSerializableHobbyHub} with the given members and sessions.
-     * A missing {@code sessions} list (e.g. in data files from older versions) is treated as empty.
+     * A missing {@code members} or {@code sessions} list (e.g. in data files from older versions) is treated
+     * as empty.
      */
     @JsonCreator
-    public JsonSerializableHobbyHub(@JsonProperty("persons") List<JsonAdaptedMember> members,
-            @JsonProperty("sessions") List<JsonAdaptedSession> sessions) {
-        this.members.addAll(members);
+    public JsonSerializableHobbyHub(@JsonProperty(MEMBERS_FIELD) List<JsonAdaptedMember> members,
+            @JsonProperty(SESSIONS_FIELD) List<JsonAdaptedSession> sessions) {
+        if (members != null) {
+            this.members.addAll(members);
+        }
         if (sessions != null) {
             this.sessions.addAll(sessions);
         }
@@ -62,33 +75,74 @@ class JsonSerializableHobbyHub {
     }
 
     /**
-     * Converts this HobbyHub into the model's {@code HobbyHub} object.
-     * Emails in a session are matched to members ignoring case, and emails that match no member are dropped.
-     *
-     * @throws IllegalValueException if there were any data constraints violated.
+     * Returns the number of members and sessions discarded by the latest call to {@link #toModelType()}.
      */
-    public HobbyHub toModelType() throws IllegalValueException {
-        HobbyHub hobbyHub = new HobbyHub();
-        for (JsonAdaptedMember jsonAdaptedMember : members) {
-            Member member = jsonAdaptedMember.toModelType();
-            if (hobbyHub.hasMember(member)) {
-                throw new IllegalValueException(MESSAGE_DUPLICATE_MEMBER);
-            }
-            hobbyHub.addMember(member);
-        }
+    @JsonIgnore
+    public int getDiscardedCount() {
+        return discardedCount;
+    }
 
+    /**
+     * Converts this HobbyHub into the model's {@code HobbyHub} object.
+     * Members and sessions that violate data constraints, or duplicate an earlier one, are discarded and logged.
+     * Emails in a session are matched to members ignoring case, and emails that match no member are dropped.
+     */
+    public HobbyHub toModelType() {
+        discardedCount = 0;
+        HobbyHub hobbyHub = new HobbyHub();
+        addMembers(hobbyHub);
+        addSessions(hobbyHub);
+        return hobbyHub;
+    }
+
+    /**
+     * Adds every valid, non-duplicate member in {@code members} to {@code hobbyHub}.
+     */
+    private void addMembers(HobbyHub hobbyHub) {
+        for (JsonAdaptedMember adaptedMember : members) {
+            try {
+                Member member = adaptedMember.toModelType();
+                if (hobbyHub.hasMember(member)) {
+                    discard("member", MESSAGE_DUPLICATE_MEMBER);
+                } else {
+                    hobbyHub.addMember(member);
+                }
+            } catch (IllegalValueException ive) {
+                discard("member", ive.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Adds every valid, non-duplicate session in {@code sessions} to {@code hobbyHub}.
+     * Must be called after {@link #addMembers(HobbyHub)}, as sessions refer to members by email.
+     */
+    private void addSessions(HobbyHub hobbyHub) {
         Map<String, Email> memberEmails = new HashMap<>();
         for (Member member : hobbyHub.getMemberList()) {
             memberEmails.putIfAbsent(member.getEmail().value.toLowerCase(), member.getEmail());
         }
-        for (JsonAdaptedSession jsonAdaptedSession : sessions) {
-            Session session = resolveMembers(jsonAdaptedSession.toModelType(), memberEmails);
-            if (hobbyHub.hasSession(session)) {
-                throw new IllegalValueException(MESSAGE_DUPLICATE_SESSION);
+
+        for (JsonAdaptedSession adaptedSession : sessions) {
+            try {
+                Session session = resolveMembers(adaptedSession.toModelType(), memberEmails);
+                if (hobbyHub.hasSession(session)) {
+                    discard("session", MESSAGE_DUPLICATE_SESSION);
+                } else {
+                    hobbyHub.addSession(session);
+                }
+            } catch (IllegalValueException ive) {
+                discard("session", ive.getMessage());
             }
-            hobbyHub.addSession(session);
         }
-        return hobbyHub;
+    }
+
+    /**
+     * Records and logs that an entry of type {@code entryType} was discarded because of {@code reason}.
+     */
+    private void discard(String entryType, String reason) {
+        discardedCount++;
+        logger.warning("Discarding " + entryType + ": " + reason);
     }
 
     /**

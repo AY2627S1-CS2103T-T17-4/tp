@@ -39,6 +39,19 @@ public class HobbyTest {
         assertTrue(Hobby.isValidHobby("Muay-Thai")); // hyphen
         assertTrue(Hobby.isValidHobby("Cooking/Baking")); // slash
         assertTrue(Hobby.isValidHobby("Children's Theatre")); // apostrophe
+        assertTrue(Hobby.isValidHobby("Café hopping")); // accented Latin letter
+        assertTrue(Hobby.isValidHobby("書道")); // non-Latin letters
+        assertTrue(Hobby.isValidHobby("Cafe\u0301 hopping")); // decomposed accented letter
+    }
+
+    @Test
+    public void constructor_canonicallyEquivalentName_normalizesToNfc() {
+        Hobby composed = new Hobby("Café");
+        Hobby decomposed = new Hobby("Cafe\u0301");
+
+        assertTrue(composed.equals(decomposed));
+        assertTrue(composed.hashCode() == decomposed.hashCode());
+        assertTrue(decomposed.value.equals("Café"));
     }
 
     @Test

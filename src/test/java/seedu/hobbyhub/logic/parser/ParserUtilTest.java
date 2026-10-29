@@ -7,6 +7,7 @@ import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_SESSION_DAT
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_FIRST_MEMBER;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
@@ -207,12 +209,16 @@ public class ParserUtilTest {
 
     @Test
     public void parseSessionLocation_blankValue_throwsParseException() {
-        assertThrows(ParseException.class, () -> ParserUtil.parseSessionLocation(" \t "));
+        for (String location : List.of("", " \t ", "\u2003", "\u2002\u2003\u3000", " \u2003 \t")) {
+            assertThrows(ParseException.class, ParserUtil.MESSAGE_INVALID_SESSION_LOCATION, ()
+                -> ParserUtil.parseSessionLocation(location));
+        }
     }
 
     @Test
     public void parseSessionLocation_validValueWithWhitespace_returnsTrimmedLocation() throws Exception {
         assertEquals("Golf Club", ParserUtil.parseSessionLocation("  Golf Club  "));
+        assertEquals("Golf\u2003Club", ParserUtil.parseSessionLocation("  Golf\u2003Club  "));
     }
 
     @Test
@@ -295,5 +301,20 @@ public class ParserUtilTest {
         Set<Group> expectedGroupSet = Set.of(new Group(VALID_GROUP_1), new Group(VALID_GROUP_2));
 
         assertEquals(expectedGroupSet, actualGroupSet);
+    }
+
+    @Test
+    public void parseAvailability_validDays_returnsAvailability() throws Exception {
+        Availability expected = new Availability(List.of(DayOfWeek.MONDAY, DayOfWeek.SUNDAY));
+
+        assertEquals(expected, ParserUtil.parseAvailability(List.of("Monday", "sUNDAY")));
+    }
+
+    @Test
+    public void parseAvailability_invalidDay_throwsParseException() {
+        assertThrows(ParseException.class, Availability.MESSAGE_CONSTRAINTS, () ->
+                ParserUtil.parseAvailability(List.of("Funday")));
+        assertThrows(ParseException.class, Availability.MESSAGE_CONSTRAINTS, () ->
+                ParserUtil.parseAvailability(List.of("")));
     }
 }

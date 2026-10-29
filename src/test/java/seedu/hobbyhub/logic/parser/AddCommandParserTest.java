@@ -37,6 +37,8 @@ import static seedu.hobbyhub.logic.parser.CommandParserTestUtil.assertParseSucce
 import static seedu.hobbyhub.testutil.TypicalMembers.AMY;
 import static seedu.hobbyhub.testutil.TypicalMembers.BOB;
 
+import java.time.DayOfWeek;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.logic.Messages;
@@ -44,6 +46,7 @@ import seedu.hobbyhub.logic.commands.AddCommand;
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Email;
+import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
@@ -65,6 +68,14 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_emailWithConsecutiveSpecialCharacters_success() {
+        Member expectedMember = new MemberBuilder().withName("Alice").withPhone("")
+                .withEmail("alice++tag@example.com").withAddress("").withHobby("Chess").withGroups().build();
+
+        assertParseSuccess(parser, " -n Alice -c alice++tag@example.com -h Chess", new AddCommand(expectedMember));
+    }
+
+    @Test
     public void parse_legacySlashPrefixes_failure() {
         assertParseFailure(parser, " n/John Doe p/98765432 e/johnd@example.com a/John Street h/Chess",
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
@@ -73,7 +84,7 @@ public class AddCommandParserTest {
     @Test
     public void parse_incorrectEmailPrefix_failure() {
         assertParseFailure(parser, " -n John Doe -p 98765432 -e johnd@example.com -a John Street -h Chess",
-                "Unknown add option. Use only -n, -p, -c, -a, -h, or -g.");
+                "Unknown add option. Use only -n, -p, -c, -a, -h, -g, or -d.");
     }
 
     @Test
@@ -92,6 +103,25 @@ public class AddCommandParserTest {
                 NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + HOBBY_DESC_BOB
                         + GROUP_DESC_HUSBAND + GROUP_DESC_FRIEND,
                 new AddCommand(expectedMemberMultipleGroups));
+    }
+
+    @Test
+    public void parse_availabilityDays_success() {
+        Member expectedMember = new MemberBuilder(BOB).withGroups()
+                .withAvailability(DayOfWeek.MONDAY, DayOfWeek.SATURDAY).build();
+
+        assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + HOBBY_DESC_BOB + " -d Monday -d saturday", new AddCommand(expectedMember));
+    }
+
+    @Test
+    public void parse_internationalHobbyNames_success() {
+        Member expectedMember = new MemberBuilder().withName("Jose").withPhone("")
+                .withEmail("jose@example.com").withAddress("")
+                .withHobbies(new Hobby("Café"), new Hobby("書道")).withGroups().build();
+
+        assertParseSuccess(parser, " -n Jose -c jose@example.com -h Café -h 書道",
+                new AddCommand(expectedMember));
     }
 
     @Test
@@ -247,14 +277,29 @@ public class AddCommandParserTest {
     @Test
     public void parse_unsupportedOption_failure() {
         String validArguments = NAME_DESC_BOB + EMAIL_DESC_BOB + HOBBY_DESC_BOB;
-        String expectedMessage = "Unknown add option. Use only -n, -p, -c, -a, -h, or -g.";
+        String expectedMessage = "Unknown add option. Use only -n, -p, -c, -a, -h, -g, or -d.";
 
         assertParseFailure(parser, validArguments + " -x", expectedMessage);
         assertParseFailure(parser, validArguments + " -hh", expectedMessage);
         assertParseFailure(parser, validArguments + " -unknown value", expectedMessage);
-        assertParseFailure(parser, validArguments + " -", expectedMessage);
         assertParseFailure(parser, "-nBob Choo -cbob@example.com -hChess",
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_unpairedQuoteInAddress_success() {
+        Member expectedMember = new MemberBuilder().withName("Bob Choo").withPhone("")
+                .withEmail("bob@example.com").withAddress("Block 5 \"Sunrise").withHobby("Chess").withGroups().build();
+        assertParseSuccess(parser, NAME_DESC_BOB + EMAIL_DESC_BOB + " -a Block 5 \"Sunrise -h Chess",
+                new AddCommand(expectedMember));
+    }
+
+    @Test
+    public void parse_standaloneHyphenInValue_success() {
+        Member expectedMember = new MemberBuilder().withName("Bob Choo").withPhone("")
+                .withEmail("bob@example.com").withAddress("Block 5 - Unit 3").withHobby("Chess").withGroups().build();
+        assertParseSuccess(parser, NAME_DESC_BOB + EMAIL_DESC_BOB + " -a Block 5 - Unit 3 -h Chess",
+                new AddCommand(expectedMember));
     }
 
     @Test

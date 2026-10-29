@@ -2,18 +2,23 @@ package seedu.hobbyhub;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import seedu.hobbyhub.commons.core.GuiSettings;
 import seedu.hobbyhub.commons.exceptions.DataLoadingException;
 import seedu.hobbyhub.model.HobbyHub;
 import seedu.hobbyhub.model.Model;
@@ -21,6 +26,7 @@ import seedu.hobbyhub.model.ModelManager;
 import seedu.hobbyhub.model.ReadOnlyHobbyHub;
 import seedu.hobbyhub.model.ReadOnlyUserPrefs;
 import seedu.hobbyhub.model.UserPrefs;
+import seedu.hobbyhub.storage.InstanceLock;
 import seedu.hobbyhub.storage.JsonUserPrefsStorage;
 import seedu.hobbyhub.storage.Storage;
 import seedu.hobbyhub.ui.FxTestHelper;
@@ -55,6 +61,43 @@ public class MainAppTest {
     }
 
     @Test
+    public void initPrefs_nullGuiSettings_restoresAndSavesDefaultSettings() throws Exception {
+        Path preferencesFile = testFolder.resolve("preferences.json");
+        Files.writeString(preferencesFile, "{\"guiSettings\":null}");
+        JsonUserPrefsStorage storage = new JsonUserPrefsStorage(preferencesFile);
+
+        UserPrefs preferences = new MainApp().initPrefs(storage);
+
+        assertEquals(new GuiSettings(), preferences.getGuiSettings());
+        assertEquals(new GuiSettings(), storage.readUserPrefs().orElseThrow().getGuiSettings());
+    }
+
+    @Test
+    public void initPrefs_validGuiSettings_preservesSavedSettings() throws Exception {
+        Path preferencesFile = testFolder.resolve("preferences.json");
+        JsonUserPrefsStorage storage = new JsonUserPrefsStorage(preferencesFile);
+        UserPrefs savedPreferences = new UserPrefs();
+        savedPreferences.setGuiSettings(new GuiSettings(1000, 700, 100, 200));
+        storage.saveUserPrefs(savedPreferences);
+
+        UserPrefs preferences = new MainApp().initPrefs(storage);
+
+        assertEquals(savedPreferences, preferences);
+    }
+
+    @Test
+    public void init_nullGuiSettings_initializesModelWithDefaultSettings() throws Exception {
+        Path preferencesFile = testFolder.resolve("preferences.json");
+        Files.writeString(preferencesFile, "{\"guiSettings\":null}");
+        TestMainApp app = new TestMainApp(preferencesFile, testFolder.resolve("hobbyhub.json"));
+
+        app.init();
+
+        assertEquals(new GuiSettings(), app.model.getGuiSettings());
+        assertFalse(app.model.getHobbyHub().getMemberList().isEmpty());
+    }
+
+    @Test
     public void initPrefs_saveFailure_stillReturnsPreferences() {
         MainApp app = new MainApp();
 
@@ -73,12 +116,47 @@ public class MainAppTest {
 
     @Test
     public void init_initializesApplicationUsingConfiguredStorage() throws Exception {
-        TestMainApp app = new TestMainApp(testFolder.resolve("preferences.json"), testFolder.resolve("hobbyhub.json"));
+        Path hobbyHubFile = testFolder.resolve("hobbyhub.json");
+        TestMainApp app = new TestMainApp(testFolder.resolve("preferences.json"), hobbyHubFile);
+
+        app.init();
+        try {
+            assertTrue(app.model.getHobbyHub().getMemberList().size() > 0);
+            assertEquals(hobbyHubFile, app.storage.getHobbyHubFilePath());
+            assertTrue(Files.exists(lockFileOf(hobbyHubFile)));
+        } finally {
+            app.stop();
+        }
+    }
+
+    @Test
+    public void init_instanceAlreadyRunning_exitsWithStatusOne() throws Exception {
+        Path hobbyHubFile = testFolder.resolve("hobbyhub.json");
+        TestMainApp app = new TestMainApp(testFolder.resolve("preferences.json"), hobbyHubFile);
+        List<Integer> exitStatuses = new ArrayList<>();
+        app.setExitHandler(exitStatuses::add);
+
+        try (InstanceLock heldLock = InstanceLock.tryAcquire(hobbyHubFile).get()) {
+            app.init();
+        }
+
+        assertEquals(List.of(1), exitStatuses);
+        assertNull(getInstanceLock(app));
+    }
+
+    @Test
+    public void init_lockFileCannotBeCreated_continuesWithoutLock() throws Exception {
+        Path blocker = testFolder.resolve("blocker");
+        Files.writeString(blocker, "a file where a directory is needed");
+        TestMainApp app = new TestMainApp(testFolder.resolve("preferences.json"), blocker.resolve("hobbyhub.json"));
+        List<Integer> exitStatuses = new ArrayList<>();
+        app.setExitHandler(exitStatuses::add);
 
         app.init();
 
-        assertTrue(app.model.getHobbyHub().getMemberList().size() > 0);
-        assertEquals(testFolder.resolve("hobbyhub.json"), app.storage.getHobbyHubFilePath());
+        assertTrue(exitStatuses.isEmpty());
+        assertNull(getInstanceLock(app));
+        assertFalse(app.model.getHobbyHub().getMemberList().isEmpty());
     }
 
     @Test
@@ -105,6 +183,33 @@ public class MainAppTest {
     }
 
     @Test
+    public void stop_releasesInstanceLock() throws Exception {
+        Path hobbyHubFile = testFolder.resolve("hobbyhub.json");
+        TestMainApp app = new TestMainApp(testFolder.resolve("preferences.json"), hobbyHubFile);
+        app.init();
+
+        app.stop();
+
+        Optional<InstanceLock> reacquiredLock = InstanceLock.tryAcquire(hobbyHubFile);
+        assertTrue(reacquiredLock.isPresent());
+        reacquiredLock.get().close();
+        assertNull(getInstanceLock(app));
+    }
+
+    @Test
+    public void stop_lockReleaseFails_doesNotPreventShutdown() throws Exception {
+        TestMainApp app = new TestMainApp(testFolder.resolve("preferences.json"),
+                testFolder.resolve("hobbyhub.json"));
+        app.init();
+        // Closing the lock early makes the release performed by stop() fail.
+        getInstanceLock(app).close();
+
+        app.stop();
+
+        assertNull(getInstanceLock(app));
+    }
+
+    @Test
     public void start_delegatesToTheUi() {
         MainApp app = new MainApp();
         RecordingUi ui = new RecordingUi();
@@ -126,6 +231,22 @@ public class MainAppTest {
         app.stop();
 
         assertTrue(storage.saveAttempted);
+    }
+
+    /**
+     * Returns the path of the lock file guarding {@code dataFile}.
+     */
+    private Path lockFileOf(Path dataFile) {
+        return dataFile.resolveSibling(dataFile.getFileName() + ".lock");
+    }
+
+    /**
+     * Returns the instance lock currently held by {@code app}, or null if there is none.
+     */
+    private InstanceLock getInstanceLock(MainApp app) throws Exception {
+        Field field = MainApp.class.getDeclaredField("instanceLock");
+        field.setAccessible(true);
+        return (InstanceLock) field.get(app);
     }
 
     private Model invokeInitModelManager(MainApp app, Storage storage) throws Exception {

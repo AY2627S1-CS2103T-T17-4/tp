@@ -3,6 +3,7 @@ package seedu.hobbyhub.ui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.DayOfWeek;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,7 @@ public class MemberCardTest {
             assertEquals("2. ", ((Label) root.lookup("#id")).getText());
             assertEquals("Alex", ((Label) root.lookup("#name")).getText());
             assertEquals("Chess (Beginner)", ((Label) root.lookup("#hobby")).getText());
+            assertEquals("Available: None", ((Label) root.lookup("#availability")).getText());
 
             FlowPane groups = (FlowPane) root.lookup("#groups");
             List<String> groupNames = groups.getChildren().stream()
@@ -59,6 +61,18 @@ public class MemberCardTest {
             MemberCard card = new MemberCard(member, 1);
             Label hobbyLabel = (Label) card.getRoot().lookup("#hobby");
             assertEquals("Chess (Advanced), Table Tennis (Intermediate)", hobbyLabel.getText());
+        });
+    }
+
+    @Test
+    public void constructor_displaysAvailabilityInCalendarOrder() {
+        FxTestHelper.runOnFxThread(() -> {
+            var member = new MemberBuilder()
+                    .withAvailability(DayOfWeek.SUNDAY, DayOfWeek.TUESDAY).build();
+            MemberCard card = new MemberCard(member, 1);
+            Label availability = (Label) card.getRoot().lookup("#availability");
+
+            assertEquals("Available: Tuesday, Sunday", availability.getText());
         });
     }
 

@@ -1,5 +1,7 @@
 package seedu.hobbyhub.testutil;
 
+import java.time.DayOfWeek;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -8,6 +10,7 @@ import java.util.stream.Stream;
 import seedu.hobbyhub.logic.commands.EditCommand.EditMemberDescriptor;
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
@@ -40,6 +43,7 @@ public class EditMemberDescriptorBuilder {
         descriptor.setAddress(member.getAddress());
         descriptor.setGroups(member.getGroups());
         descriptor.setHobbies(member.getHobbies());
+        descriptor.setAvailability(member.getAvailability());
     }
 
     /**
@@ -95,6 +99,12 @@ public class EditMemberDescriptorBuilder {
     /** Sets the complete hobby list to replace the member's hobbies. */
     public EditMemberDescriptorBuilder withHobbies(Hobby... hobbies) {
         descriptor.setHobbies(List.of(hobbies));
+        return this;
+    }
+
+    /** Sets the availability to the supplied weekdays. */
+    public EditMemberDescriptorBuilder withAvailability(DayOfWeek... days) {
+        descriptor.setAvailability(new Availability(Arrays.asList(days)));
         return this;
     }
 
