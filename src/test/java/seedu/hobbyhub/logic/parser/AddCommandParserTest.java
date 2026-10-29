@@ -66,6 +66,14 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_emailWithConsecutiveSpecialCharacters_success() {
+        Member expectedMember = new MemberBuilder().withName("Alice").withPhone("")
+                .withEmail("alice++tag@example.com").withAddress("").withHobby("Chess").withGroups().build();
+
+        assertParseSuccess(parser, " -n Alice -c alice++tag@example.com -h Chess", new AddCommand(expectedMember));
+    }
+
+    @Test
     public void parse_legacySlashPrefixes_failure() {
         assertParseFailure(parser, " n/John Doe p/98765432 e/johnd@example.com a/John Street h/Chess",
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
