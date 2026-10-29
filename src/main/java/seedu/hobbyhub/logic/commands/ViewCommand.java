@@ -88,7 +88,8 @@ public class ViewCommand extends Command {
         String sessions = m.getSessions().isEmpty()
                 ? "none"
                 : m.getSessions().stream()
-                        .map(s -> s.getName() + " (" + s.getDate() + " @ " + s.getLocation() + ")")
+                        .map(s -> s.getName() + " (" + s.getDate() + " @ "
+                            + s.getLocation() + ")" + (s.isCompleted() ? " -- Done" : ""))
                         .collect(Collectors.joining("; "));
 
         return "Name: " + m.getName() + "\n"

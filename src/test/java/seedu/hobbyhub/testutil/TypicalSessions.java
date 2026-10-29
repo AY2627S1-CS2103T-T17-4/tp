@@ -20,6 +20,12 @@ public class TypicalSessions {
     public static final Session CHESS_MEETUP = new SessionBuilder().withName("Weekend Chess Meetup")
             .withDateTime("2026-10-24T14:00").withLocation("Community Center")
             .withMembers(ALICE.getEmail().value, BENSON.getEmail().value).build();
+
+    // Session marked as done for testing purposes
+    public static final Session COMPLETED_CHESS_MEETUP = new SessionBuilder().withName("Weekend Chess Meetup")
+            .withDateTime("2026-10-24T14:00").withLocation("Community Center")
+            .withMembers(ALICE.getEmail().value, BENSON.getEmail().value).withCompleted(true).build();
+
     public static final Session CYCLING_TRIP = new SessionBuilder().withName("Sunday Cycling Trip")
             .withDateTime("2026-10-25T09:00").withLocation("MacRitchie Reservoir")
             .withMembers(BENSON.getEmail().value, CARL.getEmail().value).build();
