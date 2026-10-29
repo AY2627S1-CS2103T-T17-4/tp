@@ -29,6 +29,7 @@
       </HBox>
       <FlowPane fx:id="groups" />
       <Label fx:id="hobby" styleClass="cell_small_label" text="\$hobby" />
+      <Label fx:id="availability" styleClass="cell_small_label" text="\$availability" />
     </VBox>
   </GridPane>
 </HBox>

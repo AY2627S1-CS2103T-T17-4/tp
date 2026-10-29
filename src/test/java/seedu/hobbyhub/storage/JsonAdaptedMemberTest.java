@@ -7,6 +7,7 @@ import static seedu.hobbyhub.storage.JsonAdaptedMember.MISSING_FIELD_MESSAGE_FOR
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalMembers.BENSON;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,11 +16,13 @@ import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.commons.exceptions.IllegalValueException;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
+import seedu.hobbyhub.testutil.MemberBuilder;
 
 public class JsonAdaptedMemberTest {
     private static final String INVALID_NAME = "R@chel";
@@ -128,6 +131,40 @@ public class JsonAdaptedMemberTest {
         JsonAdaptedMember member = new JsonAdaptedMember(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS, null,
                 VALID_GROUPS);
         assertEquals(DEFAULT_HOBBY, member.toModelType().getHobby().value);
+    }
+
+    @Test
+    public void toModelType_availability_returnsMemberWithAvailability() throws Exception {
+        JsonAdaptedMember member = new JsonAdaptedMember(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
+                VALID_HOBBY, null, VALID_GROUPS, null, List.of("MONDAY", "saturday"));
+
+        assertEquals(new Availability(List.of(DayOfWeek.MONDAY, DayOfWeek.SATURDAY)),
+                member.toModelType().getAvailability());
+    }
+
+    @Test
+    public void constructor_memberWithAvailability_roundTripsAvailability() throws Exception {
+        Member member = new MemberBuilder(BENSON)
+                .withAvailability(DayOfWeek.MONDAY, DayOfWeek.SATURDAY).build();
+
+        assertEquals(member, new JsonAdaptedMember(member).toModelType());
+    }
+
+    @Test
+    public void toModelType_invalidAvailability_throwsIllegalValueException() {
+        JsonAdaptedMember member = new JsonAdaptedMember(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
+                VALID_HOBBY, null, VALID_GROUPS, null, List.of("Funday"));
+        assertThrows(IllegalValueException.class, Availability.MESSAGE_CONSTRAINTS, member::toModelType);
+    }
+
+    @Test
+    public void toModelType_nullAvailabilityDay_throwsIllegalValueException() {
+        List<String> availability = new ArrayList<>();
+        availability.add(null);
+        JsonAdaptedMember member = new JsonAdaptedMember(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
+                VALID_HOBBY, null, VALID_GROUPS, null, availability);
+
+        assertThrows(IllegalValueException.class, Availability.MESSAGE_CONSTRAINTS, member::toModelType);
     }
 
     @Test

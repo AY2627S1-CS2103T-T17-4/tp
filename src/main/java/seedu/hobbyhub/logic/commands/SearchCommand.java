@@ -20,7 +20,7 @@ public class SearchCommand extends Command {
             + "All conditions must match. Hobby and skill must match the same hobby.\n"
             + "Names, hobbies and groups use case-insensitive partial matching; emails match in full.\n"
             + "Parameters: [-n NAME_FRAGMENT] [-h HOBBY_FRAGMENT] [-g GROUP_FRAGMENT] [-c EMAIL] "
-            + "[-sl SKILL_LEVEL (Beginner, Intermediate, Advanced)]\n"
+            + "[-sl SKILL_LEVEL (Beginner, Intermediate, Advanced)] [-d DAY]\n"
             + "At least one option is required; each option can appear only once.\n"
             + "Example: " + COMMAND_WORD + " -n alice";
 

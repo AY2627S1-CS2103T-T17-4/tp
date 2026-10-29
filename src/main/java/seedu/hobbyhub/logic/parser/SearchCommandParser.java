@@ -1,5 +1,6 @@
 package seedu.hobbyhub.logic.parser;
 
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_SEARCH_HOBBY;
@@ -31,7 +32,8 @@ public class SearchCommandParser implements Parser<SearchCommand> {
     @Override
     public SearchCommand parse(String args) throws ParseException {
         List<SearchArgument> arguments = SearchArgument.parse(args, SearchCommand.MESSAGE_USAGE,
-                PREFIX_SEARCH_NAME, PREFIX_SEARCH_HOBBY, PREFIX_GROUP, PREFIX_EMAIL, PREFIX_SEARCH_SKILL);
+                PREFIX_SEARCH_NAME, PREFIX_SEARCH_HOBBY, PREFIX_GROUP, PREFIX_EMAIL, PREFIX_SEARCH_SKILL,
+                PREFIX_AVAILABILITY);
         Map<Prefix, String> queries = arguments.stream()
                 .collect(Collectors.toMap(SearchArgument::getPrefix, SearchArgument::getQuery));
         String hobby = queries.get(PREFIX_SEARCH_HOBBY);
@@ -65,6 +67,9 @@ public class SearchCommandParser implements Parser<SearchCommand> {
         }
         if (prefix.equals(PREFIX_EMAIL)) {
             return new MemberSearchPredicate(Field.EMAIL, ParserUtil.parseEmail(query).value);
+        }
+        if (prefix.equals(PREFIX_AVAILABILITY)) {
+            return new MemberSearchPredicate(Field.AVAILABILITY, ParserUtil.parseAvailabilityDay(query).name());
         }
         return new MemberSearchPredicate(Field.SKILL_LEVEL, parseSkill(query).toString());
     }

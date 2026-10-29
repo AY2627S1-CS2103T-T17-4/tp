@@ -1,5 +1,7 @@
 package seedu.hobbyhub.logic.commands;
 
+import static java.time.DayOfWeek.MONDAY;
+import static java.time.DayOfWeek.THURSDAY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -101,6 +103,18 @@ public class EditCommandTest {
         expectedModel.setMember(model.getFilteredMemberList().get(0), editedMember);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_availabilityOnly_replacesAvailabilityAndPreservesOtherDetails() throws Exception {
+        Member original = model.getFilteredMemberList().getFirst();
+        EditMemberDescriptor descriptor = new EditMemberDescriptorBuilder()
+                .withAvailability(MONDAY, THURSDAY).build();
+
+        new EditCommand(INDEX_FIRST_MEMBER, descriptor).execute(model);
+
+        Member expected = new MemberBuilder(original).withAvailability(MONDAY, THURSDAY).build();
+        assertEquals(expected, model.getFilteredMemberList().getFirst());
     }
 
     @Test

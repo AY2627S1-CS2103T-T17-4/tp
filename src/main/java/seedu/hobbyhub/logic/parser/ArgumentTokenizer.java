@@ -15,8 +15,8 @@ import seedu.hobbyhub.logic.parser.exceptions.ParseException;
  * 3. An argument may be repeated and all its values will be accumulated e.g. the value of {@code t/}
  *    in the above example.<br>
  * 4. Prefixes inside a quoted value, such as {@code -h "Chess -x"}, are not recognized. A quoted value opens with
- *    {@code "} at the start of a word and closes with the next {@code "} at the end of a word. A {@code "} without
- *    such a partner is kept as an ordinary character.<br>
+ *    {@code "} at the start of a word or immediately after a prefix, and closes with the next {@code "} at the end
+ *    of a word. A {@code "} without such a partner is kept as an ordinary character.<br>
  */
 public class ArgumentTokenizer {
 
@@ -41,7 +41,7 @@ public class ArgumentTokenizer {
      * @return           List of zero-based prefix positions in the given arguments string
      */
     private static List<PrefixPosition> findAllPrefixPositions(String argsString, Prefix... prefixes) {
-        boolean[] quoted = findQuotedCharacters(argsString);
+        boolean[] quoted = findQuotedCharacters(argsString, prefixes);
         return Arrays.stream(prefixes)
                 .flatMap(prefix -> findPrefixPositions(argsString, prefix, quoted).stream())
                 .collect(Collectors.toList());
@@ -95,7 +95,7 @@ public class ArgumentTokenizer {
      */
     public static void verifyNoUnknownOptions(String argsString, String message, Prefix... prefixes)
             throws ParseException {
-        boolean[] quoted = findQuotedCharacters(argsString);
+        boolean[] quoted = findQuotedCharacters(argsString, prefixes);
         for (int i = 0; i < argsString.length(); i++) {
             if (quoted[i] || !isOptionStart(argsString, i)) {
                 continue;
@@ -127,14 +127,17 @@ public class ArgumentTokenizer {
 
     /**
      * Returns which characters of {@code input} belong to a quoted value, including the quotes themselves.
-     * A quoted value opens with {@code "} at the start of a word and closes with the next {@code "} at the end of
-     * a word. A {@code "} without such a partner, such as in {@code Block 5 "Sunrise}, is an ordinary character.
+     * A quoted value opens with {@code "} at the start of a word or immediately after a recognized prefix and closes
+     * with the next {@code "} at the end of a word. A {@code "} without such a partner, such as in
+     * {@code Block 5 "Sunrise}, is an ordinary character.
      */
-    private static boolean[] findQuotedCharacters(String input) {
+    private static boolean[] findQuotedCharacters(String input, Prefix... prefixes) {
         boolean[] quoted = new boolean[input.length() + 1];
         int i = 0;
         while (i < input.length()) {
-            int closingQuote = input.charAt(i) == '"' && isAtWordStart(input, i)
+            boolean isOpeningQuote = input.charAt(i) == '"'
+                    && (isAtWordStart(input, i) || isImmediatelyAfterPrefix(input, i, prefixes));
+            int closingQuote = isOpeningQuote
                     ? findClosingQuote(input, i + 1) : -1;
             if (closingQuote == -1) {
                 i++;
@@ -144,6 +147,16 @@ public class ArgumentTokenizer {
             i = closingQuote + 1;
         }
         return quoted;
+    }
+
+    /** Returns whether the character at {@code index} immediately follows a recognized prefix. */
+    private static boolean isImmediatelyAfterPrefix(String input, int index, Prefix... prefixes) {
+        return Arrays.stream(prefixes).anyMatch(prefix -> {
+            int prefixStart = index - prefix.getPrefix().length();
+            return prefixStart >= 0
+                    && input.startsWith(prefix.getPrefix(), prefixStart)
+                    && isAtWordStart(input, prefixStart);
+        });
     }
 
     /** Returns the index of the first {@code "} from {@code fromIndex} that ends a word, or -1 if there is none. */
