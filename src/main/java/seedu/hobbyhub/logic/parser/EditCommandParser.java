@@ -82,7 +82,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         OptionalFieldUtil.parseSet(argMultimap.getAllValues(PREFIX_GROUP), ParserUtil::parseGroups)
                 .ifPresent(editMemberDescriptor::setGroups);
         parseAvailabilityForEdit(argMultimap.getAllValues(PREFIX_AVAILABILITY))
-                .ifPresent(editMemberDescriptor::setAvailability);      
+                .ifPresent(editMemberDescriptor::setAvailability);
 
         if (!editMemberDescriptor.isAnyFieldEdited()) {
             throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);
