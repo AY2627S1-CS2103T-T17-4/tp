@@ -12,6 +12,7 @@ import static seedu.hobbyhub.testutil.TypicalMembers.ALICE;
 import static seedu.hobbyhub.testutil.TypicalMembers.CARL;
 import static seedu.hobbyhub.testutil.TypicalMembers.getTypicalHobbyHub;
 import static seedu.hobbyhub.testutil.TypicalSessions.CHESS_MEETUP;
+import static seedu.hobbyhub.testutil.TypicalSessions.COMPLETED_CHESS_MEETUP;
 import static seedu.hobbyhub.testutil.TypicalSessions.CYCLING_TRIP;
 
 import java.time.DayOfWeek;
@@ -161,5 +162,24 @@ public class ViewCommandTest {
         ViewCommand viewCommand = new ViewCommand(targetIndex);
         String expected = ViewCommand.class.getCanonicalName() + "{targetIndex=" + targetIndex + "}";
         assertEquals(expected, viewCommand.toString());
+    }
+
+    @Test
+    public void formatMember_withDoneAndNotDoneSessions_appendsDoneCorrectly() {
+        // Assuming CHESS_MEETUP is done and CYCLING_TRIP is not done
+        // Adjust the method name/setup based on how your Session class handles 'done' status
+        Member member = ALICE.withSessions(List.of(COMPLETED_CHESS_MEETUP, CYCLING_TRIP));
+
+        String details = ViewCommand.formatMember(member);
+
+        // Done session should have " (Done)" appended
+        assertTrue(details.contains(COMPLETED_CHESS_MEETUP.getName() + " (" + COMPLETED_CHESS_MEETUP.getDate()
+                + " @ " + COMPLETED_CHESS_MEETUP.getLocation() + ") -- Done"));
+
+        // Pending session should NOT have " (Done)" appended
+        assertTrue(details.contains(CYCLING_TRIP.getName() + " (" + CYCLING_TRIP.getDate()
+                + " @ " + CYCLING_TRIP.getLocation() + ")"));
+        assertFalse(details.contains(CYCLING_TRIP.getName() + " (" + CYCLING_TRIP.getDate()
+                + " @ " + CYCLING_TRIP.getLocation() + ") -- Done"));
     }
 }
