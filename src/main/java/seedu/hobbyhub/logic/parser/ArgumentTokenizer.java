@@ -29,7 +29,16 @@ public class ArgumentTokenizer {
      * @return           ArgumentMultimap object that maps prefixes to their arguments
      */
     public static ArgumentMultimap tokenize(String argsString, Prefix... prefixes) {
-        List<PrefixPosition> positions = findAllPrefixPositions(argsString, prefixes);
+        List<PrefixPosition> positions = findAllPrefixPositions(argsString, false, prefixes);
+        return extractArguments(argsString, positions);
+    }
+
+    /**
+     * Tokenizes arguments, recognizing a prefix only when followed by whitespace or the end of the input.
+     * For example, {@code -night} remains part of a value rather than being read as {@code -n}.
+     */
+    public static ArgumentMultimap tokenizeWithExactPrefixes(String argsString, Prefix... prefixes) {
+        List<PrefixPosition> positions = findAllPrefixPositions(argsString, true, prefixes);
         return extractArguments(argsString, positions);
     }
 
@@ -37,26 +46,33 @@ public class ArgumentTokenizer {
      * Finds all zero-based prefix positions in the given arguments string.
      *
      * @param argsString Arguments string of the form: {@code preamble <prefix>value <prefix>value ...}
+     * @param requireExactPrefixes whether each prefix must be followed by whitespace or the end of the input
      * @param prefixes   Prefixes to find in the arguments string
      * @return           List of zero-based prefix positions in the given arguments string
      */
-    private static List<PrefixPosition> findAllPrefixPositions(String argsString, Prefix... prefixes) {
+    private static List<PrefixPosition> findAllPrefixPositions(String argsString,
+            boolean requireExactPrefixes, Prefix... prefixes) {
         boolean[] quoted = findQuotedCharacters(argsString, prefixes);
         return Arrays.stream(prefixes)
-                .flatMap(prefix -> findPrefixPositions(argsString, prefix, quoted).stream())
+                .flatMap(prefix -> findPrefixPositions(
+                        argsString, prefix, requireExactPrefixes, quoted).stream())
                 .collect(Collectors.toList());
     }
 
     /**
-     * @see #findAllPrefixPositions(String, Prefix...)
+     * @see #findAllPrefixPositions(String, boolean, Prefix...)
      */
-    private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix, boolean[] quoted) {
+    private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix,
+            boolean requireExactPrefixes, boolean[] quoted) {
         List<PrefixPosition> positions = new ArrayList<>();
 
         int prefixPosition = findPrefixPosition(argsString, prefix.getPrefix(), 0);
         while (prefixPosition != -1) {
             PrefixPosition extendedPrefix = new PrefixPosition(prefix, prefixPosition);
-            if (!quoted[prefixPosition]) {
+            int prefixEnd = prefixPosition + prefix.getPrefix().length();
+            boolean isExactPrefix = prefixEnd == argsString.length()
+                    || Character.isWhitespace(argsString.charAt(prefixEnd));
+            if ((!requireExactPrefixes || isExactPrefix) && !quoted[prefixPosition]) {
                 positions.add(extendedPrefix);
             }
             prefixPosition = findPrefixPosition(argsString, prefix.getPrefix(), prefixPosition);

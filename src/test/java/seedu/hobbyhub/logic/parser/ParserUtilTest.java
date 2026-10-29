@@ -179,6 +179,30 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseSessionName_singleCharacter_returnsName() throws Exception {
+        assertEquals(new SessionName("A"), ParserUtil.parseSessionName(" A "));
+    }
+
+    @Test
+    public void parseSessionName_emptyOrBlank_throwsParseException() {
+        for (String name : List.of("", "   ", "\"", "\"   \"")) {
+            assertThrows(ParseException.class, () -> ParserUtil.parseSessionName(name));
+        }
+    }
+
+    @Test
+    public void parseSessionName_quotedValue_returnsUnquotedName() throws Exception {
+        assertEquals(new SessionName("Chess -night"), ParserUtil.parseSessionName(" \" Chess -night \" "));
+    }
+
+    @Test
+    public void parseSessionName_unbalancedQuotes_throwsParseException() {
+        for (String name : List.of("\"Chess -night", "Chess -night\"", "\"\"")) {
+            assertThrows(ParseException.class, () -> ParserUtil.parseSessionName(name));
+        }
+    }
+
+    @Test
     public void parseSessionLocation_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseSessionLocation(null));
     }
