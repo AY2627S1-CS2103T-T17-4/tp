@@ -3,6 +3,7 @@ package seedu.hobbyhub.model.member;
 import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.commons.util.AppUtil.checkArgument;
 
+import java.text.Normalizer;
 import java.util.Objects;
 
 /**
@@ -12,14 +13,14 @@ import java.util.Objects;
 public class Hobby {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Hobbies should only contain alphanumeric characters, spaces, and the following special characters: "
-                    + "& + ' / -";
+            "Hobbies should start with a letter or digit and contain only Unicode letters, digits, combining marks, "
+                    + "spaces, and the following special characters: & + ' / -";
 
     /*
      * The first character of the hobby must not be a whitespace,
      * otherwise " " (a blank string) becomes a valid input.
      */
-    public static final String VALIDATION_REGEX = "[\\p{Alnum}][\\p{Alnum} &+'/-]*";
+    public static final String VALIDATION_REGEX = "[\\p{L}\\p{N}][\\p{L}\\p{N}\\p{M} &+'/-]*";
 
     public final String value;
     private final SkillLevel skillLevel;
@@ -39,8 +40,9 @@ public class Hobby {
     public Hobby(String hobby, SkillLevel skillLevel) {
         requireNonNull(hobby);
         this.skillLevel = requireNonNull(skillLevel);
-        checkArgument(isValidHobby(hobby), MESSAGE_CONSTRAINTS);
-        value = hobby;
+        String normalizedHobby = normalizeName(hobby);
+        checkArgument(isValidHobby(normalizedHobby), MESSAGE_CONSTRAINTS);
+        value = normalizedHobby;
     }
 
     /**
@@ -48,6 +50,12 @@ public class Hobby {
      */
     public static boolean isValidHobby(String test) {
         return test.matches(VALIDATION_REGEX);
+    }
+
+    /** Returns the hobby name in Unicode NFC form. */
+    static String normalizeName(String name) {
+        requireNonNull(name);
+        return Normalizer.normalize(name, Normalizer.Form.NFC);
     }
 
     public SkillLevel getSkillLevel() {

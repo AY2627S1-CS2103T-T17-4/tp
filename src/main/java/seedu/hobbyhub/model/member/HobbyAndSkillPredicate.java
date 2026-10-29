@@ -19,7 +19,7 @@ public class HobbyAndSkillPredicate implements Predicate<Member> {
      * Creates a predicate for a validated hobby query and skill level.
      */
     public HobbyAndSkillPredicate(String hobbyQuery, SkillLevel skillLevel) {
-        this.hobbyQuery = requireNonNull(hobbyQuery).toLowerCase(Locale.ROOT);
+        this.hobbyQuery = Hobby.normalizeName(requireNonNull(hobbyQuery)).toLowerCase(Locale.ROOT);
         this.skillLevel = requireNonNull(skillLevel);
     }
 

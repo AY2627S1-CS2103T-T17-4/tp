@@ -17,12 +17,12 @@ import seedu.hobbyhub.logic.parser.exceptions.ParseException;
  */
 public class EditSessionCommandParser implements Parser<EditSessionCommand> {
 
+    public static final String MESSAGE_UNKNOWN_OPTION =
+            "Unknown session edit option. Use only -l or -t. A session's name cannot be edited.";
+
     @Override
     public EditSessionCommand parse(String args) throws ParseException {
-        if (hasUnsupportedOption(args)) {
-            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditSessionCommand.MESSAGE_USAGE));
-        }
-
+        ArgumentTokenizer.verifyNoUnknownOptions(args, MESSAGE_UNKNOWN_OPTION, PREFIX_LOCATION, PREFIX_DATETIME);
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_LOCATION, PREFIX_DATETIME);
 
         Index index;
@@ -51,33 +51,5 @@ public class EditSessionCommandParser implements Parser<EditSessionCommand> {
     private static boolean hasFieldsToEdit(ArgumentMultimap argumentMultimap) {
         return argumentMultimap.getValue(PREFIX_LOCATION).isPresent()
                 || argumentMultimap.getValue(PREFIX_DATETIME).isPresent();
-    }
-
-    /** Returns true if an unsupported short option appears outside quoted text. */
-    private static boolean hasUnsupportedOption(String args) {
-        boolean insideQuotes = false;
-        for (int i = 0; i < args.length(); i++) {
-            char currentCharacter = args.charAt(i);
-            if (currentCharacter == '"') {
-                insideQuotes = !insideQuotes;
-            } else if (!insideQuotes && isShortOptionStart(args, i)) {
-                String option = args.substring(i, i + 2);
-                if (!option.equals(PREFIX_LOCATION.getPrefix()) && !option.equals(PREFIX_DATETIME.getPrefix())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /** Returns true when {@code index} begins a short option token. */
-    private static boolean isShortOptionStart(String args, int index) {
-        if (args.charAt(index) != '-') {
-            return false;
-        }
-        if (index + 1 >= args.length() || !Character.isLetter(args.charAt(index + 1))) {
-            return false;
-        }
-        return index == 0 || Character.isWhitespace(args.charAt(index - 1));
     }
 }

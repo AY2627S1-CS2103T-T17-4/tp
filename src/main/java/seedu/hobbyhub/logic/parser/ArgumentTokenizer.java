@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import seedu.hobbyhub.logic.parser.exceptions.ParseException;
+
 /**
  * Tokenizes arguments string of the form: {@code preamble <prefix>value <prefix>value ...}<br>
  *     e.g. {@code some preamble text t/ 11.00 t/12.00 k/ m/ July}  where prefixes are {@code t/ k/ m/}.<br>
@@ -12,6 +14,9 @@ import java.util.stream.Collectors;
  * 2. Leading and trailing whitespaces of an argument value will be discarded.<br>
  * 3. An argument may be repeated and all its values will be accumulated e.g. the value of {@code t/}
  *    in the above example.<br>
+ * 4. Prefixes inside a quoted value, such as {@code -h "Chess -x"}, are not recognized. A quoted value opens with
+ *    {@code "} at the start of a word and closes with the next {@code "} at the end of a word. A {@code "} without
+ *    such a partner is kept as an ordinary character.<br>
  */
 public class ArgumentTokenizer {
 
@@ -36,21 +41,22 @@ public class ArgumentTokenizer {
      * @return           List of zero-based prefix positions in the given arguments string
      */
     private static List<PrefixPosition> findAllPrefixPositions(String argsString, Prefix... prefixes) {
+        boolean[] quoted = findQuotedCharacters(argsString);
         return Arrays.stream(prefixes)
-                .flatMap(prefix -> findPrefixPositions(argsString, prefix).stream())
+                .flatMap(prefix -> findPrefixPositions(argsString, prefix, quoted).stream())
                 .collect(Collectors.toList());
     }
 
     /**
      * @see #findAllPrefixPositions(String, Prefix...)
      */
-    private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix) {
+    private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix, boolean[] quoted) {
         List<PrefixPosition> positions = new ArrayList<>();
 
         int prefixPosition = findPrefixPosition(argsString, prefix.getPrefix(), 0);
         while (prefixPosition != -1) {
             PrefixPosition extendedPrefix = new PrefixPosition(prefix, prefixPosition);
-            if (!isInsideQuotes(argsString, prefixPosition)) {
+            if (!quoted[prefixPosition]) {
                 positions.add(extendedPrefix);
             }
             prefixPosition = findPrefixPosition(argsString, prefix.getPrefix(), prefixPosition);
@@ -72,20 +78,87 @@ public class ArgumentTokenizer {
      * {@code fromIndex} = 0, this method returns 5.
      */
     private static int findPrefixPosition(String argsString, String prefix, int fromIndex) {
-        int prefixIndex = argsString.indexOf(" " + prefix, fromIndex);
-        return prefixIndex == -1 ? -1
-                : prefixIndex + 1; // +1 as offset for whitespace
-    }
-
-    /** Returns whether the given position is inside double quotes. */
-    private static boolean isInsideQuotes(String input, int position) {
-        boolean insideQuotes = false;
-        for (int i = 0; i < position; i++) {
-            if (input.charAt(i) == '"') {
-                insideQuotes = !insideQuotes;
+        for (int i = fromIndex + 1; i < argsString.length(); i++) {
+            if (Character.isWhitespace(argsString.charAt(i - 1)) && argsString.startsWith(prefix, i)) {
+                return i;
             }
         }
-        return insideQuotes;
+        return -1;
+    }
+
+    /**
+     * Throws a {@code ParseException} with {@code message} if {@code argsString} contains an option that does not
+     * start with one of {@code prefixes}, or that repeats its option letter, such as {@code -hh}.
+     * An option is a {@code -} followed by a letter at the start of a word, outside a quoted value. Other uses of
+     * {@code -}, such as {@code East - West} or a negative index, are ordinary text. Compact options such as
+     * {@code -p91234567} are allowed.
+     */
+    public static void verifyNoUnknownOptions(String argsString, String message, Prefix... prefixes)
+            throws ParseException {
+        boolean[] quoted = findQuotedCharacters(argsString);
+        for (int i = 0; i < argsString.length(); i++) {
+            if (quoted[i] || !isOptionStart(argsString, i)) {
+                continue;
+            }
+
+            int optionEnd = i + 1;
+            while (optionEnd < argsString.length() && Character.isLetter(argsString.charAt(optionEnd))) {
+                optionEnd++;
+            }
+            String option = argsString.substring(i, optionEnd);
+            boolean isSupported = Arrays.stream(prefixes).anyMatch(prefix -> option.startsWith(prefix.getPrefix()));
+            if (!isSupported || isRepeatedOptionLetter(option)) {
+                throw new ParseException(message);
+            }
+            i = optionEnd - 1;
+        }
+    }
+
+    /** Returns whether the {@code -} at {@code index} starts a word and is followed by a letter. */
+    private static boolean isOptionStart(String input, int index) {
+        return input.charAt(index) == '-' && isAtWordStart(input, index)
+                && index + 1 < input.length() && Character.isLetter(input.charAt(index + 1));
+    }
+
+    /** Returns whether a compact option repeats its option letter, such as {@code -hh}. */
+    private static boolean isRepeatedOptionLetter(String option) {
+        return option.length() == 3 && option.charAt(1) == option.charAt(2);
+    }
+
+    /**
+     * Returns which characters of {@code input} belong to a quoted value, including the quotes themselves.
+     * A quoted value opens with {@code "} at the start of a word and closes with the next {@code "} at the end of
+     * a word. A {@code "} without such a partner, such as in {@code Block 5 "Sunrise}, is an ordinary character.
+     */
+    private static boolean[] findQuotedCharacters(String input) {
+        boolean[] quoted = new boolean[input.length() + 1];
+        int i = 0;
+        while (i < input.length()) {
+            int closingQuote = input.charAt(i) == '"' && isAtWordStart(input, i)
+                    ? findClosingQuote(input, i + 1) : -1;
+            if (closingQuote == -1) {
+                i++;
+                continue;
+            }
+            Arrays.fill(quoted, i, closingQuote + 1, true);
+            i = closingQuote + 1;
+        }
+        return quoted;
+    }
+
+    /** Returns the index of the first {@code "} from {@code fromIndex} that ends a word, or -1 if there is none. */
+    private static int findClosingQuote(String input, int fromIndex) {
+        for (int i = fromIndex; i < input.length(); i++) {
+            if (input.charAt(i) == '"' && (i + 1 == input.length() || Character.isWhitespace(input.charAt(i + 1)))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /** Returns whether the character at {@code index} begins a whitespace-delimited word. */
+    private static boolean isAtWordStart(String input, int index) {
+        return index == 0 || Character.isWhitespace(input.charAt(index - 1));
     }
 
     /**
@@ -134,7 +207,7 @@ public class ArgumentTokenizer {
         int valueStartPos = currentPrefixPosition.getStartPosition() + prefix.getPrefix().length();
         String value = argsString.substring(valueStartPos, nextPrefixPosition.getStartPosition());
 
-        return value.trim();
+        return value.strip();
     }
 
     /**

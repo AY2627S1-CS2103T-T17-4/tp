@@ -32,6 +32,14 @@ public class HobbyAndSkillPredicateTest {
     }
 
     @Test
+    public void test_canonicallyEquivalentUnicodeQuery_matchesHobby() {
+        Member memberWithAccentedHobby = new MemberBuilder()
+                .withHobbies(new Hobby("Café", SkillLevel.BEGINNER)).build();
+
+        assertTrue(new HobbyAndSkillPredicate("Cafe\u0301", SkillLevel.BEGINNER).test(memberWithAccentedHobby));
+    }
+
+    @Test
     public void equalsAndHashCode_compareHobbyAndSkill() {
         HobbyAndSkillPredicate predicate = new HobbyAndSkillPredicate("Chess", SkillLevel.BEGINNER);
         HobbyAndSkillPredicate equivalent = new HobbyAndSkillPredicate("CHESS", SkillLevel.BEGINNER);

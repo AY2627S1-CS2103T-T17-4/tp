@@ -27,6 +27,12 @@ import seedu.hobbyhub.model.member.Availability;
  * Parses input arguments and creates a new EditCommand object
  */
 public class EditCommandParser implements Parser<EditCommand> {
+  
+    public static final String MESSAGE_UNKNOWN_OPTION =
+            "Unknown edit option. Use only -n, -p, -c, -a, -h, -g, or -d.";
+
+    private static final Prefix[] SUPPORTED_OPTIONS = {PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS,
+        PREFIX_GROUP, PREFIX_HOBBY, PREFIX_AVAILABILITY, PREFIX_LEGACY_TAG};
 
     /**
      * Parses the given {@code String} of arguments in the context of the EditCommand
@@ -35,10 +41,8 @@ public class EditCommandParser implements Parser<EditCommand> {
      */
     public EditCommand parse(String args) throws ParseException {
         requireNonNull(args);
-        ArgumentMultimap argMultimap =
-                ArgumentTokenizer
-                    .tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS,
-                            PREFIX_GROUP, PREFIX_HOBBY, PREFIX_AVAILABILITY, PREFIX_LEGACY_TAG);
+        ArgumentTokenizer.verifyNoUnknownOptions(args, MESSAGE_UNKNOWN_OPTION, SUPPORTED_OPTIONS);
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, SUPPORTED_OPTIONS);
 
         if (argMultimap.getValue(PREFIX_LEGACY_TAG).isPresent()) {
             throw new ParseException("The -t option has been replaced by -g for groups.");

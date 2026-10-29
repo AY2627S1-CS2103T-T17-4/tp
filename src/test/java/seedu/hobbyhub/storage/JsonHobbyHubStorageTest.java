@@ -2,6 +2,7 @@ package seedu.hobbyhub.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalMembers.ALICE;
 import static seedu.hobbyhub.testutil.TypicalMembers.HOON;
@@ -9,8 +10,11 @@ import static seedu.hobbyhub.testutil.TypicalMembers.IDA;
 import static seedu.hobbyhub.testutil.TypicalMembers.getTypicalHobbyHub;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -21,6 +25,7 @@ import seedu.hobbyhub.model.ReadOnlyHobbyHub;
 
 public class JsonHobbyHubStorageTest {
     private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data", "JsonHobbyHubStorageTest");
+    private static final String BACKUP_SUFFIX = ".bak";
 
     @TempDir
     public Path testFolder;
@@ -30,7 +35,7 @@ public class JsonHobbyHubStorageTest {
         assertThrows(NullPointerException.class, () -> readHobbyHub(null));
     }
 
-    private java.util.Optional<ReadOnlyHobbyHub> readHobbyHub(String filePath) throws Exception {
+    private Optional<ReadOnlyHobbyHub> readHobbyHub(String filePath) throws Exception {
         return new JsonHobbyHubStorage(Paths.get(filePath)).readHobbyHub(addToTestDataPathIfNotNull(filePath));
     }
 
@@ -38,6 +43,34 @@ public class JsonHobbyHubStorageTest {
         return prefsFileInTestDataFolder != null
                 ? TEST_DATA_FOLDER.resolve(prefsFileInTestDataFolder)
                 : null;
+    }
+
+    /**
+     * Copies the test data file {@code fixtureName} into the temporary folder and reads the copy.
+     * Reading a copy keeps backups made by the storage out of the test data folder.
+     */
+    private Optional<ReadOnlyHobbyHub> readHobbyHubFromCopy(String fixtureName) throws Exception {
+        Path copy = testFolder.resolve(fixtureName);
+        Files.copy(TEST_DATA_FOLDER.resolve(fixtureName), copy);
+        return new JsonHobbyHubStorage(copy).readHobbyHub();
+    }
+
+    /**
+     * Writes {@code content} to a new file named {@code fileName} in the temporary folder and reads it.
+     */
+    private Optional<ReadOnlyHobbyHub> readHobbyHubFromContent(String fileName, String content) throws Exception {
+        Path file = testFolder.resolve(fileName);
+        Files.writeString(file, content);
+        return new JsonHobbyHubStorage(file).readHobbyHub();
+    }
+
+    /**
+     * Returns the number of backup files in the temporary folder.
+     */
+    private long countBackups() throws IOException {
+        try (Stream<Path> files = Files.list(testFolder)) {
+            return files.filter(path -> path.toString().endsWith(BACKUP_SUFFIX)).count();
+        }
     }
 
     @Test
@@ -48,6 +81,11 @@ public class JsonHobbyHubStorageTest {
     @Test
     public void read_notJsonFormat_exceptionThrown() {
         assertThrows(DataLoadingException.class, () -> readHobbyHub("notJsonFormatHobbyHub.json"));
+    }
+
+    @Test
+    public void readHobbyHub_nonObjectRoot_throwsDataLoadingException() {
+        assertThrows(DataLoadingException.class, () -> readHobbyHubFromContent("arrayRoot.json", "[]"));
     }
 
     @Test
@@ -62,13 +100,55 @@ public class JsonHobbyHubStorageTest {
     }
 
     @Test
-    public void readHobbyHub_invalidMemberHobbyHub_throwDataLoadingException() {
-        assertThrows(DataLoadingException.class, () -> readHobbyHub("invalidMemberHobbyHub.json"));
+    public void readHobbyHub_invalidMemberHobbyHub_discardsInvalidMember() throws Exception {
+        ReadOnlyHobbyHub hobbyHub = readHobbyHubFromCopy("invalidMemberHobbyHub.json").get();
+
+        assertTrue(hobbyHub.getMemberList().isEmpty());
     }
 
     @Test
-    public void readHobbyHub_invalidAndValidMemberHobbyHub_throwDataLoadingException() {
-        assertThrows(DataLoadingException.class, () -> readHobbyHub("invalidAndValidMemberHobbyHub.json"));
+    public void readHobbyHub_invalidAndValidMemberHobbyHub_keepsValidMember() throws Exception {
+        ReadOnlyHobbyHub hobbyHub = readHobbyHubFromCopy("invalidAndValidMemberHobbyHub.json").get();
+
+        assertEquals(1, hobbyHub.getMemberList().size());
+    }
+
+    @Test
+    public void readHobbyHub_nullAndMalformedEntries_discardsThem() throws Exception {
+        ReadOnlyHobbyHub hobbyHub = readHobbyHubFromContent("malformedEntries.json",
+                "{\"persons\": [null, []], \"sessions\": [null]}").get();
+
+        assertTrue(hobbyHub.getMemberList().isEmpty());
+        assertTrue(hobbyHub.getSessionList().isEmpty());
+        assertEquals(1, countBackups());
+    }
+
+    @Test
+    public void readHobbyHub_missingLists_loadsEmptyHobbyHub() throws Exception {
+        ReadOnlyHobbyHub hobbyHub = readHobbyHubFromContent("noLists.json", "{}").get();
+
+        assertTrue(hobbyHub.getMemberList().isEmpty());
+        assertTrue(hobbyHub.getSessionList().isEmpty());
+        assertEquals(0, countBackups());
+    }
+
+    @Test
+    public void readHobbyHub_invalidEntries_backsUpOriginalFile() throws Exception {
+        readHobbyHubFromCopy("invalidAndValidMemberHobbyHub.json");
+
+        assertEquals(1, countBackups());
+        try (Stream<Path> files = Files.list(testFolder)) {
+            Path backup = files.filter(path -> path.toString().endsWith(BACKUP_SUFFIX)).findFirst().get();
+            assertEquals(Files.readString(TEST_DATA_FOLDER.resolve("invalidAndValidMemberHobbyHub.json")),
+                    Files.readString(backup));
+        }
+    }
+
+    @Test
+    public void readHobbyHub_validFile_noBackup() throws Exception {
+        readHobbyHubFromCopy("legacyMemberData.json");
+
+        assertEquals(0, countBackups());
     }
 
     @Test
@@ -95,6 +175,8 @@ public class JsonHobbyHubStorageTest {
         readBack = jsonHobbyHubStorage.readHobbyHub().get(); // file path not specified
         assertEquals(original, new HobbyHub(readBack));
 
+        // Saved data is fully valid, so nothing was discarded
+        assertEquals(0, countBackups());
     }
 
     @Test
@@ -117,5 +199,23 @@ public class JsonHobbyHubStorageTest {
     @Test
     public void saveHobbyHub_nullFilePath_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> saveHobbyHub(new HobbyHub(), null));
+    }
+
+    @Test
+    public void readHobbyHub_backupFails_stillLoadsRemainingData() throws Exception {
+        Path copy = testFolder.resolve("invalidAndValidMemberHobbyHub.json");
+        Files.copy(TEST_DATA_FOLDER.resolve("invalidAndValidMemberHobbyHub.json"), copy);
+        Path unwritableBackup = testFolder.resolve("missingFolder").resolve("backup.bak");
+        JsonHobbyHubStorage storage = new JsonHobbyHubStorage(copy) {
+            @Override
+            Path getBackupPath(Path filePath) {
+                return unwritableBackup;
+            }
+        };
+
+        ReadOnlyHobbyHub hobbyHub = storage.readHobbyHub().get();
+
+        assertEquals(1, hobbyHub.getMemberList().size());
+        assertEquals(0, countBackups());
     }
 }

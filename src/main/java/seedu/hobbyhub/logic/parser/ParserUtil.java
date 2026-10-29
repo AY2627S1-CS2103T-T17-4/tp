@@ -96,7 +96,7 @@ public class ParserUtil {
     public static String parseSessionLocation(String location) throws ParseException {
         requireNonNull(location);
         String trimmedLocation = location.trim();
-        if (trimmedLocation.isEmpty()) {
+        if (trimmedLocation.isBlank()) {
             throw new ParseException(MESSAGE_INVALID_SESSION_LOCATION);
         }
         return trimmedLocation;
