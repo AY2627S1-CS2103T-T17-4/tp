@@ -46,6 +46,7 @@ public class ArgumentTokenizer {
      * Finds all zero-based prefix positions in the given arguments string.
      *
      * @param argsString Arguments string of the form: {@code preamble <prefix>value <prefix>value ...}
+     * @param requireExactPrefixes whether each prefix must be followed by whitespace or the end of the input
      * @param prefixes   Prefixes to find in the arguments string
      * @return           List of zero-based prefix positions in the given arguments string
      */
