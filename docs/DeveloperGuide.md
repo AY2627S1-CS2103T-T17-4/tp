@@ -822,8 +822,32 @@ HobbyHub shows the session name, date-time, location, completion status and assi
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Adapter**: A storage-layer object that converts between a model object and the JSON-compatible representation
+  used when saving or loading data.
+* **API**: The operations a component exposes for other components to use, defined by its interface.
+* **Availability**: The weekdays a member records as suitable for activities. HobbyHub stores this information but
+  does not use it to prevent session assignments.
+* **Component**: A group of classes responsible for one part of the application, such as the UI, Logic, Model, or
+  Storage.
+* **Coordinator**: The person who operates HobbyHub and manages member and session records.
+* **Displayed index**: The one-based position of a member or session in the currently shown list. After filtering,
+  an index refers to the displayed results, not the original unfiltered list.
+* **Filter**: A condition used to decide which records appear in a list. A search replaces the filter for the active
+  list; it does not change the stored records.
+* **Group**: A label recorded on a member to organise people. It is separate from a hobby and does not itself create
+  a scheduled activity.
+* **Hobby**: An activity and its associated skill level recorded as part of a member's profile.
+* **Instance lock**: A best-effort file-system lock associated with the data-file path, used to prevent another
+  HobbyHub process from using the same data file at the same time.
+* **List state**: Which record type—members or sessions—is currently shown and used by commands that act on the
+  current list.
+* **Model**: The in-memory application data and operations that maintain it; in HobbyHub this includes member and
+  session records, list state, and user preferences.
+* **Persistence**: Saving application data to local files and restoring it when HobbyHub starts again.
+* **Predicate**: A condition that evaluates whether a record matches a search criterion.
+* **Rollback**: Restoring the in-memory records to their previous state after a command cannot be saved.
+* **Session**: A scheduled hobby activity with a name, date and time, location, completion status, and assigned
+  members. This is distinct from an application session, which means one period of running the program.
 
 --------------------------------------------------------------------------------------------------------------------
 

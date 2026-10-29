@@ -124,6 +124,10 @@ a {
     text-decoration: underline;
   }
 
+  &.no-hover:hover {
+    text-decoration: none;
+  }
+
   .social-media-list &:hover {
     text-decoration: none;
 
