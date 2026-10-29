@@ -1,8 +1,11 @@
 package seedu.hobbyhub.storage;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import seedu.hobbyhub.commons.exceptions.IllegalValueException;
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
@@ -38,22 +42,32 @@ class JsonAdaptedMember {
     private final String hobby;
     private final List<JsonAdaptedHobby> hobbies;
     private final List<JsonAdaptedGroup> groups = new ArrayList<>();
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private final List<String> availability = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonAdaptedMember} with the given member details.
      */
     public JsonAdaptedMember(String name, String phone, String email, String address,
             String hobby, List<JsonAdaptedGroup> groups) {
-        this(name, phone, email, address, hobby, null, groups, null);
+        this(name, phone, email, address, hobby, null, groups, null, null);
     }
 
-    /** Constructs a member from either the legacy hobby string or the new hobby list. */
+    /** Constructs a member without an explicit availability list. */
+    public JsonAdaptedMember(String name, String phone, String email, String address,
+            String hobby, List<JsonAdaptedHobby> hobbies, List<JsonAdaptedGroup> groups,
+            List<JsonAdaptedGroup> legacyTags) {
+        this(name, phone, email, address, hobby, hobbies, groups, legacyTags, null);
+    }
+
+    /** Constructs a member from current and legacy JSON fields. */
     @JsonCreator
     public JsonAdaptedMember(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
             @JsonProperty("email") String email, @JsonProperty("address") String address,
             @JsonProperty("hobby") String hobby, @JsonProperty("hobbies") List<JsonAdaptedHobby> hobbies,
             @JsonProperty("groups") List<JsonAdaptedGroup> groups,
-            @JsonProperty("tags") List<JsonAdaptedGroup> legacyTags) {
+            @JsonProperty("tags") List<JsonAdaptedGroup> legacyTags,
+            @JsonProperty("availability") List<String> availability) {
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -65,6 +79,9 @@ class JsonAdaptedMember {
         }
         if (legacyTags != null) {
             this.groups.addAll(legacyTags);
+        }
+        if (availability != null) {
+            this.availability.addAll(availability);
         }
     }
 
@@ -78,6 +95,10 @@ class JsonAdaptedMember {
         address = source.getAddress().value;
         hobby = null;
         hobbies = source.getHobbies().stream().map(JsonAdaptedHobby::new).toList();
+        source.getAvailability().getDays().stream()
+                .sorted()
+                .map(DayOfWeek::name)
+                .forEach(availability::add);
         groups.addAll(source.getGroups().stream()
                 .map(JsonAdaptedGroup::new)
                 .collect(Collectors.toList()));
@@ -151,7 +172,19 @@ class JsonAdaptedMember {
         }
 
         final Set<Group> modelGroups = new HashSet<>(memberGroups);
-        return new Member(modelName, modelPhone, modelEmail, modelAddress, modelHobbies, modelGroups);
+        final Set<DayOfWeek> modelAvailability = EnumSet.noneOf(DayOfWeek.class);
+        for (String day : availability) {
+            if (day == null) {
+                throw new IllegalValueException(Availability.MESSAGE_CONSTRAINTS);
+            }
+            try {
+                modelAvailability.add(DayOfWeek.valueOf(day.trim().toUpperCase(Locale.ROOT)));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalValueException(Availability.MESSAGE_CONSTRAINTS);
+            }
+        }
+        return new Member(modelName, modelPhone, modelEmail, modelAddress, modelHobbies, modelGroups,
+                new Availability(modelAvailability));
     }
 
 }

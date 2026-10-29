@@ -53,6 +53,7 @@ public class Messages {
                 .append(member.getHobbies().stream().map(Object::toString).collect(Collectors.joining(", ")))
                 .append("; Groups: ");
         member.getGroups().forEach(builder::append);
+        builder.append("; Availability: ").append(member.getAvailability());
         return builder.toString();
     }
 

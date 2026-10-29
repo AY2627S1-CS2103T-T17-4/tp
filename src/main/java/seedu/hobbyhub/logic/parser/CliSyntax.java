@@ -14,6 +14,7 @@ public class CliSyntax {
     public static final Prefix PREFIX_ADDRESS = new Prefix("-a");
     public static final Prefix PREFIX_HOBBY = new Prefix("-h");
     public static final Prefix PREFIX_GROUP = new Prefix("-g");
+    public static final Prefix PREFIX_AVAILABILITY = new Prefix("-d");
 
     /** Recognized only to reject the replaced tag option with a helpful error. */
     public static final Prefix PREFIX_LEGACY_TAG = new Prefix("-t");

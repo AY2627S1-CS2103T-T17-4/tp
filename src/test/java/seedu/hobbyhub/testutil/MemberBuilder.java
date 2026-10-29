@@ -1,11 +1,14 @@
 package seedu.hobbyhub.testutil;
 
+import java.time.DayOfWeek;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
@@ -30,6 +33,7 @@ public class MemberBuilder {
     private Address address;
     private List<Hobby> hobbies;
     private Set<Group> groups;
+    private Availability availability;
 
     /**
      * Creates a {@code MemberBuilder} with the default details.
@@ -41,6 +45,7 @@ public class MemberBuilder {
         address = new Address(DEFAULT_ADDRESS);
         hobbies = List.of(new Hobby(DEFAULT_HOBBY));
         groups = new HashSet<>();
+        availability = Availability.empty();
     }
 
     /**
@@ -53,6 +58,7 @@ public class MemberBuilder {
         address = memberToCopy.getAddress();
         hobbies = memberToCopy.getHobbies();
         groups = new HashSet<>(memberToCopy.getGroups());
+        availability = memberToCopy.getAvailability();
     }
 
     /**
@@ -109,8 +115,14 @@ public class MemberBuilder {
         return this;
     }
 
+    /** Sets the weekdays on which the member is generally available. */
+    public MemberBuilder withAvailability(DayOfWeek... days) {
+        availability = new Availability(Arrays.asList(days));
+        return this;
+    }
+
     public Member build() {
-        return new Member(name, phone, email, address, hobbies, groups);
+        return new Member(name, phone, email, address, hobbies, groups, availability);
     }
 
 }

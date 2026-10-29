@@ -35,6 +35,8 @@ public class MemberCard extends UiPart<Region> {
     @FXML
     private Label hobby;
     @FXML
+    private Label availability;
+    @FXML
     private FlowPane groups;
 
     /**
@@ -46,6 +48,7 @@ public class MemberCard extends UiPart<Region> {
         id.setText(displayedIndex + ". ");
         name.setText(member.getName().fullName);
         hobby.setText(String.join(", ", member.getHobbies().stream().map(Object::toString).toList()));
+        availability.setText("Available: " + member.getAvailability());
         member.getGroups().stream()
                 .sorted(Comparator.comparing(group -> group.groupName))
                 .forEach(group -> groups.getChildren().add(new Label(group.groupName)));

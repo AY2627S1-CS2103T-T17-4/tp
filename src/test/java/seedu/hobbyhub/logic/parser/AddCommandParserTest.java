@@ -37,6 +37,8 @@ import static seedu.hobbyhub.logic.parser.CommandParserTestUtil.assertParseSucce
 import static seedu.hobbyhub.testutil.TypicalMembers.AMY;
 import static seedu.hobbyhub.testutil.TypicalMembers.BOB;
 
+import java.time.DayOfWeek;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.logic.Messages;
@@ -82,7 +84,7 @@ public class AddCommandParserTest {
     @Test
     public void parse_incorrectEmailPrefix_failure() {
         assertParseFailure(parser, " -n John Doe -p 98765432 -e johnd@example.com -a John Street -h Chess",
-                "Unknown add option. Use only -n, -p, -c, -a, -h, or -g.");
+                "Unknown add option. Use only -n, -p, -c, -a, -h, -g, or -d.");
     }
 
     @Test
@@ -101,6 +103,15 @@ public class AddCommandParserTest {
                 NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + HOBBY_DESC_BOB
                         + GROUP_DESC_HUSBAND + GROUP_DESC_FRIEND,
                 new AddCommand(expectedMemberMultipleGroups));
+    }
+
+    @Test
+    public void parse_availabilityDays_success() {
+        Member expectedMember = new MemberBuilder(BOB).withGroups()
+                .withAvailability(DayOfWeek.MONDAY, DayOfWeek.SATURDAY).build();
+
+        assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + HOBBY_DESC_BOB + " -d Monday -d saturday", new AddCommand(expectedMember));
     }
 
     @Test
@@ -266,7 +277,7 @@ public class AddCommandParserTest {
     @Test
     public void parse_unsupportedOption_failure() {
         String validArguments = NAME_DESC_BOB + EMAIL_DESC_BOB + HOBBY_DESC_BOB;
-        String expectedMessage = "Unknown add option. Use only -n, -p, -c, -a, -h, or -g.";
+        String expectedMessage = "Unknown add option. Use only -n, -p, -c, -a, -h, -g, or -d.";
 
         assertParseFailure(parser, validArguments + " -x", expectedMessage);
         assertParseFailure(parser, validArguments + " -hh", expectedMessage);

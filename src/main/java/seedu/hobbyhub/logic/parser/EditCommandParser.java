@@ -3,6 +3,7 @@ package seedu.hobbyhub.logic.parser;
 import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
@@ -10,6 +11,8 @@ import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_LEGACY_TAG;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_PHONE;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -18,6 +21,7 @@ import seedu.hobbyhub.logic.commands.EditCommand;
 import seedu.hobbyhub.logic.commands.EditCommand.EditMemberDescriptor;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Phone;
 
 /**
@@ -28,10 +32,10 @@ import seedu.hobbyhub.model.member.Phone;
 public class EditCommandParser implements Parser<EditCommand> {
 
     public static final String MESSAGE_UNKNOWN_OPTION =
-            "Unknown edit option. Use only -n, -p, -c, -a, -h, or -g.";
+            "Unknown edit option. Use only -n, -p, -c, -a, -h, -g, or -d.";
 
     private static final Prefix[] SUPPORTED_OPTIONS = {PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS,
-        PREFIX_GROUP, PREFIX_HOBBY, PREFIX_LEGACY_TAG};
+        PREFIX_GROUP, PREFIX_HOBBY, PREFIX_AVAILABILITY, PREFIX_LEGACY_TAG};
 
     /**
      * Parses the given {@code String} of arguments in the context of the EditCommand
@@ -77,6 +81,8 @@ public class EditCommandParser implements Parser<EditCommand> {
                 editMemberDescriptor::setAddress);
         OptionalFieldUtil.parseSet(argMultimap.getAllValues(PREFIX_GROUP), ParserUtil::parseGroups)
                 .ifPresent(editMemberDescriptor::setGroups);
+        parseAvailabilityForEdit(argMultimap.getAllValues(PREFIX_AVAILABILITY))
+                .ifPresent(editMemberDescriptor::setAvailability);      
 
         if (!editMemberDescriptor.isAnyFieldEdited()) {
             throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);
@@ -99,6 +105,17 @@ public class EditCommandParser implements Parser<EditCommand> {
         if (value.isPresent()) {
             setter.accept(OptionalFieldUtil.parseScalar(value.get(), parser, emptyValue));
         }
+    }
+
+    /** Parses availability options, with one empty {@code -d} clearing all selected weekdays. */
+    private Optional<Availability> parseAvailabilityForEdit(Collection<String> days) throws ParseException {
+        requireNonNull(days);
+        if (days.isEmpty()) {
+            return Optional.empty();
+        }
+        Collection<String> selectedDays = days.size() == 1 && days.contains("")
+                ? Collections.emptySet() : days;
+        return Optional.of(ParserUtil.parseAvailability(selectedDays));
     }
 
 }

@@ -195,7 +195,9 @@ Each new search examines all records of its type rather than only the previous s
 
 Combined criteria implement US12 for members and support the corresponding session search workflow.
 Invalid combinations are rejected before execution, preserving both the previous filter and stored data.
-Availability search (part of US11) awaits availability model support; phone and address are outside search scope.
+Availability search (part of US11) matches members whose stored weekday set contains the requested day.
+Availability is informational and is not checked when a member is assigned to a session. Phone and address are
+outside search scope.
 
 ### \[Proposed\] Undo/redo feature
 

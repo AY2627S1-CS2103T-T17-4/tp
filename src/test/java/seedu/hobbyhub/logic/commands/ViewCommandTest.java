@@ -14,6 +14,7 @@ import static seedu.hobbyhub.testutil.TypicalMembers.getTypicalHobbyHub;
 import static seedu.hobbyhub.testutil.TypicalSessions.CHESS_MEETUP;
 import static seedu.hobbyhub.testutil.TypicalSessions.CYCLING_TRIP;
 
+import java.time.DayOfWeek;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.ModelManager;
 import seedu.hobbyhub.model.UserPrefs;
 import seedu.hobbyhub.model.member.Member;
+import seedu.hobbyhub.testutil.MemberBuilder;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for {@code ViewCommand}.
@@ -86,6 +88,7 @@ public class ViewCommandTest {
 
         String details = ViewCommand.formatMember(CARL);
         assertTrue(details.contains("Groups: none"));
+        assertTrue(details.contains("Availability: None"));
         assertTrue(details.contains("Sessions: none"));
     }
 
@@ -109,6 +112,7 @@ public class ViewCommandTest {
         assertEquals(CARL.getEmail().value, details.recordId());
         assertEquals("None", details.fields().get(3).value());
         assertEquals("None", details.fields().get(4).value());
+        assertEquals("None", details.fields().get(5).value());
     }
 
     @Test
@@ -118,7 +122,16 @@ public class ViewCommandTest {
         ViewDetails details = ViewCommand.createViewDetails(member);
 
         assertTrue(details.fields().get(3).value().contains("friends"));
-        assertTrue(details.fields().get(4).value().contains(CHESS_MEETUP.getName().toString()));
+        assertTrue(details.fields().get(5).value().contains(CHESS_MEETUP.getName().toString()));
+    }
+
+    @Test
+    public void createViewDetails_memberWithAvailability_listsWeekdays() {
+        Member member = new MemberBuilder().withAvailability(DayOfWeek.MONDAY, DayOfWeek.THURSDAY).build();
+
+        ViewDetails details = ViewCommand.createViewDetails(member);
+
+        assertEquals("Monday, Thursday", details.fields().get(4).value());
     }
 
     @Test

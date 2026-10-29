@@ -2,6 +2,7 @@ package seedu.hobbyhub.model.member;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.DayOfWeek;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -16,7 +17,7 @@ public class MemberSearchPredicate implements Predicate<Member> {
      * Searchable member fields beyond the existing name and hobby searches.
      */
     public enum Field {
-        GROUP, EMAIL, SKILL_LEVEL
+        GROUP, EMAIL, SKILL_LEVEL, AVAILABILITY
     }
 
     private final Field field;
@@ -38,6 +39,8 @@ public class MemberSearchPredicate implements Predicate<Member> {
             case EMAIL -> member.getEmail().value.equalsIgnoreCase(query);
             case SKILL_LEVEL -> member.getHobbies().stream()
                     .anyMatch(hobby -> hobby.getSkillLevel().toString().equalsIgnoreCase(query));
+            case AVAILABILITY -> member.getAvailability()
+                    .contains(DayOfWeek.valueOf(query.toUpperCase(Locale.ROOT)));
         };
     }
 

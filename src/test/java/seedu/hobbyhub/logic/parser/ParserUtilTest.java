@@ -7,6 +7,7 @@ import static seedu.hobbyhub.logic.parser.ParserUtil.MESSAGE_INVALID_SESSION_DAT
 import static seedu.hobbyhub.testutil.Assert.assertThrows;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_FIRST_MEMBER;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
@@ -275,5 +277,20 @@ public class ParserUtilTest {
         Set<Group> expectedGroupSet = Set.of(new Group(VALID_GROUP_1), new Group(VALID_GROUP_2));
 
         assertEquals(expectedGroupSet, actualGroupSet);
+    }
+
+    @Test
+    public void parseAvailability_validDays_returnsAvailability() throws Exception {
+        Availability expected = new Availability(List.of(DayOfWeek.MONDAY, DayOfWeek.SUNDAY));
+
+        assertEquals(expected, ParserUtil.parseAvailability(List.of("Monday", "sUNDAY")));
+    }
+
+    @Test
+    public void parseAvailability_invalidDay_throwsParseException() {
+        assertThrows(ParseException.class, Availability.MESSAGE_CONSTRAINTS, () ->
+                ParserUtil.parseAvailability(List.of("Funday")));
+        assertThrows(ParseException.class, Availability.MESSAGE_CONSTRAINTS, () ->
+                ParserUtil.parseAvailability(List.of("")));
     }
 }
