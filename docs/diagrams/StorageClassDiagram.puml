@@ -1,6 +1,5 @@
 @startuml
 !include style.puml
-left to right direction
 skinparam linetype ortho
 skinparam nodesep 45
 skinparam ranksep 60
@@ -30,6 +29,10 @@ package Storage as StoragePackage {
     }
 }
 
+package Application {
+    class MainApp
+}
+
 package Model {
     interface ReadOnlyHobbyHub
     interface ReadOnlyUserPrefs
@@ -42,32 +45,33 @@ package Model {
 }
 
 StorageManager .up.|> Storage
-StorageManager -[down]-> "1" JsonHobbyHubStorage
-StorageManager -[down]-> "1" JsonUserPrefsStorage
+StorageManager -down-> "1" JsonHobbyHubStorage
+StorageManager -down-> "1" JsonUserPrefsStorage
 
-JsonHobbyHubStorage -[dashed,down]-> JsonSerializableHobbyHub : reads / writes
-JsonSerializableHobbyHub -[down]-> "*" JsonAdaptedMember
-JsonSerializableHobbyHub -[down]-> "*" JsonAdaptedSession
-JsonAdaptedMember -[down]-> "*" JsonAdaptedHobby
-JsonAdaptedMember -[down]-> "*" JsonAdaptedGroup
+JsonHobbyHubStorage ..> JsonSerializableHobbyHub : reads / writes
+JsonSerializableHobbyHub -down-> "*" JsonAdaptedMember
+JsonSerializableHobbyHub -down-> "*" JsonAdaptedSession
+JsonAdaptedMember -down-> "*" JsonAdaptedHobby
+JsonAdaptedMember -down-> "*" JsonAdaptedGroup
 
-InstanceLock -[dashed,up]-> JsonHobbyHubStorage : guards data file of
+MainApp ..> Storage : obtains data-file path
+MainApp ..> InstanceLock : acquires and owns
 
 note bottom of InstanceLock
-    Holds an exclusive lock on
-    data/addressbook.json.lock.
-    Acquired by MainApp on start-up
-    and released on exit.
+    Best-effort exclusive lock associated
+    with the configured HobbyHub data file.
+    Held for the application's lifetime and
+    released during shutdown.
 end note
 
-JsonSerializableHobbyHub -[dashed,right]-> ReadOnlyHobbyHub
-JsonSerializableHobbyHub -[dashed,right]-> HobbyHub
-JsonAdaptedMember -[dashed,right]-> Member
-JsonAdaptedSession -[dashed,right]-> Session
-JsonAdaptedHobby -[dashed,right]-> Hobby
-JsonAdaptedGroup -[dashed,right]-> Group
-JsonUserPrefsStorage -[dashed,right]-> ReadOnlyUserPrefs
-JsonUserPrefsStorage -[dashed,right]-> UserPrefs
+JsonSerializableHobbyHub ..> ReadOnlyHobbyHub
+JsonSerializableHobbyHub ..> HobbyHub
+JsonAdaptedMember ..> Member
+JsonAdaptedSession ..> Session
+JsonAdaptedHobby ..> Hobby
+JsonAdaptedGroup ..> Group
+JsonUserPrefsStorage ..> ReadOnlyUserPrefs
+JsonUserPrefsStorage ..> UserPrefs
 
 ' Preserve a visible gap between these otherwise independent model types.
 HobbyHub -[hidden]down- Session

@@ -22,6 +22,7 @@ Class Phone
 Class Hobby
 Class "<<enumeration>>\nSkillLevel" as SkillLevel
 Class Group
+Class Availability
 
 Class UniqueSessionList
 Class Session
@@ -54,6 +55,7 @@ Member *--> Email
 Member *--> Address
 Member *--> "1..*" Hobby
 Member *--> "*" Group
+Member *--> "1" Availability
 Hobby *--> "1" SkillLevel
 Member --> "*" Session : assigned >
 
