@@ -367,7 +367,19 @@ not guarantee restoration of the previous view or search filter, or an unchanged
 
     Use case ends.
 
-**Use case: UC02 - List all members**
+* 1b. Coordinator requests plain `list`.
+
+  * 1b1. HobbyHub keeps the active view and displays all its records, clearing that list's filter.
+
+    Use case ends.
+
+* 1c. The request contains an unsupported flag or additional arguments.
+
+  * 1c1. HobbyHub reports the invalid format and leaves the view and filters unchanged.
+
+    Use case ends.
+
+**Use case: UC03 - Delete a member**
 
 **Preconditions**
 
@@ -401,7 +413,7 @@ not guarantee restoration of the previous view or search filter, or an unchanged
 
 * 6a. HobbyHub cannot save the updated data.
 
-  * 2a1. HobbyHub displays an empty member list and reports that all members have been listed.
+  * 6a1. HobbyHub restores the member and the previous in-memory session assignments and reports the save failure.
 
     Use case ends.
 
@@ -416,9 +428,9 @@ Deleting a session removes that session from every assigned member's session det
 
 **MSS**
 
-1. Coordinator requests to list members, or searches for members (UC05).
-2. HobbyHub shows the displayed member list, each member with an index number.
-3. Coordinator requests to delete the member at a specific index in the displayed list.
+1. Coordinator lists members (UC02) or searches for members (UC05).
+2. HobbyHub displays the matching members with index numbers.
+3. Coordinator requests to view a displayed member index.
 4. HobbyHub validates the index.
 5. HobbyHub shows the member's name, email, phone, address, hobbies and skill levels, groups, availability and assigned
    sessions in command feedback and the details panel.
@@ -459,9 +471,10 @@ HobbyHub shows the session name, date-time, location, completion status and assi
 
 **Guarantees**
 
-    * 6a1. HobbyHub reports the persistence failure.
-    * 6a2. HobbyHub restores the in-memory model to its state before the command and preserves the previously
-      persisted member data.
+* Names, hobby names and groups use case-insensitive substring matching; emails match in full, ignoring case.
+* Hobby and skill criteria must match the same hobby when supplied together.
+* Availability matches membership of the requested weekday in the member's availability set.
+* Each search replaces the previous member filter; stored records, the active view and the session filter are unchanged.
 
 **Extensions**
 
@@ -495,8 +508,9 @@ HobbyHub shows the session name, date-time, location, completion status and assi
 
 **Guarantees**
 
-* All member records remain unchanged.
-* Member details are accurately displayed.
+* Successfully saved contact details, hobbies, skill levels, groups, availability, sessions and valid assignments survive
+  a restart.
+* No separate save command is required. Saving follows successful command execution, including read-only commands.
 
 **Extensions**
 
@@ -530,7 +544,12 @@ HobbyHub shows the session name, date-time, location, completion status and assi
 
 * 4d. A session refers to an email that matches no loaded member.
 
-**Use case: UC05 - Search members by one or more criteria**
+  * 4d1. HobbyHub drops that participant reference and logs the problem, while retaining the otherwise valid session.
+  * 4d2. HobbyHub continues restoring the records.
+
+    Use case resumes at step 5.
+
+**Use case: UC07 - Exit the program**
 
 **Preconditions**
 
@@ -571,13 +590,11 @@ HobbyHub shows the session name, date-time, location, completion status and assi
 
 **MSS**
 
-1. Coordinator initiates a member search.
-2. Coordinator supplies one or more distinct name, hobby, group, email, skill-level, or availability options.
-3. HobbyHub validates the search term.
-4. HobbyHub identifies members matching all supplied criteria, ignoring letter case. Names, hobbies and groups
-   use substring matching; emails match in full; availability matches a stored weekday. When hobby and skill are
-   combined, both must match one hobby.
-5. HobbyHub returns the matching member records to the coordinator.
+1. Coordinator requests a search with one or more distinct session name, location, date, completion-status or
+   participant-email options and their queries.
+2. HobbyHub validates every option and its non-empty query.
+3. HobbyHub searches all sessions, requiring every supplied criterion to match the same session.
+4. HobbyHub displays matching session cards and the result count.
 
    Use case ends.
 
@@ -596,12 +613,9 @@ HobbyHub shows the session name, date-time, location, completion status and assi
 
     Use case ends.
 
-    Use case ends.
+* 3a. No sessions match all supplied criteria.
 
-* 1b. The coordinator repeats an option.
-
-  * 1b1. HobbyHub reports the invalid format; each option can be supplied only once.
-  * 1b2. HobbyHub does not perform a search.
+  * 3a1. HobbyHub displays an empty session list and reports zero sessions listed.
 
     Use case ends.
 
@@ -655,7 +669,13 @@ HobbyHub shows the session name, date-time, location, completion status and assi
 
     Use case ends.
 
-**Use case: UC06 - Persist and restore member data**
+* 4a. HobbyHub cannot save the updated data.
+
+  * 4a1. HobbyHub restores the previous in-memory records and assignments and reports the save failure.
+
+    Use case ends.
+
+**Use case: UC10 - Create a session**
 
 **Preconditions**
 
@@ -673,37 +693,26 @@ HobbyHub shows the session name, date-time, location, completion status and assi
 
 **Guarantees**
 
-* Successfully persisted member data is retained between application sessions.
-* Members, sessions, contact details, hobbies, groups, and availability are restored without unintended changes.
-* No separate manual save command is required.
+* A successfully created session is available to session listings, searches and member-assignment commands.
+* Date-time input accepts `YYYY-MM-DD HH:mm` or `YYYY-MM-DDTHH:mm`.
 
 **Extensions**
 
 * 2a. A required field is missing, a field value is invalid, an option is unsupported, or an option is repeated.
 
-  * 2a1. HobbyHub reports that the data could not be saved.
-  * 2a2. HobbyHub restores the in-memory model to its state before the command and leaves the previously saved file
-    unchanged.
+  * 2a1. HobbyHub reports the format or validation error and creates no session.
 
     Use case ends.
 
 * 3a. Another session already has the supplied name, ignoring case.
 
-  * 5a1. HobbyHub logs the loading failure and starts with an empty data model.
-  * 5a2. HobbyHub does not claim that the previous data was restored.
+  * 3a1. HobbyHub reports the duplicate session and creates no session.
 
     Use case ends.
 
-* 5b. Individual member or session entries in an otherwise readable data file are invalid.
+* 5a. HobbyHub cannot save the updated data.
 
-  * 5b1. HobbyHub discards invalid entries, loads the remaining valid entries, logs a warning, and creates a
-    timestamped backup of the original file.
-
-    Use case resumes at step 6.
-
-* 5c. The data file cannot be parsed as HobbyHub JSON.
-
-  * 5c1. HobbyHub logs a warning and starts with an empty data model without crashing.
+  * 5a1. HobbyHub restores the previous in-memory records and reports the save failure.
 
     Use case ends.
 
@@ -730,15 +739,32 @@ HobbyHub shows the session name, date-time, location, completion status and assi
 
 **Extensions**
 
-* 2a. HobbyHub encounters an unexpected failure while terminating.
+* 1a. Coordinator requests unassignment instead.
+
+  * 1a1. HobbyHub follows the same interaction, checking at step 3 that the member is assigned and removing their email
+    from the session at step 4. Neither the member nor the session is deleted.
+
+    Use case resumes at step 2 with these changes.
+
+* 2a. The arguments or index are invalid, or no session matches the supplied name.
+
+  * 2a1. HobbyHub reports the format, index or session-not-found error and changes no assignments.
+
+    Use case ends.
+
+* 3a. The member is already assigned, or an unassignment request refers to a member who is not assigned.
 
   * 3a1. HobbyHub reports the assignment-state error and changes no assignments.
 
     Use case ends.
 
-Additional text after the `exit` command word is ignored.
+* 5a. HobbyHub cannot save the updated data.
 
-**Use case: UC08 - Search sessions by one or more criteria**
+  * 5a1. HobbyHub restores the previous in-memory records and assignments and reports the save failure.
+
+    Use case ends.
+
+**Use case: UC12 - Mark or unmark a session as completed**
 
 **Preconditions**
 
@@ -777,43 +803,6 @@ Additional text after the `exit` command word is ignored.
   * 4a1. HobbyHub restores the previous in-memory records and reports the save failure.
 
     Use case ends.
-
-**Use case: UC09 - Edit a member or session**
-
-**Preconditions**
-
-* HobbyHub is running.
-* The list to edit is shown (`list -m` for members or `list -s` for sessions).
-
-**MSS**
-
-1. Coordinator requests to edit a member or session in the displayed list, giving its index and the fields to change.
-2. HobbyHub validates the index and the new values.
-3. HobbyHub replaces the current value of each given field with its new value.
-4. HobbyHub saves the data and shows the edited member or session. Use case ends.
-
-**Guarantees**
-
-* A rejected edit changes no data.
-* An accepted edit changes only the fields given. Other fields, including a member’s assigned sessions, stay as they were.
-* An accepted edit is saved to the JSON data file.
-
-**Extensions**
-
-* 2a. The index does not match any member or session in the displayed list.
-  * 2a1. HobbyHub shows an error. Use case ends.
-* 2b. No field to change is given.
-  * 2b1. HobbyHub shows an error. Use case ends.
-* 2c. A given value is invalid (e.g. a malformed phone number or date-time), or a single-valued field is given more than once.
-  * 2c1. HobbyHub shows an error and changes nothing, even if other given values were valid. Use case ends.
-* 2d. The new email belongs to another member.
-  * 2d1. HobbyHub shows an error. Use case ends.
-* 2e. Coordinator requests to clear a field, by giving the field without a value.
-  * 2e1. If the field is optional (a member’s phone, address, groups or availability), HobbyHub clears it. Use case resumes at step 3.
-  * 2e2. Otherwise (a member’s name, email or hobbies, or any session field), HobbyHub shows an error and changes nothing. Use case ends.
-* 4a. HobbyHub cannot write to the data file.
-  * 4a1. HobbyHub tells the coordinator that the data could not be saved and rolls back the edit. Use case ends.
-
 ### Non-Functional Requirements
 
 | ID | Category | Requirement |
