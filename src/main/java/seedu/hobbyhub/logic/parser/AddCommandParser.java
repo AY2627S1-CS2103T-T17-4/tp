@@ -2,6 +2,7 @@ package seedu.hobbyhub.logic.parser;
 
 import static seedu.hobbyhub.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
@@ -17,6 +18,7 @@ import seedu.hobbyhub.logic.commands.AddCommand;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
@@ -28,9 +30,9 @@ import seedu.hobbyhub.model.member.Phone;
  */
 public class AddCommandParser implements Parser<AddCommand> {
     private static final Prefix[] SUPPORTED_OPTIONS = {PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS,
-        PREFIX_HOBBY, PREFIX_GROUP, PREFIX_LEGACY_TAG};
+        PREFIX_HOBBY, PREFIX_GROUP, PREFIX_AVAILABILITY, PREFIX_LEGACY_TAG};
     private static final String MESSAGE_UNKNOWN_OPTION =
-            "Unknown add option. Use only -n, -p, -c, -a, -h, or -g.";
+            "Unknown add option. Use only -n, -p, -c, -a, -h, -g, or -d.";
     private static final String MESSAGE_EMPTY_HOBBY =
             "Each -h option needs a hobby value. Use -h \"HOBBY:SKILL\".";
 
@@ -65,8 +67,9 @@ public class AddCommandParser implements Parser<AddCommand> {
         }
         List<Hobby> hobbies = ParserUtil.parseHobbies(hobbyValues);
         Set<Group> groupList = ParserUtil.parseGroups(argMultimap.getAllValues(PREFIX_GROUP));
+        Availability availability = ParserUtil.parseAvailability(argMultimap.getAllValues(PREFIX_AVAILABILITY));
 
-        Member member = new Member(name, phone, email, address, hobbies, groupList);
+        Member member = new Member(name, phone, email, address, hobbies, groupList, availability);
 
         return new AddCommand(member);
     }

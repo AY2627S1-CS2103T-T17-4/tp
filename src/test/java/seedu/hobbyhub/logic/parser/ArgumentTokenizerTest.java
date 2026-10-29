@@ -155,7 +155,7 @@ public class ArgumentTokenizerTest {
     @Test
     public void tokenize_tabBeforeQuotedOptionText_keepsTextWithinValue() {
         ArgumentMultimap args = ArgumentTokenizer.tokenize(
-                "\tp/\"first\t-t quoted\"\t-t second", pSlash, dashT);
+                "\tp/ \"first\t-t quoted\"\t-t second", pSlash, dashT);
         assertPreambleEmpty(args);
         assertArgumentPresent(args, pSlash, "\"first\t-t quoted\"");
         assertArgumentPresent(args, dashT, "second");

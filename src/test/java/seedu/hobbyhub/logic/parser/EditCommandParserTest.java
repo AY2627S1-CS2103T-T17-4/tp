@@ -35,6 +35,9 @@ import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_FIRST_MEMBER;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_SECOND_MEMBER;
 import static seedu.hobbyhub.testutil.TypicalIndexes.INDEX_THIRD_MEMBER;
 
+import java.time.DayOfWeek;
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.hobbyhub.commons.core.index.Index;
@@ -43,12 +46,16 @@ import seedu.hobbyhub.logic.commands.EditCommand;
 import seedu.hobbyhub.logic.commands.EditCommand.EditMemberDescriptor;
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Name;
 import seedu.hobbyhub.model.member.Phone;
 import seedu.hobbyhub.testutil.EditMemberDescriptorBuilder;
 
+/**
+ * Tests {@code EditCommandParser}, including how optional fields are replaced and cleared.
+ */
 public class EditCommandParserTest {
 
     private static final String GROUP_EMPTY = " " + PREFIX_GROUP;
@@ -90,9 +97,9 @@ public class EditCommandParserTest {
         assertParseFailure(parser, "1" + INVALID_NAME_DESC, Name.MESSAGE_CONSTRAINTS); // invalid name
         assertParseFailure(parser, "1" + INVALID_PHONE_DESC, Phone.MESSAGE_CONSTRAINTS); // invalid phone
         assertParseFailure(parser, "1" + INVALID_EMAIL_DESC, Email.MESSAGE_CONSTRAINTS); // invalid email
-        assertParseFailure(parser, "1" + INVALID_ADDRESS_DESC, Address.MESSAGE_CONSTRAINTS); // invalid address
         assertParseFailure(parser, "1" + INVALID_GROUP_DESC, Group.MESSAGE_CONSTRAINTS); // invalid group
         assertParseFailure(parser, "1" + INVALID_HOBBY_DESC, Hobby.MESSAGE_CONSTRAINTS); // invalid hobby
+        assertParseFailure(parser, "1 -d Funday", Availability.MESSAGE_CONSTRAINTS);
 
         // invalid phone followed by valid email
         assertParseFailure(parser, "1" + INVALID_PHONE_DESC + EMAIL_DESC_AMY, Phone.MESSAGE_CONSTRAINTS);
@@ -122,6 +129,13 @@ public class EditCommandParserTest {
                 .withGroups(VALID_GROUP_HUSBAND, VALID_GROUP_FRIEND).withHobby(VALID_HOBBY_AMY).build();
         EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
 
+        assertParseSuccess(parser, userInput, expectedCommand);
+
+        // availability
+        userInput = targetIndex.getOneBased() + " -d Monday -d Friday";
+        descriptor = new EditMemberDescriptorBuilder()
+                .withAvailability(DayOfWeek.MONDAY, DayOfWeek.FRIDAY).build();
+        expectedCommand = new EditCommand(targetIndex, descriptor);
         assertParseSuccess(parser, userInput, expectedCommand);
     }
 
@@ -227,6 +241,70 @@ public class EditCommandParserTest {
         EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
 
         assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
+    public void parse_resetAvailability_success() {
+        EditMemberDescriptor descriptor = new EditMemberDescriptorBuilder().withAvailability().build();
+        assertParseSuccess(parser, "1 -d", new EditCommand(INDEX_FIRST_MEMBER, descriptor));
+    }
+  
+    @Test
+    public void parse_blankPhone_clearsPhone() {
+        EditCommand expectedCommand = new EditCommand(INDEX_FIRST_MEMBER,
+                new EditMemberDescriptor().setPhone(Phone.empty()));
+
+        // with and without trailing whitespace
+        assertParseSuccess(parser, "1 -p", expectedCommand);
+        assertParseSuccess(parser, "1 -p ", expectedCommand);
+        assertParseSuccess(parser, "1 -p    ", expectedCommand);
+    }
+
+    @Test
+    public void parse_blankAddress_clearsAddress() {
+        EditCommand expectedCommand = new EditCommand(INDEX_FIRST_MEMBER,
+                new EditMemberDescriptor().setAddress(Address.empty()));
+
+        // with and without trailing whitespace
+        assertParseSuccess(parser, "1 -a", expectedCommand);
+        assertParseSuccess(parser, "1 -a ", expectedCommand);
+        assertParseSuccess(parser, "1 -a    ", expectedCommand);
+    }
+
+    @Test
+    public void parse_allOptionalFieldsBlank_clearsAllOfThem() {
+        EditCommand expectedCommand = new EditCommand(INDEX_FIRST_MEMBER, new EditMemberDescriptor()
+                .setPhone(Phone.empty()).setAddress(Address.empty()).setGroups(Set.of()));
+
+        assertParseSuccess(parser, "1 -p -a -g ", expectedCommand);
+    }
+
+    @Test
+    public void parse_blankPhoneAndNewGroup_clearsPhoneAndReplacesGroups() {
+        EditCommand expectedCommand = new EditCommand(INDEX_FIRST_MEMBER, new EditMemberDescriptor()
+                .setPhone(Phone.empty()).setGroups(Set.of(new Group("pool-2627"))));
+
+        // with and without extra whitespace after the blank phone
+        assertParseSuccess(parser, "1 -p  -g pool-2627", expectedCommand);
+        assertParseSuccess(parser, "1 -p -g pool-2627", expectedCommand);
+    }
+
+    @Test
+    public void parse_blankPhoneBeforeAnotherOption_clearsPhoneOnly() {
+        EditCommand expectedCommand = new EditCommand(INDEX_FIRST_MEMBER, new EditMemberDescriptor()
+                .setPhone(Phone.empty()).setAddress(new Address("New Home")));
+
+        assertParseSuccess(parser, "1 -p -a New Home", expectedCommand);
+    }
+
+    @Test
+    public void parse_blankRequiredFields_failure() {
+        // required fields can be replaced but never cleared
+        assertParseFailure(parser, "1 -n", Name.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "1 -n ", Name.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "1 -c", Email.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "1 -c ", Email.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "1 -h", Hobby.MESSAGE_CONSTRAINTS);
     }
 
     @Test

@@ -2,6 +2,7 @@ package seedu.hobbyhub.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_AVAILABILITY;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_HOBBY;
@@ -25,6 +26,7 @@ import seedu.hobbyhub.logic.commands.exceptions.CommandException;
 import seedu.hobbyhub.model.Model;
 import seedu.hobbyhub.model.group.Group;
 import seedu.hobbyhub.model.member.Address;
+import seedu.hobbyhub.model.member.Availability;
 import seedu.hobbyhub.model.member.Email;
 import seedu.hobbyhub.model.member.Hobby;
 import seedu.hobbyhub.model.member.Member;
@@ -48,6 +50,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
             + "[" + PREFIX_GROUP + "GROUP]...\n"
             + "[" + PREFIX_HOBBY + " \"HOBBY:SKILL\"]...\n"
+            + "[" + PREFIX_AVAILABILITY + " DAY]...\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";
@@ -132,6 +135,7 @@ public class EditCommand extends Command {
         private Address address;
         private Set<Group> groups;
         private List<Hobby> hobbies;
+        private Availability availability;
 
         public EditMemberDescriptor() {}
 
@@ -146,6 +150,7 @@ public class EditCommand extends Command {
             setAddress(toCopy.address);
             setGroups(toCopy.groups);
             setHobbies(toCopy.hobbies);
+            setAvailability(toCopy.availability);
         }
 
         /**
@@ -161,16 +166,17 @@ public class EditCommand extends Command {
             Address updatedAddress = getAddress().orElse(memberToEdit.getAddress());
             List<Hobby> updatedHobbies = getHobbies().orElse(memberToEdit.getHobbies());
             Set<Group> updatedGroups = getGroups().orElse(memberToEdit.getGroups());
+            Availability updatedAvailability = getAvailability().orElse(memberToEdit.getAvailability());
 
             return new Member(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedHobbies, updatedGroups,
-                    memberToEdit.getSessions());
+                    updatedAvailability, memberToEdit.getSessions());
         }
 
         /**
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, phone, email, address, groups, hobbies);
+            return CollectionUtil.isAnyNonNull(name, phone, email, address, groups, hobbies, availability);
         }
 
         public EditMemberDescriptor setName(Name name) {
@@ -261,6 +267,15 @@ public class EditCommand extends Command {
             return this;
         }
 
+        public EditMemberDescriptor setAvailability(Availability availability) {
+            this.availability = availability;
+            return this;
+        }
+
+        public Optional<Availability> getAvailability() {
+            return Optional.ofNullable(availability);
+        }
+
         @Override
         public boolean equals(Object other) {
             if (other == this) {
@@ -277,7 +292,8 @@ public class EditCommand extends Command {
                     && Objects.equals(email, otherEditMemberDescriptor.email)
                     && Objects.equals(address, otherEditMemberDescriptor.address)
                     && Objects.equals(groups, otherEditMemberDescriptor.groups)
-                    && Objects.equals(hobbies, otherEditMemberDescriptor.hobbies);
+                    && Objects.equals(hobbies, otherEditMemberDescriptor.hobbies)
+                    && Objects.equals(availability, otherEditMemberDescriptor.availability);
         }
 
         @Override
@@ -289,6 +305,7 @@ public class EditCommand extends Command {
                     .add("address", address)
                     .add("groups", groups)
                     .add("hobbies", hobbies)
+                    .add("availability", availability)
                     .toString();
         }
     }
