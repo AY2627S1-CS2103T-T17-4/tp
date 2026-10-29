@@ -38,6 +38,10 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 
    * `view 3` : Shows the phone, address and email of the 3rd contact shown on the current list.
 
+   * `edit 3 -n Dylan` : Edit the name of the member at displayed index 3 to `Dylan`
+
+   * `edit 3 -p` : Removes phone number of the member at displayed index 3
+
    * `clear` : Deletes all contacts.
 
    * `exit` : Exits the app.

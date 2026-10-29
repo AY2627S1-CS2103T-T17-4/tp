@@ -144,6 +144,7 @@ The `Storage` component,
 * reads and writes the HobbyHub data and user preferences as JSON files. `StorageManager` implements the `Storage` API and delegates each data type to its own file-access class: `JsonHobbyHubStorage` and `JsonUserPrefsStorage`.
 * converts HobbyHub data between model objects and JSON-friendly objects. `JsonSerializableHobbyHub` holds adapted members and sessions; each adapted member in turn contains adapted hobbies and groups. On loading, these adapters validate and reconstruct the model objects.
 * depends on model types such as `ReadOnlyHobbyHub`, `Member`, `Session`, and `UserPrefs` because it persists and restores the application's data.
+* creates a lock file such that no 2 instances can run concurrently to prevent divergent states
 
 ### Common classes
 
@@ -727,6 +728,41 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   * 2a1. HobbyHub reports the format or value error and leaves the existing results unchanged.
 * 3a. No sessions match.
   * 3a1. HobbyHub displays an empty session list and reports zero sessions listed.
+
+**Use case: UC08 - Edit a member or session**
+
+**Preconditions**
+
+HobbyHub is running and the list to edit is shown (list -m for members, list -s for sessions).
+
+**MSS**
+
+1. Coordinator requests to edit a member or session in the displayed list, giving its index and the fields to change.
+2. HobbyHub validates the index and the new values.
+3. HobbyHub replaces the current value of each given field with its new value.
+4. HobbyHub saves the data and shows the edited member or session. Use case ends.
+
+**Guarantees**
+
+* A rejected edit changes no data.
+* An accepted edit changes only the fields given. Other fields, including a member’s assigned sessions, stay as they were.
+* An accepted edit is saved to the JSON data file.
+
+**Extensions**
+
+* 2a. The index does not match any member or session in the displayed list.
+  * 2a1. HobbyHub shows an error. Use case ends.
+* 2b. No field to change is given.
+  * 2b1. HobbyHub shows an error. Use case ends.
+* 2c. A given value is invalid (e.g. a malformed phone number or date-time), or a single-valued field is given more than once.
+  * 2c1. HobbyHub shows an error and changes nothing, even if other given values were valid. Use case ends.
+* 2d. The new email belongs to another member.
+  * 2d1. HobbyHub shows an error. Use case ends.
+* 2e. Coordinator requests to clear a field, by giving the field without a value.
+  * 2e1. If the field is optional (a member’s phone, address or groups), HobbyHub clears it. Use case resumes at step 3.
+  * 2e2. Otherwise (a member’s name, email or hobbies, or any session field), HobbyHub shows an error and changes nothing. Use case ends.
+* 4a. HobbyHub cannot write to the data file.
+  * 4a1. HobbyHub tells the Coordinator that the data could not be saved. Use case ends.
 
 ### Non-Functional Requirements
 
