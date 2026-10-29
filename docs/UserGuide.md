@@ -3,7 +3,7 @@ layout: page
 title: User Guide
 ---
 
-HobbyHub is a **desktop application for managing contacts, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, HobbyHub can help you manage contacts faster than traditional GUI applications.
+HobbyHub is a **desktop application for hobby club organisers to manage members and club sessions, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). It keeps track of each member's hobbies and skill levels, groups members, and records which members attend each session. If you type quickly, HobbyHub can help you manage your club faster than traditional GUI applications.
 
 * Table of Contents
 {:toc}
@@ -26,19 +26,23 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
 
-   * `list` : Lists all contacts.
+   * `list -m` : Switches to the member list and shows all members.
 
-   * `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h "Chess:Beginner" -h "Table Tennis:Advanced"` : Adds a contact named `John Doe` to the HobbyHub.
+   * `add -n John Doe -p 98765432 -c johnd@example.com -a John street, block 123, #01-01 -h "Chess:Beginner" -h "Table Tennis:Advanced"` : Adds a member named `John Doe` to HobbyHub.
 
    * `search -n John` : Finds members whose names contain `John`.
 
    * `search -h Chess` : Finds members whose hobbies contain `Chess`.
 
-   * `delete 3` : Deletes the 3rd contact shown in the current list.
+   * `delete 3` : Deletes the 3rd member shown in the current list.
 
-   * `view 3` : Shows the phone, address and email of the 3rd contact shown on the current list.
+   * `view 3` : Shows the full details of the 3rd member shown in the current list.
 
-   * `clear` : Deletes all contacts.
+   * `list -s` : Switches to the session list and shows all sessions.
+
+   * `add -n Weekend Chess Meetup -l Community Center -t 2026-10-24 14:00` : Adds a session (while the session list is shown).
+
+   * `clear` : Deletes all members and sessions.
 
    * `exit` : Exits the app.
 
@@ -60,6 +64,9 @@ HobbyHub is a **desktop application for managing contacts, optimized for use thr
 
 * Items followed by `…`​ can appear zero or more times.<br>
   For example, `[-g GROUP]…​` may be omitted, or written as `-g friend` or `-g friend -g family`.
+
+* HobbyHub shows either the member list or the session list. Commands such as `add`, `edit`, `delete`, `view` and
+  `search` act on the list that is currently shown. Use `list -m` or `list -s` to switch lists.
 
 * Parameters can be in any order.<br>
   For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
@@ -84,12 +91,13 @@ Shows a message explaining how to access the help page.
 Format: `help`
 
 
-### Adding a person: `add`
+### Adding a member: `add`
 
-Adds a person to HobbyHub.
+Adds a member to HobbyHub.
 
 Format: `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…`
 
+* This command is available while the member list is shown. Use `list -m` to switch to it.
 * Name, email and at least one hobby are required. Phone number and address are optional.
 * Omit `-p` or `-a` when those details are unknown. If supplied during add, each must have a valid, non-empty value.
 * Supply name and email once, and phone/address at most once if included. Repeat `-h` for additional hobbies and `-g` for additional groups.
@@ -107,7 +115,7 @@ Format: `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-
 * Email addresses must be unique, ignoring capitalization. Members may share a name.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of groups, including zero.
+A member can have any number of groups, including zero.
 </div>
 
 Examples:
@@ -145,26 +153,27 @@ Format: `list [-m | -s]`
 * `list` keeps the active view and shows all its entries.
 * Other flags or additional arguments are rejected.
 
-### Editing a person: `edit`
+### Editing a member: `edit`
 
-Edits an existing person in HobbyHub.
+Edits an existing member in HobbyHub.
 
 Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* This command is available while the member list is shown. Use `list -m` to switch to it.
+* Edits the member at the specified `INDEX`. The index refers to the index number shown in the displayed member list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * Omit `-p` or `-a` to preserve the current value. If supplied, the option requires a valid, non-empty value.
 * Supplying `-h` replaces the entire hobby list with the supplied hobbies and skill levels.
   Omitting `-h` preserves all hobbies. An empty `-h` is rejected; at least one hobby is required.
-* When editing groups, all of the person's existing groups are removed; adding groups is not cumulative.
-* To remove all of a person's groups, enter `-g` without a group after it.
+* When editing groups, all of the member's existing groups are removed; adding groups is not cumulative.
+* To remove all of a member's groups, enter `-g` without a group after it.
 * Omitting `-g` preserves the member's current groups.
 
 Examples:
 * `edit 1 -h "Chess:Advanced" -h "Cycling:Intermediate"` Replaces the member's hobbies with these two entries.
-* `edit 1 -p 91234567 -c johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-* `edit 2 -n Betsy Crower -g` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing groups.
+* `edit 1 -p 91234567 -c johndoe@example.com` Edits the phone number and email address of the 1st member to be `91234567` and `johndoe@example.com` respectively.
+* `edit 2 -n Betsy Crower -g` Edits the name of the 2nd member to be `Betsy Crower` and clears all existing groups.
 
 ### Editing a session: `edit`
 
@@ -272,19 +281,21 @@ Format: `delete INDEX`
 
 Example: `list -s` followed by `delete 1` deletes the first displayed session.
 
-### Deleting a person: `delete`
+### Deleting a member: `delete`
 
-Deletes the specified person from HobbyHub.
+Deletes the specified member from HobbyHub.
 
 Format: `delete INDEX`
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
+* This command is available while the member list is shown. Use `list -m` to switch to it.
+* Deletes the member at the specified `INDEX`.
+* The index refers to the index number shown in the displayed member list.
 * The index **must be a positive integer** 1, 2, 3, …​
+* Deleting a member also removes them from every session they are assigned to.
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in HobbyHub.
-* `search -n Betsy` followed by `delete 1` deletes the 1st person in the search results.
+* `list -m` followed by `delete 2` deletes the 2nd member in HobbyHub.
+* `search -n Betsy` followed by `delete 1` deletes the 1st member in the search results.
 
 ### Viewing a session: `view`
 
@@ -296,23 +307,24 @@ Format: `view INDEX`
 * The index refers to the currently displayed session list and must be a positive integer.
 * Viewing a session also shows all members assigned to the session.
 
-Example: `list -s` followed by `view 1` deletes the first displayed session.
+Example: `list -s` followed by `view 1` shows the details of the first displayed session.
 
-### Viewing a person: `view`
+### Viewing a member: `view`
 
-Viewing the additional details specified person from HobbyHub (Phone, address and email).
+Shows the full details of the specified member, including their phone, address, hobbies, groups and sessions.
 
 Format: `view INDEX`
 
-* Views the details of the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
+* This command is available while the member list is shown. Use `list -m` to switch to it.
+* Views the details of the member at the specified `INDEX`.
+* The index refers to the index number shown in the displayed member list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list -m` followed by `view 2` deletes the 2nd person in HobbyHub.
+* `list -m` followed by `view 2` shows the details of the 2nd member in the list.
 
 
-### Assigning a person to a session: `assign`
+### Assigning a member to a session: `assign`
 
 Assigns the member at the specified index in the currently displayed member list to an existing session.
 
@@ -324,7 +336,7 @@ Format: `assign INDEX SESSION_NAME`
 
 Example: `assign 1 Weekend Chess Meetup` assigns the first displayed member to that session.
 
-### Unassigning a person from a session: `unassign`
+### Unassigning a member from a session: `unassign`
 
 Unassigns the member at the specified index from an existing session.
 
@@ -354,68 +366,19 @@ Examples:
 
 ### Clearing all entries: `clear`
 
-Clears all entries from HobbyHub.
+Clears all members and sessions from HobbyHub.
 
 Format: `clear`
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
+`clear` cannot be undone. If you might need the data again, back up `data/addressbook.json` first.
+</div>
 
 ### Exiting the program: `exit`
 
 Exits the program.
 
 Format: `exit`
-
-### Saving the data
-
-HobbyHub automatically saves data after every successful command. You do not need to save manually.
-
-### Editing the data file
-
-HobbyHub data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
-
-<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, HobbyHub starts with an empty member list at the next run. The invalid file remains on disk until you run a successful command (HobbyHub saves after every successful command). Still, we recommend backing up the file before editing it.<br>
-Furthermore, certain edits can cause HobbyHub to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
-</div>
-
-### Archiving data files `[coming in v2.0]`
-
-_Details coming soon ..._
-
---------------------------------------------------------------------------------------------------------------------
-
-## FAQ
-
-**Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous HobbyHub home folder.
-
---------------------------------------------------------------------------------------------------------------------
-
-## Known issues
-
-1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
-2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
-
---------------------------------------------------------------------------------------------------------------------
-
-## Command summary
-
-Action | Format, Examples
---------|------------------
-**Add member** | `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -g friend -g colleague -h Chess`
-**Add session** | `add -n SESSION_NAME -l LOCATION -t DATETIME`<br> `DATETIME` is `2026-10-24 14:00` or `2026-10-24T14:00`<br> e.g., `add -n Weekend Chess Meetup -l Community Center -t 2026-10-24 14:00`
-**Assign** | `assign INDEX SESSION_NAME`<br> e.g., `assign 1 Weekend Chess Meetup`
-**Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3` (member list) or `delete 1` (session list)
-**Edit member** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
-**Edit session** | `edit INDEX [-l LOCATION] [-t DATETIME]`<br> `DATETIME` is `2026-10-24 14:00` or `2026-10-24T14:00`<br> e.g., `edit 1 -l Sports Hall -t 2026-11-01 10:30`
-**Search members** | `search [-n NAME] [-h HOBBY] [-g GROUP] [-c EMAIL] [-sl SKILL_LEVEL]` (at least one option; AND matching)
-**Search sessions** | `search [-n NAME] [-l LOCATION] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]` (at least one option; AND matching)
-**List** | `list [-m \| -s]` switches lists with a flag, or shows all entries in the current list without one
-**View** | `view INDEX`<br> e.g., `view 3`
-**Unassign** | `unassign INDEX SESSION_NAME`<br> e.g., `unassign 1 Weekend Chess Meetup`
-**Mark / Unmark** (session list) | `mark INDEX` or `unmark INDEX`<br> e.g., `mark 1`
-**Help** | `help`
-**Exit** | `exit`
 
 ### Hobby skill levels
 
@@ -454,3 +417,59 @@ Name, email and hobbies remain required.
 
 Saved JSON omits absent phone/address fields. Older files with contact details still load, and
 missing, null or empty phone/address fields load as absent values. Malformed non-empty values are rejected.
+
+### Saving the data
+
+HobbyHub automatically saves data after every successful command. You do not need to save manually.
+
+### Editing the data file
+
+HobbyHub data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
+If your changes make some members or sessions invalid, HobbyHub skips those entries at the next run and loads the rest. Before loading, it saves a copy of the original file next to it, named like `addressbook.json.<number>.bak`, so you can recover the skipped entries. The skipped entries are removed from `addressbook.json` the next time HobbyHub saves (after any successful command).<br>
+If the file is no longer valid JSON at all, HobbyHub starts with no data.<br>
+Furthermore, certain edits can cause HobbyHub to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, back up the file before editing it, and edit it only if you are confident that you can update it correctly.
+</div>
+
+### Running one copy of HobbyHub at a time
+
+Only one copy of HobbyHub can use a data file at a time, so that two windows cannot overwrite each other's changes. If HobbyHub is already running, starting it again closes the new copy straight away. Switch to the window that is already open instead.
+
+HobbyHub keeps a small `addressbook.json.lock` file in the `data` folder for this purpose. You can ignore it; it does not contain any of your data.
+
+--------------------------------------------------------------------------------------------------------------------
+
+## FAQ
+
+**Q**: How do I transfer my data to another computer?<br>
+**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous HobbyHub home folder.
+
+--------------------------------------------------------------------------------------------------------------------
+
+## Known issues
+
+1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
+2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
+
+--------------------------------------------------------------------------------------------------------------------
+
+## Command summary
+
+Action | Format, Examples
+--------|------------------
+**Add member** | `add -n NAME [-p PHONE_NUMBER] -c EMAIL [-a ADDRESS] -h "HOBBY:SKILL" [-h "HOBBY:SKILL"]… [-g GROUP]…​` <br> e.g., `add -n James Ho -p 22224444 -c jamesho@example.com -a 123, Clementi Rd, 1234665 -g friend -g colleague -h Chess`
+**Add session** | `add -n SESSION_NAME -l LOCATION -t DATETIME`<br> `DATETIME` is `2026-10-24 14:00` or `2026-10-24T14:00`<br> e.g., `add -n Weekend Chess Meetup -l Community Center -t 2026-10-24 14:00`
+**Assign** | `assign INDEX SESSION_NAME`<br> e.g., `assign 1 Weekend Chess Meetup`
+**Clear** | `clear`
+**Delete** | `delete INDEX`<br> e.g., `delete 3` (member list) or `delete 1` (session list)
+**Edit member** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-c EMAIL] [-a ADDRESS] [-h "HOBBY:SKILL"]… [-g GROUP]…​`<br> e.g., `edit 2 -n James Lee -c jameslee@example.com`
+**Edit session** | `edit INDEX [-l LOCATION] [-t DATETIME]`<br> `DATETIME` is `2026-10-24 14:00` or `2026-10-24T14:00`<br> e.g., `edit 1 -l Sports Hall -t 2026-11-01 10:30`
+**Search members** | `search [-n NAME] [-h HOBBY] [-g GROUP] [-c EMAIL] [-sl SKILL_LEVEL]` (at least one option; AND matching)
+**Search sessions** | `search [-n NAME] [-l LOCATION] [-t YYYY-MM-DD] [-done true/false] [-c EMAIL]` (at least one option; AND matching)
+**List** | `list [-m \| -s]` switches lists with a flag, or shows all entries in the current list without one
+**View** | `view INDEX`<br> e.g., `view 3`
+**Unassign** | `unassign INDEX SESSION_NAME`<br> e.g., `unassign 1 Weekend Chess Meetup`
+**Mark / Unmark** (session list) | `mark INDEX` or `unmark INDEX`<br> e.g., `mark 1`
+**Help** | `help`
+**Exit** | `exit`
