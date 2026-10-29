@@ -1,0 +1,44 @@
+@startuml
+!include style.puml
+skinparam dpi 150
+show members
+skinparam ClassFontColor #000000
+skinparam ClassBorderColor #000000
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ArrowColor #000000
+
+object "<u>h:HobbyHub</u>" as h
+
+object "<u>alice:Member</u>" as alice {
+    name = "Alice"
+}
+
+object "<u>bob:Member</u>" as bob {
+    name = "Bob"
+}
+
+object "<u>s:Session</u>" as s {
+    name = "Weekend Chess Meetup"
+}
+
+object "<u>e1:Email</u>" as e1 {
+    value = "alice@example.com"
+}
+
+object "<u>e2:Email</u>" as e2 {
+    value = "bob@example.com"
+}
+
+h -- alice
+h -- bob
+h -- s
+
+alice -- e1 : email
+bob -- e2 : email
+
+alice -- s : sessions
+bob -- s : sessions
+
+s -- e1 : members
+s -- e2 : members
+@enduml

@@ -236,12 +236,21 @@ A `Session` does not hold `Member` objects. It stores the `Email` of each assign
 Each `Member` in turn holds the list of sessions it is assigned to, which `HobbyHub` rebuilds from the session list
 whenever members or sessions change.
 
-The sequence diagram below shows how `assign 1 Weekend Chess Meetup` is executed.
+The sequence diagram below shows how the `Logic` component parses and executes `assign 1 Weekend Chess Meetup`,
+and saves the result.
 
-![Interactions for the `assign 1 Weekend Chess Meetup` command](images/AssignSequenceDiagram.png)
+![Interactions inside the Logic component for the `assign 1 Weekend Chess Meetup` command](images/AssignSequenceDiagram-Logic.png)
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `AssignCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 </div>
+
+The next sequence diagram shows what `AssignCommand#execute` does inside the `Model` component.
+
+![Interactions inside the Model component for the `assign 1 Weekend Chess Meetup` command](images/AssignSequenceDiagram-Model.png)
+
+The activity diagram below summarises the checks `assign` makes and what happens when each one fails.
+
+<img src="images/AssignActivityDiagram.png" width="500" />
 
 1. `LogicManager` passes the command text and the active `ListState` to `HobbyHubParser#parseCommand`.
    If the session list is shown, `HobbyHubParser` rejects `assign` before creating a parser.
@@ -283,6 +292,15 @@ Because sessions refer to members by email, other member commands keep the links
     are unique among members, and are easy to save to and load from JSON.
   * Cons: Sessions must be updated when a member's email changes or the member is deleted, and each member's session
     list has to be rebuilt after changes.
+
+  The object diagram below shows the objects after `assign 1 Weekend Chess Meetup`. The session refers to members
+  only through their `Email` objects; each member's list of sessions is rebuilt by
+  `HobbyHub#refreshMemberSessions()`. Because `Session` and `Member` are immutable, `assign` does not change the
+  existing objects: it replaces the session with a new one that includes Alice's email, and `refreshMemberSessions()`
+  replaces Alice with a new `Member` whose session list includes the new session.
+
+  ![Objects after `assign 1 Weekend Chess Meetup`](images/AssignObjectDiagram.png)
+
 * **Alternative 2:** Store references to `Member` objects.
   * Pros: A session can read its members' details directly.
   * Cons: Every edit creates a new `Member`, so sessions would hold out-of-date objects unless every edit also
