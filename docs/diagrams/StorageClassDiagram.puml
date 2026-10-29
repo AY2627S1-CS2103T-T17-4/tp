@@ -17,6 +17,10 @@ package Storage as StoragePackage {
         class JsonUserPrefsStorage
     }
 
+    package "Single-instance guard" #F4F6F6 {
+        class InstanceLock
+    }
+
     package "HobbyHub JSON adapters" #F4F6F6 {
         class JsonSerializableHobbyHub
         class JsonAdaptedMember
@@ -46,6 +50,15 @@ JsonSerializableHobbyHub -[down]-> "*" JsonAdaptedMember
 JsonSerializableHobbyHub -[down]-> "*" JsonAdaptedSession
 JsonAdaptedMember -[down]-> "*" JsonAdaptedHobby
 JsonAdaptedMember -[down]-> "*" JsonAdaptedGroup
+
+InstanceLock -[dashed,up]-> JsonHobbyHubStorage : guards data file of
+
+note bottom of InstanceLock
+    Holds an exclusive lock on
+    data/addressbook.json.lock.
+    Acquired by MainApp on start-up
+    and released on exit.
+end note
 
 JsonSerializableHobbyHub -[dashed,right]-> ReadOnlyHobbyHub
 JsonSerializableHobbyHub -[dashed,right]-> HobbyHub
