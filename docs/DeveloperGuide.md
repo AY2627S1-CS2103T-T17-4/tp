@@ -10,7 +10,9 @@ title: Developer Guide
 
 ## **Acknowledgements**
 
-* _{List the sources of reused or adapted ideas, code, documentation, and third-party libraries here, with links to the originals.}_
+* HobbyHub was adapted from the [AddressBook-Level3 project by SE-EDU](https://github.com/se-edu/addressbook-level3).
+* The Developer Guide structure and PlantUML conventions were adapted from the
+  [SE-EDU documentation guides](https://se-education.org/guides/).
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -39,7 +41,8 @@ The following provides a quick overview of the main components and their interac
 
 **Main components of the architecture**
 
-**`Main`** (consisting of classes [`Main`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
+**`Main`** (consisting of classes [`Main`](../src/main/java/seedu/hobbyhub/Main.java) and
+[`MainApp`](../src/main/java/seedu/hobbyhub/MainApp.java)) is in charge of app launch and shut down.
 * At app launch, it initializes the other components in the correct sequence, and connects them up with each other.
 * At shut down, it shuts down the other components and invokes cleanup methods where necessary.
 
@@ -71,24 +74,29 @@ The sections below give more details of each component.
 
 ### UI component
 
-The **API** of this component is specified in [`Ui.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/Ui.java)
+The **API** of this component is specified in [`Ui.java`](../src/main/java/seedu/hobbyhub/ui/Ui.java).
 
 ![Structure of the UI Component](images/UiClassDiagram.png)
 
-The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDisplay`, `PersonListPanel`, and `StatusBarFooter`. All of these, including `MainWindow`, inherit from the abstract `UiPart` class, which captures common behavior among classes that represent visible GUI parts.
+The UI consists of a `MainWindow` and its parts, including `CommandBox`, `ResultDisplay`,
+`MemberListPanel`, `SessionListPanel`, `ViewDetailsPanel`, and `StatusBarFooter`. The list panels use
+`MemberCard` and `SessionCard` objects to display the corresponding model objects. These visible parts,
+including `MainWindow`, inherit from the abstract `UiPart` class, which captures their common behavior.
 
-The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java).
+The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml`
+files in `src/main/resources/view`. For example, [`MainWindow.fxml`](../src/main/resources/view/MainWindow.fxml)
+specifies the layout of [`MainWindow`](../src/main/java/seedu/hobbyhub/ui/MainWindow.java).
 
 The `UI` component,
 
 * executes user commands using the `Logic` component.
 * listens for changes to `Model` data so that the UI can be updated with the modified data.
 * keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
-* depends on some classes in the `Model` component because it displays `Person` objects from the model.
+* depends on some classes in the `Model` component because it displays `Member` and `Session` objects.
 
 ### Logic component
 
-**API** : [`Logic.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/logic/Logic.java)
+**API** : [`Logic.java`](../src/main/java/seedu/hobbyhub/logic/Logic.java)
 
 Here's a partial class diagram of the `Logic` component, showing member and session search as concrete examples. Other commands, parsers, and search predicate classes are omitted for clarity:
 
@@ -107,7 +115,7 @@ How the `Logic` component works:
 
 1. When `Logic` is called upon to execute a command, `LogicManager` passes the command text and the model's active `ListState` to `HobbyHubParser`. For commands that act on the current list, it creates member and session parsers, then selects the appropriate parser to parse the arguments.
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
-1. The command can communicate with the `Model` when it is executed (e.g. to delete a person).<br>
+1. The command can communicate with the `Model` when it is executed (e.g. to delete a member).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
 
@@ -120,7 +128,7 @@ How the parsing works:
 * All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
 
 ### Model component
-**API** : [`Model.java`](https://github.com/AY2627S1-CS2103T-T17-4/tp/blob/master/src/main/java/seedu/hobbyhub/model/Model.java)
+**API** : [`Model.java`](../src/main/java/seedu/hobbyhub/model/Model.java)
 
 <img src="images/ModelClassDiagram.png" width="550" />
 
@@ -142,13 +150,18 @@ The `Model` component,
 
 The `Storage` component,
 * reads and writes the HobbyHub data and user preferences as JSON files. `StorageManager` implements the `Storage` API and delegates each data type to its own file-access class: `JsonHobbyHubStorage` and `JsonUserPrefsStorage`.
-* converts HobbyHub data between model objects and JSON-friendly objects. `JsonSerializableHobbyHub` holds adapted members and sessions; each adapted member in turn contains adapted hobbies and groups. On loading, these adapters validate and reconstruct the model objects.
+* converts HobbyHub data between model objects and JSON-friendly objects. `JsonSerializableHobbyHub` holds adapted
+  members and sessions; each adapted member in turn contains adapted hobbies, groups, and availability values. On
+  loading, these adapters validate and reconstruct the model objects.
 * depends on model types such as `ReadOnlyHobbyHub`, `Member`, `Session`, and `UserPrefs` because it persists and restores the application's data.
-* creates a lock file such that no 2 instances can run concurrently to prevent divergent states
+* is guarded on startup by `MainApp`, which asks `InstanceLock` to acquire an exclusive lock associated with the
+  configured HobbyHub data-file path. If another process already holds the lock, the new instance exits. If the
+  operating system reports an I/O error while creating or acquiring the lock, HobbyHub logs a warning and continues;
+  therefore, the lock is a best-effort safeguard rather than an absolute guarantee.
 
 ### Common classes
 
-Classes used by multiple components are in the `seedu.address.commons` package.
+Classes used by multiple components are in the `seedu.hobbyhub.commons` package.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -172,7 +185,8 @@ Email queries are validated by `ParserUtil.parseEmail`, skill levels against `Sk
 and dates against the `YYYY-MM-DD` format and `LocalDate` calendar validation.
 Completion queries accept only `true` or `false`, ignoring case.
 
-Member search supports name (`-n`), hobby name (`-h`), group (`-g`), email (`-c`), and skill level (`-sl`).
+Member search supports name (`-n`), hobby name (`-h`), group (`-g`), email (`-c`), skill level (`-sl`),
+and availability (`-d`).
 Name, hobby and group searches use case-insensitive substring matching.
 Hobby matching examines every hobby name, independently of groups.
 Skill matching without a hobby criterion succeeds if any hobby has the requested level.
@@ -200,93 +214,16 @@ Availability search (part of US11) matches members whose stored weekday set cont
 Availability is informational and is not checked when a member is assigned to a session. Phone and address are
 outside search scope.
 
-### \[Proposed\] Undo/redo feature
+### Transactional persistence and single-instance coordination
 
-#### Proposed Implementation
+Before executing a command, `LogicManager` copies the current `HobbyHub` state. After successful command execution,
+it asks `Storage` to save the updated state. If saving fails, `LogicManager` restores the copy and reports the
+persistence error, so the in-memory model and the previously saved file do not diverge because of a partial command.
 
-The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
-
-* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
-* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
-
-These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
-
-Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
-
-Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
-
-![UndoRedoState0](images/UndoRedoState0.png)
-
-Step 2. The user executes `delete 5` command to delete the 5th person in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
-
-![UndoRedoState1](images/UndoRedoState1.png)
-
-Step 3. The user executes `add -n David …​` to add a new person. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
-
-![UndoRedoState2](images/UndoRedoState2.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
-
-</div>
-
-Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
-
-![UndoRedoState3](images/UndoRedoState3.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.
-
-</div>
-
-The following sequence diagram shows how an undo operation goes through the `Logic` component:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Logic.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
-
-</div>
-
-Similarly, how an undo operation goes through the `Model` component is shown below:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Model.png)
-
-The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
-
-</div>
-
-Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
-
-![UndoRedoState4](images/UndoRedoState4.png)
-
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add -n David …​` command. This is the behavior that most modern desktop applications follow.
-
-![UndoRedoState5](images/UndoRedoState5.png)
-
-The following activity diagram summarizes what happens when a user executes a new command:
-
-<img src="images/CommitActivityDiagram.png" width="250" />
-
-#### Design considerations:
-
-**Aspect: How undo & redo execute:**
-
-* **Alternative 1 (current choice):** Saves the entire address book.
-  * Pros: Easy to implement.
-  * Cons: May have performance issues in terms of memory usage.
-
-* **Alternative 2:** Individual command knows how to undo/redo by
-  itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
-  * Cons: We must ensure that the implementation of each individual command is correct.
-
-_{more aspects and alternatives to be added}_
-
-### \[Proposed\] Data archiving
-
-_{Explain here how the data archiving feature will be implemented}_
+At startup, `MainApp` calls `InstanceLock.tryAcquire` using the configured HobbyHub data-file path. The lock is held
+for the application's lifetime and released during shutdown. A second process that can see the held lock exits before
+loading the model. If lock acquisition itself fails with an `IOException`, HobbyHub logs the failure and starts without
+the guard so that file-system limitations do not prevent the application from opening.
 
 
 --------------------------------------------------------------------------------------------------------------------
@@ -308,7 +245,7 @@ _{Explain here how the data archiving feature will be implemented}_
 
 A single community hobby-group coordinator who
 * manages prospective and existing members of one or more hobby groups
-* records member details such as hobbies, skill level, availability, and area
+* records member details such as hobbies, skill level, availability, and address
 * needs to find suitable members when organising activities
 * manually decides which members to match or assign to groups
 * prefers fast, keyboard-driven workflows
@@ -324,11 +261,11 @@ HobbyHub is a single-user, coordinator-driven tool. It does not provide member a
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-# HobbyHub — User Stories
+Only user stories supported by the current release are listed below.
 
 | Priority | ID | As a …​ | I want to …​ | So that I can…​ |
 | -------- | -- | ------- | ------------ | ---------------- |
-| `* * *` | US01 | coordinator | add a member with a name, phone number, email, address, hobby and optional tags | maintain an up-to-date member list |
+| `* * *` | US01 | coordinator | add a member with a name, optional phone number, email, optional address, hobbies, groups and availability | maintain an up-to-date member list |
 | `* * *` | US02 | coordinator | list all members | view the members currently under my management |
 | `* * *` | US03 | coordinator | delete a member by index | keep the member list accurate |
 | `* * *` | US04 | coordinator | search for members by name using case-insensitive partial matching | retrieve a member quickly |
@@ -345,20 +282,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* *` | US15 | coordinator | remove an existing session | correct an outdated or unsuccessful pairing |
 | `* *` | US16 | coordinator | create and assign members to hobby groups | manage group participation |
 | `* *` | US17 | coordinator | view a member's group memberships | know which activities the member is involved in |
-| `* *` | US18 | coordinator | remove a member from a specific hobby group without deleting the member | update group participation accurately |
-| `* *` | US19 | coordinator | archive ended sessions | retain historical information without cluttering active records |
-| `* *` | US20 | coordinator | import member sign-ups from a JSON file | add many local records efficiently |
-| `* *` | US21 | coordinator | export member data | create backups or reuse the data elsewhere |
-| `* *` | US22 | coordinator | view local statistics such as common hobbies and unmatched members | understand the current state of my programme |
-| `*` | US23 | coordinator | use natural-language variants for equivalent commands | remember commands more easily |
-| `*` | US24 | coordinator | enter member details one field at a time | avoid remembering every option format |
-| `*` | US25 | coordinator | access in-app help and command suggestions | learn how to use the application without external documentation |
-| `*` | US26 | coordinator | recall previously entered commands | repeat common actions quickly |
-| `*` | US27 | coordinator | undo and redo recent changes | recover from accidental edits or removals |
-| `*` | US28 | coordinator | receive confirmation before destructive actions | avoid unintended removals or data clearing |
-| `*` | US29 | coordinator | perform partial searches | find members without knowing the exact spelling |
-| `*` | US30 | coordinator | store multiple hobbies and phone numbers | represent more complete member profiles |
-| `*` | US31 | coordinator | validate and standardise email addresses | keep stored contact information consistent |
+| `*` | US18 | coordinator | perform partial searches | find members without knowing the exact spelling |
+| `*` | US19 | coordinator | store multiple hobbies | represent a more complete member profile |
+| `*` | US20 | coordinator | validate email addresses | keep stored contact information consistent |
 
 ### Use cases
 
@@ -420,12 +346,6 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case ends.
 
-* *a. Coordinator cancels the operation.
-
-  * *a1. HobbyHub ends the operation without modifying the member data.
-
-    Use case ends.
-
 **Use case: UC02 - List all members**
 
 **Preconditions**
@@ -456,7 +376,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 2a. There are no members in HobbyHub.
 
-  * 2a1. HobbyHub reports that no members have been added.
+  * 2a1. HobbyHub displays an empty member list and reports that all members have been listed.
 
     Use case ends.
 
@@ -469,7 +389,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1. Coordinator requests to list members, or searches for members (UC04).
+1. Coordinator requests to list members, or searches for members (UC05).
 2. HobbyHub shows the displayed member list, each member with an index number.
 3. Coordinator requests to delete the member at a specific index in the displayed list.
 4. HobbyHub validates the index.
@@ -508,7 +428,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 6a. HobbyHub cannot persist the updated member data.
 
     * 6a1. HobbyHub reports the persistence failure.
-    * 6a2. HobbyHub preserves the previously persisted member data.
+    * 6a2. HobbyHub restores the in-memory model to its state before the command and preserves the previously
+      persisted member data.
 
       Use case ends.
 
@@ -531,7 +452,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Guarantees**
 
-* Every member records remain unchanged.
+* All member records remain unchanged.
 * Member details are accurately displayed.
 
 **Extensions**
@@ -554,7 +475,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
 
-**Use case: UC05 - Search members by name or hobby**
+**Use case: UC05 - Search members by one or more criteria**
 
 **Preconditions**
 
@@ -563,10 +484,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **MSS**
 
 1. Coordinator initiates a member search.
-2. Coordinator supplies one or more distinct name, hobby, group, email, or skill-level options.
+2. Coordinator supplies one or more distinct name, hobby, group, email, skill-level, or availability options.
 3. HobbyHub validates the search term.
 4. HobbyHub identifies members matching all supplied criteria, ignoring letter case. Names, hobbies and groups
-   use substring matching; emails match in full. When hobby and skill are combined, both must match one hobby.
+   use substring matching; emails match in full; availability matches a stored weekday. When hobby and skill are
+   combined, both must match one hobby.
 5. HobbyHub returns the matching member records to the coordinator.
 
    Use case ends.
@@ -584,10 +506,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   * 1a1. HobbyHub reports that the request format is invalid.
   * 1a2. HobbyHub does not perform a search or modify any member records.
 
+    Use case ends.
+
 * 1b. The coordinator repeats an option.
 
   * 1b1. HobbyHub reports the invalid format; each option can be supplied only once.
-  * 1b2. HobbyHub does not perform a search. Use case ends.
+  * 1b2. HobbyHub does not perform a search.
 
     Use case ends.
 
@@ -608,12 +532,6 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 4a. No members match the search term.
 
   * 4a1. HobbyHub displays an empty member list and reports zero members listed.
-
-    Use case ends.
-
-* *a. The coordinator cancels the search before it is completed.
-
-  * *a1. HobbyHub ends the operation without modifying any member records.
 
     Use case ends.
 
@@ -638,7 +556,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Guarantees**
 
 * Successfully persisted member data is retained between application sessions.
-* Members, contact details, and hobbies are restored without unintended changes.
+* Members, sessions, contact details, hobbies, groups, and availability are restored without unintended changes.
 * No separate manual save command is required.
 
 **Extensions**
@@ -646,21 +564,28 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 2a. HobbyHub cannot create, access, or write to the local data store.
 
   * 2a1. HobbyHub reports that the data could not be saved.
-  * 2a2. HobbyHub informs the coordinator that the latest changes may not be available after relaunch.
+  * 2a2. HobbyHub restores the in-memory model to its state before the command and leaves the previously saved file
+    unchanged.
 
     Use case ends.
 
 * 5a. HobbyHub cannot read the persisted member data.
 
-  * 5a1. HobbyHub reports that the data could not be loaded.
-  * 5a2. HobbyHub does not claim that the previous member data was restored.
+  * 5a1. HobbyHub logs the loading failure and starts with an empty data model.
+  * 5a2. HobbyHub does not claim that the previous data was restored.
 
     Use case ends.
 
-* 5b. The persisted data is invalid.
+* 5b. Individual member or session entries in an otherwise readable data file are invalid.
 
-  * 5b1. HobbyHub reports that the data file is invalid.
-  * 5b2. HobbyHub does not silently overwrite the invalid data before informing the coordinator.
+  * 5b1. HobbyHub discards invalid entries, loads the remaining valid entries, logs a warning, and creates a
+    timestamped backup of the original file.
+
+    Use case resumes at step 6.
+
+* 5c. The data file cannot be parsed as HobbyHub JSON.
+
+  * 5c1. HobbyHub logs a warning and starts with an empty data model without crashing.
 
     Use case ends.
 
@@ -684,13 +609,6 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Extensions**
 
-* 1a. The exit request contains additional or invalid parameters.
-
-  * 1a1. HobbyHub reports that the exit request format is invalid.
-  * 1a2. HobbyHub does not terminate the application.
-
-    Use case ends.
-
 * 2a. HobbyHub encounters an unexpected failure while terminating.
 
   * 2a1. HobbyHub reports the termination failure.
@@ -699,7 +617,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case ends.
 
-**Use case: UC07 - Search sessions by one or more criteria**
+Additional text after the `exit` command word is ignored.
+
+**Use case: UC08 - Search sessions by one or more criteria**
 
 **Preconditions**
 
@@ -729,11 +649,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 3a. No sessions match.
   * 3a1. HobbyHub displays an empty session list and reports zero sessions listed.
 
-**Use case: UC08 - Edit a member or session**
+**Use case: UC09 - Edit a member or session**
 
 **Preconditions**
 
-HobbyHub is running and the list to edit is shown (list -m for members, list -s for sessions).
+* HobbyHub is running.
+* The list to edit is shown (`list -m` for members or `list -s` for sessions).
 
 **MSS**
 
@@ -759,10 +680,10 @@ HobbyHub is running and the list to edit is shown (list -m for members, list -s 
 * 2d. The new email belongs to another member.
   * 2d1. HobbyHub shows an error. Use case ends.
 * 2e. Coordinator requests to clear a field, by giving the field without a value.
-  * 2e1. If the field is optional (a member’s phone, address or groups), HobbyHub clears it. Use case resumes at step 3.
+  * 2e1. If the field is optional (a member’s phone, address, groups or availability), HobbyHub clears it. Use case resumes at step 3.
   * 2e2. Otherwise (a member’s name, email or hobbies, or any session field), HobbyHub shows an error and changes nothing. Use case ends.
 * 4a. HobbyHub cannot write to the data file.
-  * 4a1. HobbyHub tells the Coordinator that the data could not be saved. Use case ends.
+  * 4a1. HobbyHub tells the coordinator that the data could not be saved and rolls back the edit. Use case ends.
 
 ### Non-Functional Requirements
 
@@ -773,7 +694,7 @@ HobbyHub is running and the list to edit is shown (list -m for members, list -s 
 | NFR03 | Performance | For a local dataset of up to 1000 members, common operations such as adding a member, searching by name, and applying a basic filter should complete within two seconds under normal operations. |
 | NFR04 | Usability | All core workflows should be usable through keyboard-driven commands without requiring mouse interaction or relying solely on colour, animation, or pointer-based interaction. |
 | NFR05 | Availability | All MVP functions should work without requiring an Internet connection, remote API, or hosted database. |
-| NFR06 | Privacy | Member data should remain on the coordinator's local machine unless the coordinator explicitly exports it. |
+| NFR06 | Privacy | Member data should remain on the coordinator's local machine. |
 | NFR07 | Reliability | Invalid commands should not partially modify stored data. |
 | NFR08 | Robustness | Validation and persistence failures should be reported clearly without causing the application to crash. |
 | NFR09 | Data portability | Member data should be stored in a local, human-readable format that can be inspected or backed up using standard file-management tools. |
@@ -804,7 +725,7 @@ testers are expected to do more *exploratory* testing.
    1. Download the JAR file and copy it into an empty folder.
 
    1. Double-click the JAR file.<br>
-      Expected: The GUI opens with a set of sample contacts. The window size may not be optimal.
+      Expected: The GUI opens with sample members and sessions. The window size may not be optimal.
 
 1. Saving window preferences
 
@@ -813,29 +734,81 @@ testers are expected to do more *exploratory* testing.
    1. Relaunch the app by double-clicking the JAR file.<br>
        Expected: The most recent window size and location are retained.
 
-1. _{ more test cases …​ }_
+1. Preventing a second instance from using the same data file
 
-### Deleting a person
+   1. With the first instance still running, double-click the same JAR file again.<br>
+      Expected: The second instance prints `Another HobbyHub instance is already running.` and exits. The first
+      instance continues running. This check assumes the operating system supports creating and locking the lock file.
 
-1. Deleting a person while all persons are being shown
+### Switching lists and deleting records
 
-   1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+1. Deleting a member while all members are being shown
+
+   1. Prerequisites: Show all members using `list -m`, with multiple members in the list.
 
    1. Test case: `delete 1`<br>
-      Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
+      Expected: The first member is deleted from the list. The status message shows the deleted member's details.
 
    1. Test case: `delete 0`<br>
-      Expected: No person is deleted. The status message shows error details.
+      Expected: No member is deleted. The status message shows error details.
 
    1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.
 
-1. _{ more test cases …​ }_
+1. Deleting a session
+
+   1. Prerequisites: Show all sessions using `list -s`, with at least one session in the list.
+
+   1. Test case: `delete 1`<br>
+      Expected: The first displayed session is deleted and the status message identifies it.
+
+### Editing optional member fields
+
+1. Clearing optional fields
+
+   1. Prerequisites: Show all members using `list -m`, with at least one member in the list.
+
+   1. Test case: `edit 1 -p -a -g -d`<br>
+      Expected: The first member's phone, address, groups, and availability are cleared. Required fields and assigned
+      sessions remain unchanged.
+
+1. Rejecting an attempt to clear a required field
+
+   1. Test case: `edit 1 -n`<br>
+      Expected: The edit is rejected with the name constraint message, and the member remains unchanged.
 
 ### Saving data
 
-1. Dealing with missing/corrupted data files
+1. Restoring saved data
 
-   1. _{Explain how to simulate missing or corrupted data files and state the expected behavior.}_
+   1. Add or edit a member, note the changed data, and exit HobbyHub.
 
-1. _{ more test cases …​ }_
+   1. Relaunch HobbyHub from the same folder.<br>
+      Expected: The changed member data is restored from `data/addressbook.json`.
+
+1. Dealing with a missing data file
+
+   1. Exit HobbyHub and move `data/addressbook.json` to another folder.
+
+   1. Relaunch HobbyHub.<br>
+      Expected: HobbyHub starts successfully with sample data and creates a new data file after the next successful
+      command. Restore the moved file after finishing the test if its data is still needed.
+
+1. Dealing with invalid entries in a readable data file
+
+   1. Exit HobbyHub and make a backup copy of `data/addressbook.json`.
+
+   1. In one member entry, replace the email value with an invalid string while keeping the JSON syntax valid.
+
+   1. Relaunch HobbyHub.<br>
+      Expected: HobbyHub starts, discards the invalid entry, loads the remaining valid entries, and creates a
+      timestamped backup beside `data/addressbook.json`. Restore the manual backup after the test.
+
+1. Dealing with malformed JSON
+
+   1. Exit HobbyHub, back up `data/addressbook.json`, then replace its contents with text that is not valid JSON.
+
+   1. Relaunch HobbyHub.<br>
+      Expected: HobbyHub starts with an empty model and logs the loading error without crashing. Close the window
+      using the title-bar close button without entering a command, then restore the backup to avoid replacing the
+      original data with the empty model.
