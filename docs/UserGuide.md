@@ -332,7 +332,7 @@ sessions.
 Format: `view INDEX`
 
 * This command is available while the member list is shown. Use `list -m` to switch to it.
-* Views the details of the member at the specified `INDEX`.
+* Views the details of the member at the specified `INDEX`, inclusive of the sessions that the member has participated in.
 * The index refers to the index number shown in the displayed member list.
 * The index **must be a positive integer** 1, 2, 3, …​
 

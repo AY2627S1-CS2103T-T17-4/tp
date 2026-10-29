@@ -433,7 +433,7 @@ Deleting a session removes that session from every assigned member's session det
 3. Coordinator requests to view a displayed member index.
 4. HobbyHub validates the index.
 5. HobbyHub shows the member's name, email, phone, address, hobbies and skill levels, groups, availability and assigned
-   sessions in command feedback and the details panel.
+   sessions, marking the ones that are completed, in command feedback and the details panel.
 
    Use case ends.
 
