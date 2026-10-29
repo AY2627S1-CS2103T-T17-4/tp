@@ -225,6 +225,101 @@ for the application's lifetime and released during shutdown. A second process th
 loading the model. If lock acquisition itself fails with an `IOException`, HobbyHub logs the failure and starts without
 the guard so that file-system limitations do not prevent the application from opening.
 
+### Assigning and unassigning members to sessions
+
+`assign INDEX SESSION_NAME` adds the member at `INDEX` in the displayed member list to an existing session, and
+`unassign INDEX SESSION_NAME` removes them again. Both commands are only available while the member list is shown.
+
+#### How it works
+
+A `Session` does not hold `Member` objects. It stores the `Email` of each assigned member in a `Set<Email>`.
+Each `Member` in turn holds the list of sessions it is assigned to, which `HobbyHub` rebuilds from the session list
+whenever members or sessions change.
+
+The sequence diagram below shows how the `Logic` component parses and executes `assign 1 Weekend Chess Meetup`.
+After the command returns, `LogicManager` saves the data as described in the previous section, so saving is not
+shown again here.
+
+![Interactions inside the Logic component for the `assign 1 Weekend Chess Meetup` command](images/AssignSequenceDiagram-Logic.png)
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `AssignCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
+</div>
+
+The next sequence diagram shows what `AssignCommand#execute` does inside the `Model` component.
+
+![Interactions inside the Model component for the `assign 1 Weekend Chess Meetup` command](images/AssignSequenceDiagram-Model.png)
+
+The activity diagram below summarises the overall flow of `assign`. The checks are the ones listed in the steps
+above; each failed check shows its own error message and leaves the data unchanged.
+
+<img src="images/AssignActivityDiagram.png" width="500" />
+
+1. `LogicManager` passes the command text and the active `ListState` to `HobbyHubParser#parseCommand`.
+   If the session list is shown, `HobbyHubParser` rejects `assign` before creating a parser.
+1. `AssignCommandParser` splits the arguments into the first word (the index) and the rest (the session name).
+   It parses the index with `ParserUtil#parseIndex`, checks the name with `SessionName#isValidSessionName`,
+   and creates an `AssignCommand`.
+1. `AssignCommand#execute` checks again that `ListState` is `MEMBERS`, then gets the member at the index from the
+   filtered member list.
+1. It finds the session in `HobbyHub#getSessionList()` whose `SessionName` equals the given name.
+   `SessionName#equals` ignores case, so `assign 1 weekend chess meetup` finds the same session.
+1. If the session already contains the member's email, the command fails. Otherwise it calls
+   `Session#withMember(email)`, which returns a new `Session` with the email added, and replaces the old session
+   through `Model#setSession`.
+1. `HobbyHub#setSession` calls `refreshMemberSessions()`, which gives every member whose assigned sessions changed
+   an updated copy of themselves. This is how the member card and `view` show the new session.
+1. `LogicManager` saves the data through `Storage`. If saving fails, it restores the copy of `HobbyHub` taken before
+   the command, as described in the previous section.
+
+`unassign` follows the same steps, except that it fails if the member is not assigned to the session and it uses
+`Session#withoutMember(email)` instead of `withMember`.
+
+The command fails without changing any data when:
+* the session list is shown instead of the member list,
+* the index is not a positive integer or is larger than the displayed member list,
+* the session name is invalid or no session has that name,
+* the member is already assigned (`assign`) or not assigned (`unassign`) to that session.
+
+Because sessions refer to members by email, other member commands keep the links up to date:
+* `HobbyHub#setMember` replaces the old email with the new one in every session when an edit changes a member's email.
+* `HobbyHub#removeMember` removes the deleted member's email from every session.
+* Deleting a session removes it from every member through `refreshMemberSessions()`.
+
+#### Design considerations
+
+**Aspect: How a session refers to its members**
+
+* **Alternative 1 (current choice):** Store each member's `Email`.
+  * Pros: `Member` and `Session` are immutable, and an edited member is a new object. Emails stay valid across edits,
+    are unique among members, and are easy to save to and load from JSON.
+  * Cons: Sessions must be updated when a member's email changes or the member is deleted, and each member's session
+    list has to be rebuilt after changes.
+
+  The object diagram below shows the objects after `assign 1 Weekend Chess Meetup`. The session refers to members
+  only through their `Email` objects; each member's list of sessions is rebuilt by
+  `HobbyHub#refreshMemberSessions()`. Because `Session` and `Member` are immutable, `assign` does not change the
+  existing objects: it replaces the session with a new one that includes Alice's email, and `refreshMemberSessions()`
+  replaces Alice with a new `Member` whose session list includes the new session.
+  For simplicity, the `HobbyHub`, `UniqueMemberList` and `UniqueSessionList` objects that hold these members and the
+  session are omitted.
+
+  ![Objects after `assign 1 Weekend Chess Meetup`](images/AssignObjectDiagram.png)
+
+* **Alternative 2:** Store references to `Member` objects.
+  * Pros: A session can read its members' details directly.
+  * Cons: Every edit creates a new `Member`, so sessions would hold out-of-date objects unless every edit also
+    updated all sessions. Saving would also need a separate identifier for each member.
+
+**Aspect: How the session is identified in the command**
+
+* **Alternative 1 (current choice):** By session name, as in `assign 1 Weekend Chess Meetup`.
+  * Pros: Works while the member list is shown, without switching lists. Session names are unique, ignoring case.
+  * Cons: Users must type the full name.
+* **Alternative 2:** By the session's index in the session list, as in `assign 1 2`.
+  * Pros: Shorter to type.
+  * Cons: Only one list is shown at a time, so the user cannot see the session index while picking a member.
+    Indexes also change with each search or list.
+
 
 --------------------------------------------------------------------------------------------------------------------
 

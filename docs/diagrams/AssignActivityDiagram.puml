@@ -1,0 +1,32 @@
+@startuml
+!include style.puml
+skinparam ActivityFontSize 15
+skinparam ArrowFontSize 12
+skinparam dpi 150
+
+start
+:User enters assign INDEX SESSION_NAME;
+:Check that the member list is shown,
+the input is valid, the index is in range,
+the session exists and the member
+is not already assigned;
+
+if () then ([all checks pass])
+  :Replace the session with a copy
+  that includes the member's email;
+  :Refresh every member's session list;
+  :Save HobbyHub to the data file;
+  if () then ([saved])
+    :Show success message;
+  else ([save failed])
+    :Restore the HobbyHub copy
+    taken before the command;
+    :Show save error;
+  endif
+else ([a check fails])
+  :Show the error for the
+  first check that failed;
+endif
+
+stop
+@enduml
