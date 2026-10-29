@@ -4,8 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.hobbyhub.testutil.Assert.assertThrows;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import seedu.hobbyhub.logic.parser.exceptions.ParseException;
 
 public class ArgumentTokenizerTest {
 
@@ -147,6 +152,42 @@ public class ArgumentTokenizerTest {
         assertNotEquals(aaa, new Prefix("aab"));
     }
 
+
+    @Test
+    public void tokenize_unpairedQuote_isOrdinaryCharacter() {
+        Prefix address = new Prefix("-a");
+        Prefix hobby = new Prefix("-h");
+        ArgumentMultimap args = ArgumentTokenizer.tokenize(" -a Block 5 \"Sunrise -h chess", address, hobby);
+        assertArgumentPresent(args, address, "Block 5 \"Sunrise");
+        assertArgumentPresent(args, hobby, "chess");
+    }
+
+    @Test
+    public void tokenize_quoteInsideWord_doesNotStartQuotedValue() {
+        Prefix address = new Prefix("-a");
+        Prefix hobby = new Prefix("-h");
+        ArgumentMultimap args = ArgumentTokenizer.tokenize(" -a 5\" Sunrise -h \"Chess\"", address, hobby);
+        assertArgumentPresent(args, address, "5\" Sunrise");
+        assertArgumentPresent(args, hobby, "\"Chess\"");
+    }
+
+    @Test
+    public void verifyNoUnknownOptions() throws Exception {
+        Prefix name = new Prefix("-n");
+        Prefix hobby = new Prefix("-h");
+        String message = "unknown";
+
+        ArgumentTokenizer.verifyNoUnknownOptions(" -n Ann -h Chess", message, name, hobby);
+        ArgumentTokenizer.verifyNoUnknownOptions(" -nAnn -hChess", message, name, hobby);
+        ArgumentTokenizer.verifyNoUnknownOptions(" -n Anne-Marie -h \"Chess -x\"", message, name, hobby);
+        ArgumentTokenizer.verifyNoUnknownOptions("-5 -n East - West -", message, name, hobby);
+
+        for (String input : List.of(" -n Ann -x", "-x -n Ann", " -n Ann -hh Chess", " -n Ann \"Chess -x",
+                " -n Ann\t-x")) {
+            assertThrows(ParseException.class, message, () ->
+                    ArgumentTokenizer.verifyNoUnknownOptions(input, message, name, hobby));
+        }
+    }
 
     @Test
     public void tokenize_quotedOptionText_isKeptWithinValue() {
