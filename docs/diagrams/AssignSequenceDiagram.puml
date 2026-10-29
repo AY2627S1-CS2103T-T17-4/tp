@@ -1,0 +1,123 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":HobbyHubParser" as HobbyHubParser LOGIC_COLOR
+participant ":AssignCommandParser" as AssignCommandParser LOGIC_COLOR
+participant "a:AssignCommand" as AssignCommand LOGIC_COLOR
+participant "r:CommandResult" as CommandResult LOGIC_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant "m:Model" as Model MODEL_COLOR
+participant ":HobbyHub" as HobbyHub MODEL_COLOR
+participant "s:Session" as Session MODEL_COLOR
+end box
+
+box Storage STORAGE_COLOR_T1
+participant ":Storage" as Storage STORAGE_COLOR
+end box
+
+[-> LogicManager : execute("assign 1 Weekend Chess Meetup")
+activate LogicManager
+
+LogicManager -> Model : getListState()
+activate Model
+Model --> LogicManager : MEMBERS
+deactivate Model
+
+LogicManager -> HobbyHubParser : parseCommand("assign 1 Weekend Chess Meetup", MEMBERS)
+activate HobbyHubParser
+
+create AssignCommandParser
+HobbyHubParser -> AssignCommandParser
+activate AssignCommandParser
+
+AssignCommandParser --> HobbyHubParser
+deactivate AssignCommandParser
+
+HobbyHubParser -> AssignCommandParser : parse("1 Weekend Chess Meetup")
+activate AssignCommandParser
+
+create AssignCommand
+AssignCommandParser -> AssignCommand
+activate AssignCommand
+
+AssignCommand --> AssignCommandParser
+deactivate AssignCommand
+
+AssignCommandParser --> HobbyHubParser : a
+deactivate AssignCommandParser
+'Hidden arrow to position the destroy marker below the end of the activation bar.
+AssignCommandParser -[hidden]-> HobbyHubParser
+destroy AssignCommandParser
+
+HobbyHubParser --> LogicManager : a
+deactivate HobbyHubParser
+
+LogicManager -> AssignCommand : execute(m)
+activate AssignCommand
+
+AssignCommand -> Model : getFilteredMemberList()
+activate Model
+Model --> AssignCommand : members
+deactivate Model
+
+AssignCommand -> Model : getHobbyHub()
+activate Model
+Model --> AssignCommand : hobbyHub
+deactivate Model
+
+note right of AssignCommand
+  Finds the session whose name
+  matches, ignoring case, and
+  checks the member is not
+  already assigned to it.
+end note
+
+AssignCommand -> Session : withMember(email)
+activate Session
+Session --> AssignCommand : updated
+deactivate Session
+
+AssignCommand -> Model : setSession(s, updated)
+activate Model
+
+Model -> HobbyHub : setSession(s, updated)
+activate HobbyHub
+
+HobbyHub -> HobbyHub : refreshMemberSessions()
+activate HobbyHub
+deactivate HobbyHub
+
+HobbyHub --> Model
+deactivate HobbyHub
+
+Model --> AssignCommand
+deactivate Model
+
+create CommandResult
+AssignCommand -> CommandResult
+activate CommandResult
+
+CommandResult --> AssignCommand
+deactivate CommandResult
+
+AssignCommand --> LogicManager : r
+deactivate AssignCommand
+
+LogicManager -> Model : getHobbyHub()
+activate Model
+Model --> LogicManager : hobbyHub
+deactivate Model
+
+LogicManager -> Storage : saveHobbyHub(hobbyHub)
+activate Storage
+Storage --> LogicManager
+deactivate Storage
+
+[<--LogicManager
+deactivate LogicManager
+@enduml
