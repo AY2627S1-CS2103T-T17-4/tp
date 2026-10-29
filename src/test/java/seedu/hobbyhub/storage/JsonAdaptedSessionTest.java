@@ -89,9 +89,19 @@ public class JsonAdaptedSessionTest {
 
     @Test
     public void toModelType_blankLocation_throwsIllegalValueException() {
+        for (String location : List.of("", "   ", " \t ", "\u2003", "\u2002\u2003\u3000", " \u2003 \t")) {
+            JsonAdaptedSession session = new JsonAdaptedSession(VALID_NAME, VALID_DATE_TIME,
+                    location, false, VALID_MEMBERS);
+            assertThrows(IllegalValueException.class, MESSAGE_INVALID_LOCATION, session::toModelType);
+        }
+    }
+
+    @Test
+    public void toModelType_locationWithUnicodeWhitespace_preservesNonBlankLocation() throws Exception {
+        String location = "Golf\u2003Club";
         JsonAdaptedSession session = new JsonAdaptedSession(VALID_NAME, VALID_DATE_TIME,
-                "   ", false, VALID_MEMBERS);
-        assertThrows(IllegalValueException.class, MESSAGE_INVALID_LOCATION, session::toModelType);
+                location, false, VALID_MEMBERS);
+        assertEquals(location, session.toModelType().getLocation());
     }
 
     @Test
