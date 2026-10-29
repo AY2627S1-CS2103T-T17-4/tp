@@ -142,6 +142,26 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
+    public void tokenize_whitespaceBeforePrefixes_recognizesArguments() {
+        for (String separator : new String[] {"\t", "\r", "\n", "\f", "\u2003", " \t "}) {
+            ArgumentMultimap args = ArgumentTokenizer.tokenize(
+                    separator + "p/first" + separator + "-t second" + separator + "p/third", pSlash, dashT);
+            assertPreambleEmpty(args);
+            assertArgumentPresent(args, pSlash, "first", "third");
+            assertArgumentPresent(args, dashT, "second");
+        }
+    }
+
+    @Test
+    public void tokenize_tabBeforeQuotedOptionText_keepsTextWithinValue() {
+        ArgumentMultimap args = ArgumentTokenizer.tokenize(
+                "\tp/\"first\t-t quoted\"\t-t second", pSlash, dashT);
+        assertPreambleEmpty(args);
+        assertArgumentPresent(args, pSlash, "\"first\t-t quoted\"");
+        assertArgumentPresent(args, dashT, "second");
+    }
+
+    @Test
     public void equalsMethod() {
         Prefix aaa = new Prefix("aaa");
 
