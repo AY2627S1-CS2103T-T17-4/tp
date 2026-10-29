@@ -186,7 +186,7 @@ and dates against the `YYYY-MM-DD` format and `LocalDate` calendar validation.
 Completion queries accept only `true` or `false`, ignoring case.
 
 Member search supports name (`-n`), hobby name (`-h`), group (`-g`), email (`-c`), skill level (`-sl`),
-and availability (`-d`).
+and weekday availability (`-d`).
 Name, hobby and group searches use case-insensitive substring matching.
 Hobby matching examines every hobby name, independently of groups.
 Skill matching without a hobby criterion succeeds if any hobby has the requested level.
@@ -245,21 +245,21 @@ the guard so that file-system limitations do not prevent the application from op
 
 A single community hobby-group coordinator who
 * manages prospective and existing members of one or more hobby groups
-* records member details such as hobbies, skill level, availability, and address
+* records member contact details, hobbies, skill levels, weekday availability and group labels
 * needs to find suitable members when organising activities
-* manually decides which members to match or assign to groups
+* manually organises members using group labels and assigns members to sessions
 * prefers fast, keyboard-driven workflows
 * is reasonably comfortable using CLI applications
 * does not require members to log in or access the application directly
 
-**Value proposition**: Help a hobby-group coordinator manage members and matches quickly from the keyboard by storing member details locally, supporting fast searches and filters, and allowing the coordinator to record matches and group memberships without relying on spreadsheets or remote services.
+**Value proposition**: Help a hobby-group coordinator manage members and sessions quickly from the keyboard by storing records locally, supporting combined searches, and recording group labels and session participation without relying on spreadsheets or remote services.
 
 HobbyHub is a single-user, coordinator-driven tool. It does not provide member accounts or automated black-box matching.
 
 
 ### User stories
 
-Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
+Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (optional) - `*`
 
 Only user stories supported by the current release are listed below.
 
@@ -267,10 +267,10 @@ Only user stories supported by the current release are listed below.
 | -------- | -- | ------- | ------------ | ---------------- |
 | `* * *` | US01 | coordinator | add a member with a name, optional phone number, email, optional address, hobbies, groups and availability | maintain an up-to-date member list |
 | `* * *` | US02 | coordinator | list all members | view the members currently under my management |
-| `* * *` | US03 | coordinator | delete a member by index | keep the member list accurate |
+| `* * *` | US03 | coordinator | delete a member by their displayed index | keep the member list accurate |
 | `* * *` | US04 | coordinator | search for members by name using case-insensitive partial matching | retrieve a member quickly |
-| `* * *` | US05 | coordinator | search members by hobby | focus on members interested in a particular activity |
-| `* * *` | US06 | coordinator | save member data automatically after successful changes and restore it when the application restarts | avoid losing records between sessions |
+| `* * *` | US05 | coordinator | search members by hobby name | focus on members interested in a particular activity |
+| `* * *` | US06 | coordinator | save member and session data automatically after successful commands and restore it on restart | avoid losing records between application sessions |
 | `* * *` | US07 | coordinator | exit the application cleanly | close the application without losing saved data |
 | `* *` | US08 | coordinator | view a member's complete profile | understand the member's interests and participation needs |
 | `* *` | US09 | coordinator | edit a member's information | correct outdated or inaccurate records |
@@ -288,61 +288,82 @@ Only user stories supported by the current release are listed below.
 
 ### Use cases
 
-(For all use cases below, the **System** is `HobbyHub` and the **Actor** is the `coordinator`, unless specified otherwise)
+(For all use cases below, the **System** is `HobbyHub` and the **Actor** is the `coordinator`, unless specified otherwise.)
+
+Indices refer to the currently displayed list, including search results. Commands that act on a list are
+interpreted according to the active member or session view. Unless stated otherwise, a rejected input changes
+neither stored records nor the current search results. A save failure is reported as a command error, and
+HobbyHub restores its in-memory member and session data to the state before the command. This rollback does
+not guarantee restoration of the previous view or search filter, or an unchanged file after a failed write.
 
 **Use case: UC01 - Add a member**
 
 **Preconditions**
 
-* HobbyHub is running.
-* The local data store is available.
+* HobbyHub is running and the member list is active (`list -m`).
 
 **MSS**
 
-1. Coordinator initiates the addition of a member.
-2. Coordinator supplies the member's name, email address, and primary hobby.
-3. HobbyHub validates the supplied details.
-4. HobbyHub verifies that the email address is unique.
-5. HobbyHub creates the member record.
-6. HobbyHub persists the updated member data.
-7. HobbyHub records the successful addition.
+1. Coordinator requests to add a member, supplying a name, email and at least one hobby, optionally with skill levels,
+   phone, address, groups and weekday availability.
+2. HobbyHub validates the supplied fields and options.
+3. HobbyHub verifies that no existing member has the same email, ignoring case.
+4. HobbyHub adds the member.
+5. HobbyHub saves the updated data.
+6. HobbyHub reports the successful addition.
 
    Use case ends.
 
 **Guarantees**
 
-* The new member is available in subsequent searches and listings.
-* The new member is persisted and can be restored after relaunching HobbyHub.
-* Invalid input does not partially modify the member list.
+* A successful addition is retained after restart and is available to member listings and searches.
+* Omitted phone and address are stored as absent values; omitted groups and availability are empty.
+* A hobby without a skill suffix defaults to Beginner.
 
 **Extensions**
 
-* 2a. One or more required details are missing.
+* 2a. A required field is missing, a value is invalid, an option is unsupported, or a single-valued option is repeated.
 
-  * 2a1. HobbyHub reports the missing details.
-  * 2a2. HobbyHub does not create or modify the member record.
-
-    Use case ends.
-
-* 3a. One or more supplied details are invalid.
-
-  * 3a1. HobbyHub reports the invalid details and the expected format, where applicable.
-  * 3a2. HobbyHub does not create or modify the member record.
+  * 2a1. HobbyHub reports the format or validation error and adds no member.
 
     Use case ends.
 
-* 4a. The email address is already in use.
+* 3a. Another member already has the supplied email, ignoring case.
 
-  * 4a1. HobbyHub reports that the email address is already associated with an existing member.
-  * 4a2. HobbyHub does not create or modify the member record.
+  * 3a1. HobbyHub reports the duplicate email and adds no member.
 
     Use case ends.
 
-* 6a. HobbyHub cannot persist the updated member data.
+* 5a. HobbyHub cannot save the updated data.
 
-  * 6a1. HobbyHub reports the persistence failure.
-  * 6a2. HobbyHub does not record the addition as successful.
-  * 6a3. HobbyHub does not partially modify the stored member data.
+  * 5a1. HobbyHub restores the previous in-memory records and reports the save failure.
+
+    Use case ends.
+
+**Use case: UC02 - List members or sessions**
+
+**Preconditions**
+
+* HobbyHub is running.
+
+**MSS**
+
+1. Coordinator requests the complete member list using `list -m`.
+2. HobbyHub switches to the member view and clears its search filter.
+3. HobbyHub displays all members and reports that all members have been listed.
+
+   Use case ends.
+
+**Guarantees**
+
+* Member and session records are unchanged.
+* The selected list displays all its records, including when that list is empty.
+
+**Extensions**
+
+* 1a. Coordinator requests `list -s` instead.
+
+  * 1a1. HobbyHub switches to sessions, clears the session filter and displays all sessions with list feedback.
 
     Use case ends.
 
@@ -350,42 +371,48 @@ Only user stories supported by the current release are listed below.
 
 **Preconditions**
 
-* HobbyHub is running.
+* HobbyHub is running and the member list is active (`list -m`).
 
 **MSS**
 
-1. Coordinator requests to list all members.
-2. HobbyHub retrieves the current member records.
-3. HobbyHub returns all current member records to the coordinator.
+1. Coordinator lists members (UC02) or searches for members (UC05).
+2. HobbyHub displays the matching members with index numbers.
+3. Coordinator requests deletion using a displayed member index.
+4. HobbyHub validates the index.
+5. HobbyHub deletes the member and removes their email from every assigned session.
+6. HobbyHub saves the updated data.
+7. HobbyHub reports the successful deletion.
 
    Use case ends.
 
 **Guarantees**
 
-* All currently stored members are displayed.
-* No member data is changed.
+* After successful deletion, the member remains absent after restart.
+* The sessions themselves remain, with their participant lists updated.
+* No confirmation dialog is required before deletion.
 
 **Extensions**
 
-* 1a. The list request contains additional or invalid parameters.
+* 4a. The index is missing, not a positive integer, or outside the displayed list, including an empty list.
 
-  * 1a1. HobbyHub reports that the request format is invalid.
-  * 1a2. HobbyHub does not retrieve or modify any member records.
+  * 4a1. HobbyHub reports the format or index error and deletes nothing.
 
     Use case ends.
 
-* 2a. There are no members in HobbyHub.
+* 6a. HobbyHub cannot save the updated data.
 
   * 2a1. HobbyHub displays an empty member list and reports that all members have been listed.
 
     Use case ends.
 
-**Use case: UC03 - Delete a member**
+For session deletion, the same interaction applies in the session view, using UC02 or UC08 to locate the session.
+Deleting a session removes that session from every assigned member's session details while retaining the members.
+
+**Use case: UC04 - View a member**
 
 **Preconditions**
 
-* HobbyHub is running.
-* The member to be deleted is shown in the displayed member list.
+* HobbyHub is running and the member list is active (`list -m`).
 
 **MSS**
 
@@ -393,60 +420,76 @@ Only user stories supported by the current release are listed below.
 2. HobbyHub shows the displayed member list, each member with an index number.
 3. Coordinator requests to delete the member at a specific index in the displayed list.
 4. HobbyHub validates the index.
-5. HobbyHub deletes the member record.
-6. HobbyHub persists the updated member data.
-7. HobbyHub reports the successful deletion.
+5. HobbyHub shows the member's name, email, phone, address, hobbies and skill levels, groups, availability and assigned
+   sessions in command feedback and the details panel.
 
    Use case ends.
 
 **Guarantees**
 
-* The deleted member is no longer available in the member list.
-* The deleted member remains absent after HobbyHub is relaunched.
-* Other member records remain unchanged.
+* Member and session records are unchanged.
+* All assigned sessions are included, whether completed or not.
 
 **Extensions**
 
-* 2a. The displayed member list is empty.
+* 4a. The index is missing, not a positive integer, or outside the displayed list, including an empty list.
 
-  Use case ends.
+  * 4a1. HobbyHub reports the format or index error and does not show a new record.
 
-* 3a. The coordinator does not provide an index.
+    Use case ends.
 
-    * 3a1. HobbyHub reports the correct command format.
-    * 3a2. HobbyHub does not delete or modify any member record.
+For session viewing, the same interaction applies in the session view, using UC02 or UC08 to locate the session.
+HobbyHub shows the session name, date-time, location, completion status and assigned participant emails.
 
-      Use case ends.
+**Use case: UC05 - Search members by one or more criteria**
 
-* 4a. The index is not a positive integer, or is larger than the number of members displayed.
+**Preconditions**
 
-    * 4a1. HobbyHub reports that the index is invalid.
-    * 4a2. HobbyHub does not delete or modify any member record.
+* HobbyHub is running and the member list is active (`list -m`).
 
-      Use case ends.
+**MSS**
 
-* 6a. HobbyHub cannot persist the updated member data.
+1. Coordinator requests a search with one or more distinct name, hobby, group, email, skill-level or weekday-availability
+   options and their queries.
+2. HobbyHub validates every option and its non-empty query.
+3. HobbyHub searches all members, requiring every supplied criterion to match.
+4. HobbyHub displays the matching members and the result count.
+
+   Use case ends.
+
+**Guarantees**
 
     * 6a1. HobbyHub reports the persistence failure.
     * 6a2. HobbyHub restores the in-memory model to its state before the command and preserves the previously
       persisted member data.
 
-      Use case ends.
+**Extensions**
 
-**Use case: UC04 - View a member**
+* 2a. No criteria are supplied, an option is repeated or unsupported, or a query is missing or invalid.
+
+  * 2a1. HobbyHub reports the format or validation error and leaves the existing results unchanged.
+
+    Use case ends.
+
+* 3a. No members match all supplied criteria.
+
+  * 3a1. HobbyHub displays an empty member list and reports zero members listed.
+
+    Use case ends.
+
+**Use case: UC06 - Persist and restore member and session data**
 
 **Preconditions**
 
 * HobbyHub is running.
-* The member to be viewed is shown in the displayed member list.
 
 **MSS**
 
-1. Coordinator requests to list members, or searches for members (UC05).
-2. HobbyHub shows the displayed member list, each member with an index number.
-3. Coordinator requests to view the member at a specific index in the displayed list.
-4. HobbyHub validates the index.
-5. HobbyHub displays the member's additional details.
+1. Coordinator submits a valid command.
+2. HobbyHub executes the command and saves the current member and session data to its local JSON file.
+3. Coordinator closes and relaunches HobbyHub.
+4. HobbyHub loads and validates the saved members and sessions, resolving session participants by email.
+5. HobbyHub restores the records and assignments for continued use.
 
    Use case ends.
 
@@ -457,29 +500,74 @@ Only user stories supported by the current release are listed below.
 
 **Extensions**
 
-* 2a. The displayed member list is empty.
+* 2a. HobbyHub cannot create or write the data file.
 
-  Use case ends.
+  * 2a1. HobbyHub restores its in-memory records to their state before the command and reports the save failure.
 
-* 3a. The coordinator does not provide an index.
+    Use case ends.
 
-    * 3a1. HobbyHub reports the correct command format.
-    * 3a2. HobbyHub does not delete or modify any member record.
+* 4a. The data file is missing.
 
-      Use case ends.
+  * 4a1. HobbyHub starts with sample data and logs that the saved file was not found.
 
-* 4a. The index is not a positive integer, or is larger than the number of members displayed.
+    Use case ends.
 
-    * 4a1. HobbyHub reports that the index is invalid.
-    * 4a2. HobbyHub does not delete or modify any member record.
+* 4b. The file contains invalid, malformed or duplicate member or session entries, but its root is a valid JSON object.
 
-      Use case ends.
+  * 4b1. HobbyHub skips the invalid entries, logs the problems and attempts to create a timestamped backup alongside
+    the original file. A backup failure is logged without preventing startup.
+  * 4b2. HobbyHub restores the remaining valid records. The next successful save writes this recovered dataset.
+
+    Use case ends.
+
+* 4c. The file cannot be read, is malformed JSON, or has a root that is not a JSON object.
+
+  * 4c1. HobbyHub logs the loading failure and starts with empty member and session lists.
+  * 4c2. The next successful save writes the current dataset; the malformed-file path does not automatically create
+    a recovery backup.
+
+    Use case ends.
+
+* 4d. A session refers to an email that matches no loaded member.
 
 **Use case: UC05 - Search members by one or more criteria**
 
 **Preconditions**
 
-* HobbyHub is running and the member list is active (`list -m`).
+* HobbyHub is running.
+
+**MSS**
+
+1. Coordinator submits `exit`.
+2. HobbyHub saves the current data and returns an exit result.
+3. HobbyHub closes its windows, attempts to save user preferences, releases its data-file lock if held and terminates.
+
+   Use case ends.
+
+**Guarantees**
+
+* Previously saved member and session records remain available for the next launch.
+* Additional arguments after `exit` are ignored.
+
+**Extensions**
+
+* 2a. HobbyHub cannot save the current data.
+
+  * 2a1. HobbyHub reports the save failure and does not return the exit result, so the application remains open.
+
+    Use case ends.
+
+* 3a. User preferences cannot be saved or the held lock cannot be released normally.
+
+  * 3a1. HobbyHub logs the failure and continues shutdown.
+
+    Use case ends.
+
+**Use case: UC08 - Search sessions by one or more criteria**
+
+**Preconditions**
+
+* HobbyHub is running and the session list is active (`list -s`).
 
 **MSS**
 
@@ -495,16 +583,18 @@ Only user stories supported by the current release are listed below.
 
 **Guarantees**
 
-* HobbyHub displays all members matching every supplied criterion, with a result count.
-* Each search replaces the previous member filter.
-* No member data is changed.
+* Name and location matching is case-insensitive and partial.
+* Dates match the whole calendar day, ignoring time, and completion status matches the stored boolean.
+* Participant emails match complete addresses, ignoring case.
+* Each search replaces the session filter; stored records, the active view and the member filter are unchanged.
 
 **Extensions**
 
-* 1a. The search request contains additional or invalid parameters.
+* 2a. No criteria are supplied, an option is repeated or unsupported, or a query is missing or invalid.
 
-  * 1a1. HobbyHub reports that the request format is invalid.
-  * 1a2. HobbyHub does not perform a search or modify any member records.
+  * 2a1. HobbyHub reports the format or validation error and leaves the existing results unchanged.
+
+    Use case ends.
 
     Use case ends.
 
@@ -515,23 +605,53 @@ Only user stories supported by the current release are listed below.
 
     Use case ends.
 
-* 2a. The coordinator does not provide a non-empty query.
+**Use case: UC09 - Edit a member or session**
 
-  * 2a1. HobbyHub reports that a non-empty search term is required.
-  * 2a2. HobbyHub does not perform a search or modify any member records.
+**Preconditions**
+
+* HobbyHub is running and the appropriate member or session list is active.
+
+**MSS**
+
+1. Coordinator requests an edit, supplying a displayed index and at least one field to change.
+2. HobbyHub validates the index, options and supplied values.
+3. HobbyHub updates the specified fields and preserves omitted fields.
+4. HobbyHub saves the updated records.
+5. HobbyHub displays all records of the edited type and reports the successful edit.
+
+   Use case ends.
+
+**Guarantees**
+
+* Editing member hobbies, groups or availability replaces the entire corresponding collection.
+* Changing a member's email updates their participant email in assigned sessions.
+* Session edits change only date-time and location, preserving the name, completion status and assignments.
+* A successful edit is retained after restart.
+
+**Extensions**
+
+* 2a. No field is supplied, the index is invalid, an option is unsupported, a single-valued option is repeated, or a
+  supplied value is invalid.
+
+  * 2a1. HobbyHub reports the format, index or validation error and changes no records.
 
     Use case ends.
 
-* 3a. The search term does not follow the expected format.
+* 2b. The new member email belongs to another member, ignoring case.
 
-  * 3a1. HobbyHub reports the invalid search term and the expected format.
-  * 3a2. HobbyHub does not perform a search or modify any member records.
+  * 2b1. HobbyHub reports the duplicate email and changes no records.
 
     Use case ends.
 
-* 4a. No members match the search term.
+* 2c. Coordinator supplies a single empty phone, address, group or availability option for a member.
 
-  * 4a1. HobbyHub displays an empty member list and reports zero members listed.
+  * 2c1. HobbyHub accepts the field as a request to clear that optional value or collection.
+
+    Use case resumes at step 3.
+
+* 2d. Coordinator supplies an empty member name, email or hobby, or an empty session field.
+
+  * 2d1. HobbyHub reports the validation error and changes no records.
 
     Use case ends.
 
@@ -539,17 +659,15 @@ Only user stories supported by the current release are listed below.
 
 **Preconditions**
 
-* HobbyHub has been used to add or modify member data.
-* The local data store is available.
+* HobbyHub is running and the session list is active (`list -s`).
 
 **MSS**
 
-1. Coordinator completes a successful data-changing operation.
-2. HobbyHub persists the updated member data.
-3. Coordinator exits HobbyHub.
-4. Coordinator relaunches HobbyHub.
-5. HobbyHub loads the persisted member data.
-6. HobbyHub restores the member data for continued use.
+1. Coordinator requests to add a session with a name, date-time and location.
+2. HobbyHub validates the supplied options and values.
+3. HobbyHub verifies that no existing session has the same name, ignoring case.
+4. HobbyHub creates an incomplete session with no assigned members.
+5. HobbyHub saves the updated data and reports the successful addition.
 
    Use case ends.
 
@@ -561,7 +679,7 @@ Only user stories supported by the current release are listed below.
 
 **Extensions**
 
-* 2a. HobbyHub cannot create, access, or write to the local data store.
+* 2a. A required field is missing, a field value is invalid, an option is unsupported, or an option is repeated.
 
   * 2a1. HobbyHub reports that the data could not be saved.
   * 2a2. HobbyHub restores the in-memory model to its state before the command and leaves the previously saved file
@@ -569,7 +687,7 @@ Only user stories supported by the current release are listed below.
 
     Use case ends.
 
-* 5a. HobbyHub cannot read the persisted member data.
+* 3a. Another session already has the supplied name, ignoring case.
 
   * 5a1. HobbyHub logs the loading failure and starts with an empty data model.
   * 5a2. HobbyHub does not claim that the previous data was restored.
@@ -589,31 +707,32 @@ Only user stories supported by the current release are listed below.
 
     Use case ends.
 
-**Use case: UC07 - Exit the program**
+**Use case: UC11 - Assign or unassign a member from a session**
 
 **Preconditions**
 
-* HobbyHub is running.
+* HobbyHub is running and the member list is active (`list -m`).
 
 **MSS**
 
-1. Coordinator initiates an exit request.
-2. HobbyHub terminates the application gracefully.
+1. Coordinator requests assignment using a displayed member index and an existing session name.
+2. HobbyHub validates the index and finds the session by its name, ignoring case.
+3. HobbyHub checks that the member is not already assigned.
+4. HobbyHub adds the member's email to the session and refreshes members' assigned-session details.
+5. HobbyHub saves the updated data and reports the successful assignment.
 
    Use case ends.
 
 **Guarantees**
 
-* HobbyHub closes without crashing.
-* All previously persisted member data remains available for the next session.
+* The assignment appears in both the session's participants and the member's session details.
+* Assignment does not check weekday availability, hobby suitability or time conflicts.
 
 **Extensions**
 
 * 2a. HobbyHub encounters an unexpected failure while terminating.
 
-  * 2a1. HobbyHub reports the termination failure.
-  * 2a2. HobbyHub does not claim that the application exited successfully.
-  * 2a3. Previously persisted member data remains unchanged.
+  * 3a1. HobbyHub reports the assignment-state error and changes no assignments.
 
     Use case ends.
 
@@ -627,27 +746,37 @@ Additional text after the `exit` command word is ignored.
 
 **MSS**
 
-1. Coordinator requests a search with one or more distinct session name, location, date,
-   completion status, or participant email options.
-2. HobbyHub validates every option and its non-empty query.
-3. HobbyHub searches all sessions, requiring every supplied criterion to match the same session.
-4. HobbyHub displays matching session cards and the number of sessions listed.
+1. Coordinator requests to mark a displayed session index as completed.
+2. HobbyHub validates the index and checks that the session is not already completed.
+3. HobbyHub marks the session as completed.
+4. HobbyHub saves the updated data and reports success.
 
    Use case ends.
 
 **Guarantees**
 
-* Name and location matching is case-insensitive and partial.
-* Dates match the whole calendar day, and completion status matches the stored boolean.
-* Participant emails match complete addresses, ignoring case.
-* The session filter is replaced; stored data, the active view and the member filter are unchanged.
+* The session's name, date-time, location and assignments are preserved.
+* Completion status is retained after a successful save and restart.
 
 **Extensions**
 
-* 2a. No criteria are supplied, an option is repeated or unsupported, or its value is missing or invalid.
-  * 2a1. HobbyHub reports the format or value error and leaves the existing results unchanged.
-* 3a. No sessions match.
-  * 3a1. HobbyHub displays an empty session list and reports zero sessions listed.
+* 1a. Coordinator requests to unmark a session instead.
+
+  * 1a1. HobbyHub uses the same interaction, requiring a completed session and changing it to incomplete.
+
+    Use case resumes at step 2 with the reversed completion-state check.
+
+* 2a. The arguments or index are invalid, or the session already has the requested completion state.
+
+  * 2a1. HobbyHub reports the format, index or completion-state error and changes no records.
+
+    Use case ends.
+
+* 4a. HobbyHub cannot save the updated data.
+
+  * 4a1. HobbyHub restores the previous in-memory records and reports the save failure.
+
+    Use case ends.
 
 **Use case: UC09 - Edit a member or session**
 
