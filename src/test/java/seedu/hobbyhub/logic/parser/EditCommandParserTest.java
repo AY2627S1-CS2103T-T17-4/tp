@@ -245,7 +245,7 @@ public class EditCommandParserTest {
         EditMemberDescriptor descriptor = new EditMemberDescriptorBuilder().withAvailability().build();
         assertParseSuccess(parser, "1 -d", new EditCommand(INDEX_FIRST_MEMBER, descriptor));
     }
-    
+
     @Test
     public void parse_unknownOption_failure() {
         assertParseFailure(parser, "1 -n Alex Tan -x what", EditCommandParser.MESSAGE_UNKNOWN_OPTION);

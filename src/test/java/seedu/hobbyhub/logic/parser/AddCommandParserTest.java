@@ -113,7 +113,7 @@ public class AddCommandParserTest {
         assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
                 + HOBBY_DESC_BOB + " -d Monday -d saturday", new AddCommand(expectedMember));
     }
-  
+
     @Test
     public void parse_internationalHobbyNames_success() {
         Member expectedMember = new MemberBuilder().withName("Jose").withPhone("")

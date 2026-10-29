@@ -27,7 +27,7 @@ import seedu.hobbyhub.model.member.Availability;
  * Parses input arguments and creates a new EditCommand object
  */
 public class EditCommandParser implements Parser<EditCommand> {
-  
+
     public static final String MESSAGE_UNKNOWN_OPTION =
             "Unknown edit option. Use only -n, -p, -c, -a, -h, -g, or -d.";
 
