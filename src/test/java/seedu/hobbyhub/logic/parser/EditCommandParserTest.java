@@ -248,7 +248,7 @@ public class EditCommandParserTest {
         EditMemberDescriptor descriptor = new EditMemberDescriptorBuilder().withAvailability().build();
         assertParseSuccess(parser, "1 -d", new EditCommand(INDEX_FIRST_MEMBER, descriptor));
     }
-  
+
     @Test
     public void parse_blankPhone_clearsPhone() {
         EditCommand expectedCommand = new EditCommand(INDEX_FIRST_MEMBER,
