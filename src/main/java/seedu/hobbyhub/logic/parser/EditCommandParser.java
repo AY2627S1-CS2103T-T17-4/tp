@@ -14,17 +14,20 @@ import static seedu.hobbyhub.logic.parser.CliSyntax.PREFIX_PHONE;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
+import java.util.function.Consumer;
 
 import seedu.hobbyhub.commons.core.index.Index;
 import seedu.hobbyhub.logic.commands.EditCommand;
 import seedu.hobbyhub.logic.commands.EditCommand.EditMemberDescriptor;
 import seedu.hobbyhub.logic.parser.exceptions.ParseException;
-import seedu.hobbyhub.model.group.Group;
+import seedu.hobbyhub.model.member.Address;
 import seedu.hobbyhub.model.member.Availability;
+import seedu.hobbyhub.model.member.Phone;
 
 /**
- * Parses input arguments and creates a new EditCommand object
+ * Parses input arguments and creates a new EditCommand object.
+ * Optional fields (phone, address and groups) are replaced by the values given and cleared when their prefix is
+ * given without a value. Required fields (name, email and hobbies) cannot be cleared.
  */
 public class EditCommandParser implements Parser<EditCommand> {
 
@@ -60,24 +63,26 @@ public class EditCommandParser implements Parser<EditCommand> {
 
         EditMemberDescriptor editMemberDescriptor = new EditMemberDescriptor();
 
+        // Required fields: a blank value is invalid, so these can be replaced but never cleared.
         if (argMultimap.getValue(PREFIX_NAME).isPresent()) {
             editMemberDescriptor.setName(ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get()));
-        }
-        if (argMultimap.getValue(PREFIX_PHONE).isPresent()) {
-            editMemberDescriptor.setPhone(ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE).get()));
         }
         if (argMultimap.getValue(PREFIX_EMAIL).isPresent()) {
             editMemberDescriptor.setEmail(ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL).get()));
         }
-        if (argMultimap.getValue(PREFIX_ADDRESS).isPresent()) {
-            editMemberDescriptor.setAddress(ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get()));
-        }
         if (argMultimap.getValue(PREFIX_HOBBY).isPresent()) {
             editMemberDescriptor.setHobbies(ParserUtil.parseHobbies(argMultimap.getAllValues(PREFIX_HOBBY)));
         }
-        parseGroupsForEdit(argMultimap.getAllValues(PREFIX_GROUP)).ifPresent(editMemberDescriptor::setGroups);
+
+        // Optional fields: a value replaces the field, and a prefix without a value clears it.
+        applyOptionalField(argMultimap, PREFIX_PHONE, ParserUtil::parsePhone, Phone.empty(),
+                editMemberDescriptor::setPhone);
+        applyOptionalField(argMultimap, PREFIX_ADDRESS, ParserUtil::parseAddress, Address.empty(),
+                editMemberDescriptor::setAddress);
+        OptionalFieldUtil.parseSet(argMultimap.getAllValues(PREFIX_GROUP), ParserUtil::parseGroups)
+                .ifPresent(editMemberDescriptor::setGroups);
         parseAvailabilityForEdit(argMultimap.getAllValues(PREFIX_AVAILABILITY))
-                .ifPresent(editMemberDescriptor::setAvailability);
+                .ifPresent(editMemberDescriptor::setAvailability);      
 
         if (!editMemberDescriptor.isAnyFieldEdited()) {
             throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);
@@ -87,18 +92,19 @@ public class EditCommandParser implements Parser<EditCommand> {
     }
 
     /**
-     * Parses {@code Collection<String> groups} into a {@code Set<Group>} if {@code groups} is non-empty.
-     * If {@code groups} contains only one element which is an empty string, it will be parsed into a
-     * {@code Set<Group>} containing zero groups.
+     * Applies the single-valued optional field identified by {@code prefix} through {@code setter}, if the prefix
+     * is present in {@code argMultimap}. A blank value clears the field by applying {@code emptyValue}, and any
+     * other value is parsed with {@code parser}.
+     *
+     * @throws ParseException if the value is not blank and is invalid.
      */
-    private Optional<Set<Group>> parseGroupsForEdit(Collection<String> groups) throws ParseException {
-        requireNonNull(groups);
-
-        if (groups.isEmpty()) {
-            return Optional.empty();
+    private static <T> void applyOptionalField(ArgumentMultimap argMultimap, Prefix prefix,
+            OptionalFieldUtil.ThrowingFunction<String, T> parser, T emptyValue, Consumer<T> setter)
+            throws ParseException {
+        Optional<String> value = argMultimap.getValue(prefix);
+        if (value.isPresent()) {
+            setter.accept(OptionalFieldUtil.parseScalar(value.get(), parser, emptyValue));
         }
-        Collection<String> groupSet = groups.size() == 1 && groups.contains("") ? Collections.emptySet() : groups;
-        return Optional.of(ParserUtil.parseGroups(groupSet));
     }
 
     /** Parses availability options, with one empty {@code -d} clearing all selected weekdays. */
