@@ -13,6 +13,9 @@ title: Developer Guide
 * HobbyHub was adapted from the [AddressBook-Level3 project by SE-EDU](https://github.com/se-edu/addressbook-level3).
 * The Developer Guide structure and PlantUML conventions were adapted from the
   [SE-EDU documentation guides](https://se-education.org/guides/).
+* **Notable uses of AI:** OpenAI Codex was used to assist with preliminary code and documentation reviews, identify
+  potential defects and inconsistencies, suggest resolutions for merge conflicts, and refine documentation wording.
+  All suggestions were reviewed before being applied by team members.
 
 --------------------------------------------------------------------------------------------------------------------
 
