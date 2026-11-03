@@ -950,20 +950,12 @@ HobbyHub shows the session name, date-time, location, completion status and assi
 
 Team size: 5
 
-1. **Show an on-screen message when a second copy is blocked.** Currently, starting a second HobbyHub in the same
-   folder exits and only prints `Another HobbyHub instance is already running.` in the terminal, so a user who
-   launched it another way sees nothing. We plan to show a dialog with this message before exiting.
 1. **Tell the user when invalid data entries were skipped.** Currently, invalid members or sessions in the data file
    are skipped on startup and only recorded in the log. We plan to show `N invalid entries were skipped; a backup was
    saved as addressbook.json.<n>.bak` in the result box after launch.
 1. **Clear the details panel when switching lists.** Currently, after `view` on a member followed by `list -s`, the
    details panel still shows that member beside the session list. We plan to clear the panel whenever the displayed
    list changes.
-1. **Distinguish an empty filtered list from an empty list.** Currently, a search that matches no sessions shows
-   `No sessions yet.` even when sessions exist. We plan to show `No matching sessions` (and `No matching members`)
-   while a filter is active.
-1. **Show the stored session name in assign/unassign messages.** Currently, `assign 1 chess meetup` reports the name
-   as typed. We plan to echo the stored name, e.g. `Chess Meetup`.
 1. **Use one date-time format everywhere.** Currently, a member's session list in `view` shows `2026-11-01T10:00`
    while session cards show `Sun, 1 Nov 2026 at 10:00 AM`. We plan to use the session card format in both places.
 1. **Allow renaming a session.** Currently, `edit` on the session list only accepts `-l` and `-t`, so `edit 1 -n NAME`
