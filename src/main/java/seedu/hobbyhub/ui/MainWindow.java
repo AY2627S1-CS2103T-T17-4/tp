@@ -262,6 +262,8 @@ public class MainWindow extends UiPart<Stage> {
             viewedMember = updatedMember;
             viewedDetails = ViewCommand.createViewDetails(updatedMember);
             viewDetailsPanel.showDetails(viewedDetails);
+        } else {
+            clearViewedDetails();
         }
     }
 
@@ -279,7 +281,17 @@ public class MainWindow extends UiPart<Stage> {
             viewedSession = updatedSession;
             viewedDetails = ViewSessionCommand.createViewDetails(updatedSession);
             viewDetailsPanel.showDetails(viewedDetails);
+        } else {
+            clearViewedDetails();
         }
+    }
+
+    /** Clears the profile when its record has been deleted and no replacement exists. */
+    private void clearViewedDetails() {
+        viewedDetails = null;
+        viewedMember = null;
+        viewedSession = null;
+        viewDetailsPanel.clear();
     }
 
     /** Stores the viewed record and displays its latest details. */

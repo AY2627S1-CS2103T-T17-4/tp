@@ -81,9 +81,9 @@ public class MainApp extends Application {
 
     /**
      * Acquires the lock guarding the data file of {@code storage}, and exits the application if another
-     * instance already holds it. Continues without a lock if the lock file cannot be created or locked.
+     * instance already holds it. Startup fails if the lock cannot be acquired.
      */
-    private void acquireInstanceLock(Storage storage) {
+    private void acquireInstanceLock(Storage storage) throws IOException {
         try {
             Optional<InstanceLock> lock = InstanceLock.tryAcquire(storage.getHobbyHubFilePath());
             if (lock.isPresent()) {
@@ -94,9 +94,12 @@ public class MainApp extends Application {
                         + ". Exiting.");
                 System.err.println("Another HobbyHub instance is already running.");
                 exitHandler.accept(1);
+                throw new IOException("Another HobbyHub instance is already using the data file.");
             }
         } catch (IOException e) {
-            logger.warning("Could not acquire instance lock, continuing without it: " + StringUtil.getDetails(e));
+            logger.severe("Could not acquire instance lock; refusing to start without exclusive access: "
+                    + StringUtil.getDetails(e));
+            throw new IOException("Could not acquire the data file lock; HobbyHub cannot start safely.", e);
         }
     }
 
