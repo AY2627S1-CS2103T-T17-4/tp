@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -120,7 +121,7 @@ class JsonSerializableHobbyHub {
     private void addSessions(HobbyHub hobbyHub) {
         Map<String, Email> memberEmails = new HashMap<>();
         for (Member member : hobbyHub.getMemberList()) {
-            memberEmails.putIfAbsent(member.getEmail().value.toLowerCase(), member.getEmail());
+            memberEmails.putIfAbsent(member.getEmail().value.toLowerCase(Locale.ROOT), member.getEmail());
         }
 
         for (JsonAdaptedSession adaptedSession : sessions) {
@@ -154,7 +155,7 @@ class JsonSerializableHobbyHub {
     private static Session resolveMembers(Session session, Map<String, Email> memberEmails) {
         Set<Email> resolved = new HashSet<>();
         for (Email email : session.getMembers()) {
-            Email memberEmail = memberEmails.get(email.value.toLowerCase());
+            Email memberEmail = memberEmails.get(email.value.toLowerCase(Locale.ROOT));
             if (memberEmail == null) {
                 logger.warning("Session " + session.getName() + " refers to unknown member " + email
                         + ". The member is removed from the session.");

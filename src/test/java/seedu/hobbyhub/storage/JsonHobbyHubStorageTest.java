@@ -133,6 +133,16 @@ public class JsonHobbyHubStorageTest {
     }
 
     @Test
+    public void readHobbyHub_nonArrayListField_backsUpOriginalFile() throws Exception {
+        String content = "{\"persons\": {}, \"sessions\": []}";
+
+        ReadOnlyHobbyHub hobbyHub = readHobbyHubFromContent("wrongListType.json", content).get();
+
+        assertTrue(hobbyHub.getMemberList().isEmpty());
+        assertEquals(1, countBackups());
+    }
+
+    @Test
     public void readHobbyHub_invalidEntries_backsUpOriginalFile() throws Exception {
         readHobbyHubFromCopy("invalidAndValidMemberHobbyHub.json");
 

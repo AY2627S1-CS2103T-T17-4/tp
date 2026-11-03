@@ -74,9 +74,9 @@ public class JsonHobbyHubStorage {
 
         List<JsonAdaptedMember> members = new ArrayList<>();
         List<JsonAdaptedSession> sessions = new ArrayList<>();
-        int discardedCount = parseEntries(root.path(JsonSerializableHobbyHub.MEMBERS_FIELD),
+        int discardedCount = parseEntries(root, JsonSerializableHobbyHub.MEMBERS_FIELD,
                 JsonAdaptedMember.class, members);
-        discardedCount += parseEntries(root.path(JsonSerializableHobbyHub.SESSIONS_FIELD),
+        discardedCount += parseEntries(root, JsonSerializableHobbyHub.SESSIONS_FIELD,
                 JsonAdaptedSession.class, sessions);
 
         JsonSerializableHobbyHub jsonHobbyHub = new JsonSerializableHobbyHub(members, sessions);
@@ -91,15 +91,23 @@ public class JsonHobbyHubStorage {
     }
 
     /**
-     * Parses each element of {@code array} independently as a {@code type} and adds it to {@code output}.
-     * Elements that are {@code null} or cannot be parsed are skipped. Returns the number of skipped elements.
-     * Does nothing if {@code array} is not a JSON array.
+     * Parses each element of a present JSON array independently as a {@code type} and adds it to {@code output}.
+     * Elements that are {@code null} or cannot be parsed are skipped. A present non-array field is counted as one
+     * discarded field so that the source file is backed up. An absent field remains valid for legacy files.
      *
+     * @param root the root JSON object.
+     * @param fieldName the field containing the entries.
      * @param <T> the type of the adapted entry.
      */
-    private static <T> int parseEntries(JsonNode array, Class<T> type, List<T> output) {
-        if (!array.isArray()) {
+    private static <T> int parseEntries(JsonNode root, String fieldName, Class<T> type, List<T> output) {
+        if (!root.has(fieldName)) {
             return 0;
+        }
+
+        JsonNode array = root.get(fieldName);
+        if (!array.isArray()) {
+            logger.warning("Discarding malformed " + fieldName + " field: expected a JSON array.");
+            return 1;
         }
 
         int skippedCount = 0;

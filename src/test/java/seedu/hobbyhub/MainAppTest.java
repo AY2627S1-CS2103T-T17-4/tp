@@ -3,6 +3,7 @@ package seedu.hobbyhub;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -137,7 +138,7 @@ public class MainAppTest {
         app.setExitHandler(exitStatuses::add);
 
         try (InstanceLock heldLock = InstanceLock.tryAcquire(hobbyHubFile).get()) {
-            app.init();
+            assertThrows(IOException.class, app::init);
         }
 
         assertEquals(List.of(1), exitStatuses);
@@ -145,18 +146,18 @@ public class MainAppTest {
     }
 
     @Test
-    public void init_lockFileCannotBeCreated_continuesWithoutLock() throws Exception {
+    public void init_lockFileCannotBeCreated_failsToStart() throws Exception {
         Path blocker = testFolder.resolve("blocker");
         Files.writeString(blocker, "a file where a directory is needed");
         TestMainApp app = new TestMainApp(testFolder.resolve("preferences.json"), blocker.resolve("hobbyhub.json"));
         List<Integer> exitStatuses = new ArrayList<>();
         app.setExitHandler(exitStatuses::add);
 
-        app.init();
+        assertThrows(IOException.class, app::init);
 
         assertTrue(exitStatuses.isEmpty());
         assertNull(getInstanceLock(app));
-        assertFalse(app.model.getHobbyHub().getMemberList().isEmpty());
+        assertNull(app.model);
     }
 
     @Test
