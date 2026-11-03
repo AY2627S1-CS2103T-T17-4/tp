@@ -946,6 +946,31 @@ HobbyHub shows the session name, date-time, location, completion status and assi
 
 --------------------------------------------------------------------------------------------------------------------
 
+## **Appendix: Planned Enhancements**
+
+Team size: 5
+
+1. **Tell the user when invalid data entries were skipped.** Currently, invalid members or sessions in the data file
+   are skipped on startup and only recorded in the log. We plan to show `N invalid entries were skipped; a backup was
+   saved as addressbook.json.<n>.bak` in the result box after launch.
+1. **Clear the details panel when switching lists.** Currently, after `view` on a member followed by `list -s`, the
+   details panel still shows that member beside the session list. We plan to clear the panel whenever the displayed
+   list changes.
+1. **Use one date-time format everywhere.** Currently, a member's session list in `view` shows `2026-11-01T10:00`
+   while session cards show `Sun, 1 Nov 2026 at 10:00 AM`. We plan to use the session card format in both places.
+1. **Allow renaming a session.** Currently, `edit` on the session list only accepts `-l` and `-t`, so `edit 1 -n NAME`
+   gives `Invalid command format!`. We plan to accept `-n` and update the session name stored for every assigned
+   member at the same time.
+1. **Allow non-English letters in session names.** Currently, session names only accept ASCII letters and digits
+   (plus space, `_`, `'`, `&` and `-`), while member names accept letters from any language. We plan to accept
+   Unicode letters in session names too.
+1. **Report an invalid index for very large numbers.** Currently, `delete 2147483648` (larger than an `int`) gives
+   `Invalid command format!`. We plan to show the same invalid-index message as for any other out-of-range index.
+1. **Ask for confirmation before `clear`.** Currently, `clear` deletes every member and session immediately. We plan to
+   require `clear -f`, or a confirmation prompt, before deleting everything.
+
+--------------------------------------------------------------------------------------------------------------------
+
 ## **Appendix: Instructions for manual testing**
 
 Given below are instructions to test the app manually.
@@ -961,19 +986,19 @@ testers are expected to do more *exploratory* testing.
 
    1. Download the JAR file and copy it into an empty folder.
 
-   1. Double-click the JAR file.<br>
+   1. Open a terminal in that folder and run `java -jar hobbyhub.jar`.<br>
       Expected: The GUI opens with sample members and sessions. The window size may not be optimal.
 
 1. Saving window preferences
 
    1. Resize the window to an optimal size. Move the window to a different location. Close the window.
 
-   1. Relaunch the app by double-clicking the JAR file.<br>
+   1. Relaunch the app with `java -jar hobbyhub.jar`.<br>
        Expected: The most recent window size and location are retained.
 
 1. Preventing a second instance from using the same data file
 
-   1. With the first instance still running, double-click the same JAR file again.<br>
+   1. With the first instance still running, run `java -jar hobbyhub.jar` again from the same folder.<br>
       Expected: The second instance prints `Another HobbyHub instance is already running.` and exits. The first
       instance continues running. This check assumes the operating system supports creating and locking the lock file.
 
