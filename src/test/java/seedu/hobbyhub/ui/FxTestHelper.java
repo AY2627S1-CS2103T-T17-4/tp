@@ -30,11 +30,11 @@ public final class FxTestHelper {
 
         CountDownLatch completion = new CountDownLatch(1);
         AtomicReference<T> result = new AtomicReference<>();
-        AtomicReference<RuntimeException> failure = new AtomicReference<>();
+        AtomicReference<Throwable> failure = new AtomicReference<>();
         Platform.runLater(() -> {
             try {
                 result.set(action.get());
-            } catch (RuntimeException e) {
+            } catch (RuntimeException | Error e) {
                 failure.set(e);
             } finally {
                 completion.countDown();
@@ -48,8 +48,11 @@ public final class FxTestHelper {
             throw new AssertionError(e);
         }
 
-        if (failure.get() != null) {
-            throw failure.get();
+        if (failure.get() instanceof RuntimeException exception) {
+            throw exception;
+        }
+        if (failure.get() instanceof Error error) {
+            throw error;
         }
         return result.get();
     }

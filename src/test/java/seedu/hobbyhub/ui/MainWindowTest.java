@@ -186,7 +186,7 @@ public class MainWindowTest {
             assertEquals("alice.updated@example.com", ((Label) scene.lookup("#subtitle")).getText());
             assertEquals("12345678", getDetailValue(mainWindow, 0));
             logic.members.remove(updatedMember);
-            assertEquals("Alice Updated", ((Label) scene.lookup("#title")).getText());
+            assertClearedDetails(mainWindow);
             stage.hide();
         });
     }
@@ -223,7 +223,7 @@ public class MainWindowTest {
             assertEquals("Renamed Session", ((Label) scene.lookup("#title")).getText());
             assertEquals("Updated Hall", getDetailValue(mainWindow, 1));
             logic.sessions.remove(renamedSession);
-            assertEquals("Renamed Session", ((Label) scene.lookup("#title")).getText());
+            assertClearedDetails(mainWindow);
             stage.hide();
         });
     }
@@ -246,7 +246,7 @@ public class MainWindowTest {
     }
 
     @Test
-    public void executeCommand_staleViewedRecord_ignoresUnrelatedRemoval() {
+    public void executeCommand_staleViewedRecord_clearsDetailsOnListChange() {
         FxTestHelper.runOnFxThread(() -> {
             TestLogic logic = new TestLogic();
             Member otherMember = new MemberBuilder().withName("Bob Yang").withPhone("98765432")
@@ -258,21 +258,29 @@ public class MainWindowTest {
             MainWindow mainWindow = new MainWindow(stage, logic, Path.of("data", "addressbook.json"));
             mainWindow.fillInnerParts();
             mainWindow.show();
-            Scene scene = mainWindow.getRoot().getScene();
 
             logic.commandResult = new CommandResult("Stale member", new ViewDetails("Stale Member", "stale",
                     List.of(), ViewDetails.RecordType.MEMBER, "missing@example.com"));
             invokeExecuteCommand(mainWindow, "view 1");
             logic.members.remove(otherMember);
-            assertEquals("Stale Member", ((Label) scene.lookup("#title")).getText());
+            assertClearedDetails(mainWindow);
 
             logic.commandResult = new CommandResult("Stale session", new ViewDetails("Stale Session", "details",
                     List.of(), ViewDetails.RecordType.SESSION, "Missing Session"));
             invokeExecuteCommand(mainWindow, "view 1");
             logic.sessions.remove(otherSession);
-            assertEquals("Stale Session", ((Label) scene.lookup("#title")).getText());
+            assertClearedDetails(mainWindow);
             stage.hide();
         });
+    }
+
+    private static void assertClearedDetails(MainWindow mainWindow) {
+        Scene scene = mainWindow.getRoot().getScene();
+        assertEquals("Nothing selected", ((Label) scene.lookup("#title")).getText());
+        assertEquals("Use view INDEX to inspect a record.", ((Label) scene.lookup("#subtitle")).getText());
+        assertTrue(((VBox) scene.lookup("#fields")).getChildren().isEmpty());
+        assertNull(invokePrivate(mainWindow, "findViewedMember"));
+        assertNull(invokePrivate(mainWindow, "findViewedSession"));
     }
 
     private static String getDetailValue(MainWindow mainWindow, int index) {
